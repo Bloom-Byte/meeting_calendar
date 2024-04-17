@@ -1,0 +1,140 @@
+{% extends 'base/base.html' %}
+{% load static %}
+{% load tz %}
+
+{% block page_title %}
+Dashboard
+{% endblock page_title %}
+
+{% block stylesheets %}
+<link rel="stylesheet" href="{% static 'base//styles//content_container.css' %}">
+<link rel="stylesheet" href="{% static 'dashboard//styles//dashboard.css' %}">
+{% endblock stylesheets %}
+
+{% block header_content %}
+<div id="content-header">
+    <div id="header-text">
+        <h1>
+            Welcome back, {{ request.user.firstname | title }}
+        </h1>
+        <p>Here are today's updated for you!</p>
+    </div>
+</div>
+{% endblock header_content %}
+
+{% block content %}
+<div id="content-container">
+    <section id="session-cards">
+        <div class="session-card">
+            <div class="session-card-head">
+                <svg 
+                    xmlns="http://www.w3.org/2000/svg" 
+                    width="24" height="24" viewBox="0 0 24 24" 
+                    style="fill: currentColor;"
+                >
+                    <path d="M19 4h-3V2h-2v2h-4V2H8v2H5c-1.103 0-2 .897-2 2v14c0 1.103.897 2 2 2h14c1.103 0 2-.897 2-2V6c0-1.103-.897-2-2-2zm-7 10H7v-2h5v2zm5-4H7V8h10v2z"></path>
+                </svg>
+
+                <div class="card-head-text">
+                    <h3>Next session</h3>
+                    <a>Reschedule</a>
+                </div>
+            </div>
+
+            <div class="session-card-body">
+                <h2>1st April - 1:00pm</h2>
+                <a href="http://#">
+                    Join the meeting
+                </a>
+            </div>
+        </div>
+
+        <div class="session-card">
+            <div class="session-card-head">
+                <svg 
+                    xmlns="http://www.w3.org/2000/svg" 
+                    width="24" height="24" viewBox="0 0 24 24" 
+                    style="fill: currentColor;"
+                >
+                    <path d="M19 4h-3V2h-2v2h-4V2H8v2H5c-1.103 0-2 .897-2 2v14c0 1.103.897 2 2 2h14c1.103 0 2-.897 2-2V6c0-1.103-.897-2-2-2zm-7 10H7v-2h5v2zm5-4H7V8h10v2z"></path>
+                </svg>
+
+                <div class="card-head-text">
+                    <h3>Next session</h3>
+                    <a>Reschedule</a>
+                </div>
+            </div>
+
+            <div class="session-card-body">
+                <h2>1st April - 1:00pm</h2>
+                <a href="http://#">
+                    Join the meeting
+                </a>
+            </div>
+        </div>
+
+        <div class="session-card">
+            <div class="session-card-head">
+                <svg 
+                    xmlns="http://www.w3.org/2000/svg" 
+                    width="24" height="24" viewBox="0 0 24 24" 
+                    style="fill: currentColor;"
+                >
+                    <path d="M19 4h-3V2h-2v2h-4V2H8v2H5c-1.103 0-2 .897-2 2v14c0 1.103.897 2 2 2h14c1.103 0 2-.897 2-2V6c0-1.103-.897-2-2-2zm-7 10H7v-2h5v2zm5-4H7V8h10v2z"></path>
+                </svg>
+
+                <div class="card-head-text">
+                    <h3>Next session</h3>
+                    <a>Reschedule</a>
+                </div>
+            </div>
+
+            <div class="session-card-body">
+                <h2>1st April - 1:00pm</h2>
+                <a href="http://#">
+                    Join the meeting
+                </a>
+            </div>
+        </div>
+
+        <div class="session-card">
+            <div class="session-card-head">
+                <svg 
+                    xmlns="http://www.w3.org/2000/svg" 
+                    width="24" height="24" viewBox="0 0 24 24" 
+                    style="fill: currentColor;"
+                >
+                    <path d="M19 4h-3V2h-2v2h-4V2H8v2H5c-1.103 0-2 .897-2 2v14c0 1.103.897 2 2 2h14c1.103 0 2-.897 2-2V6c0-1.103-.897-2-2-2zm-7 10H7v-2h5v2zm5-4H7V8h10v2z"></path>
+                </svg>
+
+                <div class="card-head-text">
+                    <h3>Next session</h3>
+                    <a>Reschedule</a>
+                </div>
+            </div>
+
+            <div class="session-card-body">
+                <h2>1st April - 1:00pm</h2>
+                <a href="http://#">
+                    Join the meeting
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <section id="news-section">
+        <div class="section-head">
+            <h3>News</h3>
+        </div>
+
+        <div class="section-body">
+
+        </div>
+    </section>
+</div>
+{% endblock content %}
+
+
+{% block scripts %}
+{% endblock scripts %}
+
