@@ -25,10 +25,13 @@ INSTALLED_APPS = [
 
     # deps
     'timezone_field',
+    'django_utz',
 
     # apps
     'users.apps.UsersConfig',
     'dashboard.apps.DashboardConfig',
+    'booking.apps.BookingConfig',
+    'news.apps.NewsConfig',
 ]
 
 MIDDLEWARE = [

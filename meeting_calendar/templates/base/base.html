@@ -52,8 +52,8 @@
 
                 <li>
                     <a 
-                        href="" 
-                        {% if 'sessions' in request.path %}
+                        href="{% url 'booking:session_calendar' %}" 
+                        {% if 'calendar' in request.path %}
                         class="current-tab"
                         {% endif %}
                         title=""

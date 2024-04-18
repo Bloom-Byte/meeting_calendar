@@ -1,0 +1,32 @@
+{% extends 'base/base.html' %}
+{% load static %}
+{% load tz %}
+
+{% block page_title %}
+Calendar
+{% endblock page_title %}
+
+{% block stylesheets %}
+<link rel="stylesheet" href="{% static 'base//styles//content_container.css' %}">
+<link rel="stylesheet" href="{% static 'booking//styles//session_calendar.css' %}">
+{% endblock stylesheets %}
+
+{% block header_content %}
+<div id="content-header">
+    <div id="header-text">
+        <h1>
+            Session Calendar
+        </h1>
+        
+        <p>View your bookings or book a new session using the calendar</p>
+    </div>
+</div>
+{% endblock header_content %}
+
+{% block content %}
+{% endblock content %}
+
+
+{% block scripts %}
+{% endblock scripts %}
+
