@@ -11,6 +11,6 @@ urlpatterns = [
 ]
 
 
-admin.site.site_header = f"{settings.SITE_NAME or "Django"} Admin"
-admin.site.site_title = f"{settings.SITE_NAME or "Django"} Admin"
-admin.site.index_title = f"{settings.SITE_NAME or "Django"} Admin"
+admin.site.site_header = f"{settings.SITE_NAME or 'Django'} Admin"
+admin.site.site_title = f"{settings.SITE_NAME or 'Django'} Admin"
+admin.site.index_title = f"{settings.SITE_NAME or 'Django'} Admin"
