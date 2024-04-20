@@ -151,7 +151,7 @@ class ForgotPasswordView(generic.TemplateView):
             # Create a token that is only valid for 24 hours
             validity_period = settings.PASSWORD_RESET_TOKEN_VALIDITY_PERIOD
             token = create_password_reset_token(user, validity_period_in_hours=validity_period)
-            reset_url = f"{settings.SITE_URL}{reverse("users:reset_password")}"
+            reset_url = f"{settings.SITE_URL}{reverse('users:reset_password')}"
             message = construct_password_reset_mail(
                 user=user, 
                 password_reset_url=reset_url, 
