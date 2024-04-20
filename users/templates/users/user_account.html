@@ -1,12 +1,12 @@
-{% extends 'base/base.html' %}
+{% extends 'core/base.html' %}
 {% load static %}
 
 
 {% block page_title %}{{ user.fullname | title }}{% endblock page_title %}
 
 {% block stylesheets %}
-<link rel="stylesheet" href="{% static 'base//styles//form_card.css' %}">
-<link rel="stylesheet" href="{% static 'base//styles//content_container.css' %}">
+<link rel="stylesheet" href="{% static 'core//styles//form_card.css' %}">
+<link rel="stylesheet" href="{% static 'core//styles//content_container.css' %}">
 <link rel="stylesheet" href="{% static 'users//styles//user_account.css' %}">
 {% endblock stylesheets %}
 

@@ -27,6 +27,7 @@ INSTALLED_APPS = [
     'rest_framework_api_key',
 
     # apps
+    'core.apps.CoreConfig',
     'users.apps.UsersConfig',
     'dashboard.apps.DashboardConfig',
     'booking.apps.BookingConfig',
@@ -52,9 +53,7 @@ ROOT_URLCONF = 'meeting_calendar.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [
-            os.path.join(BASE_DIR, "meeting_calendar/templates")
-        ],
+        'DIRS': [],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

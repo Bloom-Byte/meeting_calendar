@@ -1,0 +1,324 @@
+/* Header */
+
+header{
+    background-color: var(--dark-gray);
+    color: white;
+    width: 100%;
+    height: 70px;
+}
+
+header > .container{
+    height: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+header #header-logo{
+    font-size: 1.5rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+header nav{
+    height: 100%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0 20px;
+}
+
+header nav ul{
+    display: inline-flex;
+    justify-content: space-between;
+    list-style: none;
+    gap: 0 16px;
+}
+
+header nav ul li{
+    display: inline-block;
+}
+
+header nav ul li a{
+    color: var(--white);
+    font-family: "Manrope";
+    font-weight: 500;
+    text-decoration: none;
+    font-size: clamp(14px, 1.5vw, 16px);
+    padding: 8px 18px;
+    border: 1px solid var(--light-gray);
+    border-radius: 4px;
+}
+
+header nav ul li a:hover{
+    color: var(--theme-color-bright);
+    border-color: var(--theme-color-bright);
+}
+
+/* Hero Section */
+.hero-section{
+    background: var(--white);
+    max-width: 1200px;
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    padding-block: 60px;
+}
+
+.hero-section > .hero-content{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 20px 0;
+    padding: 10px;
+    flex: 1;
+}
+
+.hero-content > h1{
+    font-size: clamp(32px, 2.5vw, 40px);
+    font-weight: 700;
+    color: var(--text-dark);
+}
+
+.hero-content  > p{
+    font-size: clamp(16px, 2vw, 18px);
+    color: var(--dark-gray);
+}
+
+.hero-content > a{
+    padding: 16px 24px;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 16px;
+    text-transform: uppercase;
+}
+
+.hero-image{
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.hero-image > img{
+    width: 100%;
+    height: auto;
+}
+
+/* Features Section */
+.features-section{
+    background: var(--light-gray);
+    padding: 60px 10%;
+    width: 100%;
+}
+
+.features-section > .features-wp{
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 60px 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 60px 40px;
+}
+
+.features-wp > .feature{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    text-align: center;
+    max-width: 340px;
+    align-self: center;
+}
+
+.feature-head{
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    align-items: center;
+    justify-content: center;
+}
+
+.feature-head > .feature-head-img{
+    padding: 20px;
+    border-radius: 8px;
+    background: var(--bg-gray);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.feature-head-img > svg{
+    width: 30px;
+    height: 30px;
+    color: var(--theme-color-bright);
+}
+
+.feature-head > h3{
+    font-size: clamp(18px, 2.5vw, 24px);
+    font-weight: 700;
+    color: var(--text-dark);
+
+}
+
+.feature-body{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.feature-body > p{
+    font-size: clamp(14px, 2vw, 16px);
+    color: var(--dark-gray);
+}
+
+/* Explainer Section */
+.explainer-section{
+    background: var(--white);
+    max-width: 1200px;
+    display: flex;
+    justify-content: space-between;
+    gap: 20px 80px;
+    padding-block: 60px;
+}
+
+.explainer-section > .explainer-content{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 20px 0;
+    padding: 10px;
+    flex: 1;
+}
+
+.explainer-content > h1{
+    font-size: clamp(28px, 2.5vw, 32px);
+    font-weight: 700;
+    color: var(--text-dark);
+}
+
+.explainer-content  > p{
+    font-size: clamp(16px, 1.5vw, 18px);
+    color: var(--dark-gray);
+}
+
+.explainer-content > a{
+    padding: 16px 24px;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 16px;
+    text-transform: uppercase;
+}
+
+.explainer-image{
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: var(--light-gray);
+    border-radius: 10px;
+}
+
+.explainer-image > img{
+    width: 100%;
+    height: auto;
+}
+
+/* Extras Section */
+.extras-section{
+    background: var(--white);
+    padding: 60px 10%;
+    width: 100%;
+    border-top: 3px solid var(--bg-gray);
+}
+
+.extras-section > .extras-wp{
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 60px 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 20px 0;
+    text-align: center;
+}
+
+.extras-wp > h3{
+    font-size: clamp(24px, 2.5vw, 32px);
+    font-weight: 700;
+    color: var(--text-dark);
+}
+
+.extras-wp > p{
+    font-size: clamp(16px, 2vw, 18px);
+    color: var(--dark-gray);
+}
+
+/* Footer Section */
+footer{
+    width: 100%;
+    background: var(--bg-gray);
+    padding: 60px 10%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 40px 0;
+}
+
+footer > .footer-links{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0 1.1px;
+    background: #888;
+}
+
+.footer-links > a{
+    font-family: "Manrope";
+    padding-inline: 10%;
+    padding-block: 2px;
+    background: var(--bg-gray);
+    font-size: clamp(15px, 1.5vw, 17px);
+    color: #888;
+    font-weight: 600;
+    text-decoration: none;
+    padding: 8px 16px;
+}
+
+footer > .footer-bottom{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 4px 0;
+}
+
+.footer-bottom > p{
+    font-size: clamp(14px, 1.5vw, 16px);
+    color: #888;
+}
+
+/* Media Queries */
+
+@media screen and (max-width: 840px){
+    .hero-section, .explainer-section{
+        flex-direction: column-reverse;
+    }
+}
+
+@media screen and (max-width: 560px){
+    footer .footer-links{
+        flex-direction: column;
+        background: transparent;
+    }
+}

@@ -4,6 +4,7 @@ from django.conf import settings
 
 
 urlpatterns = [
+    path("", include('core.urls', namespace="core")),
     path('dashboard/', include('dashboard.urls', namespace="dashboard")),
     path('admin/', admin.site.urls),
     path('accounts/', include('users.urls', namespace="users")),

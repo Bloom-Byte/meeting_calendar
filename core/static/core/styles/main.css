@@ -62,7 +62,6 @@ a{
 
 a:hover{
     transition: 0.05s ease-out color;
-    color: var(--theme-color-bright);
 }
 
 p, li, a{

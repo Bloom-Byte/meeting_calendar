@@ -1,4 +1,4 @@
-{% extends 'base/base.html' %}
+{% extends 'core/base.html' %}
 {% load static %}
 {% load tz %}
 {% load django_utz %}
@@ -8,7 +8,7 @@ Dashboard
 {% endblock page_title %}
 
 {% block stylesheets %}
-<link rel="stylesheet" href="{% static 'base//styles//content_container.css' %}">
+<link rel="stylesheet" href="{% static 'core//styles//content_container.css' %}">
 <link rel="stylesheet" href="{% static 'dashboard//styles//dashboard.css' %}">
 {% endblock stylesheets %}
 

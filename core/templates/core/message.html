@@ -1,12 +1,12 @@
-{% extends 'base/base.html' %}
+{% extends 'core/base.html' %}
 {% load static %}
 
 
 {% block page_title %}{{ title | title }}{% endblock page_title %}
 
 {% block stylesheets %}
-<link rel="stylesheet" href="{% static 'base//styles//content_container.css' %}">
-<link rel="stylesheet" href="{% static 'base//styles//message.css' %}">
+<link rel="stylesheet" href="{% static 'core//styles//content_container.css' %}">
+<link rel="stylesheet" href="{% static 'core//styles//message.css' %}">
 {% endblock stylesheets %}
 
 {% block header_content %}
