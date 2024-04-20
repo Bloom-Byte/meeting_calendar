@@ -1,12 +1,14 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views import generic
-from typing import Any
-from django.http import HttpRequest, HttpResponse, Http404
+from typing import Any, Dict
+import json
+from django.http import HttpRequest, HttpResponse, Http404, JsonResponse
 from django.shortcuts import redirect
 
 from links.models import Link
 from .models import Session
 from helpers.response import response_message
+from .utils import get_unavailable_times_for_date
 
 
 
@@ -59,7 +61,38 @@ class SessionLinkView(LoginRequiredMixin, generic.DetailView):
 
 class SessionCalendarView(generic.TemplateView):
     template_name = 'booking/session_calendar.html'
-    http_method_names = ["get"]
+    http_method_names = ["get", "post"]
+
+    def post(self, request: HttpRequest, *args: Any, **kwargs: Any) -> JsonResponse:
+        data: Dict = json.loads(request.body)
+        date: str = data.get('date', None)
+
+        if not date:
+            return JsonResponse(
+                data={
+                    "status": "error",
+                    "detail": "Date is required."
+                },
+                status=400
+            )
+        try:
+            unavailable_times = get_unavailable_times_for_date(date)
+        except Exception:
+            return JsonResponse(
+                data={
+                    "status": "error",
+                    "detail": "An error occurred. Please try again."
+                },
+                status=500
+            )
+        return JsonResponse(
+            data={
+                "status": "success",
+                "detail": "Unavailable times for the given date fetched successfully.",
+                "data": unavailable_times
+            },
+            status=200
+        )
 
 
 

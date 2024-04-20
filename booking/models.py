@@ -27,7 +27,7 @@ class Session(models.Model):
         help_text=_("The link to the session"), null=True,
         related_name="session", blank=True
     )
-    is_pending = models.BooleanField(default=True, help_text=_("Has this session been held? If so, uncheck this."))
+    has_held = models.BooleanField(default=False, help_text=_("Has this session been held? If so, check this."))
     cancelled = models.BooleanField(default=False, help_text=_("Check this if you want to cancel this session"))
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -43,7 +43,7 @@ class Session(models.Model):
         datetime_fields = "__all__"
 
     def __str__(self) -> str:
-        return f"'{self.title}' - to hold from {self.time_period[0]} to {self.time_period[1]} on {self.date}"
+        return f"'{self.title}' with {self.booked_by.fullname} ({self.booked_by.email})"
     
     @property
     def duration(self) -> int:
@@ -59,6 +59,11 @@ class Session(models.Model):
     def time_period(self) -> str:
         """Returns the start and end time of the session"""
         return self.start.strftime("%H:%M"), self.end.strftime("%H:%M")
+    
+    @property
+    def is_pending(self) -> bool:
+        """Returns True if the session has not been held, else False"""
+        return not self.has_held
     
 
     def was_missed(self, tz: Optional[timezone.tzinfo] = None) -> bool:
@@ -96,7 +101,7 @@ class UnavailablePeriod(models.Model):
         datetime_fields = "__all__"
 
     def __str__(self) -> str:
-        return f"Unavailable from {self.time_period[0]} to {self.time_period[1]} on {self.date}"
+        return f"Unavailable from {self.start} to {self.end}"
     
     @property
     def date(self) -> str:

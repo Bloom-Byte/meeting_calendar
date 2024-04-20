@@ -7,7 +7,7 @@ Calendar
 {% endblock page_title %}
 
 {% block stylesheets %}
-<link rel="stylesheet" href="{% static 'base//styles//content_container.css' %}">
+<link rel="stylesheet" href="{% static 'core//styles//content_container.css' %}">
 <link rel="stylesheet" href="{% static 'booking//styles//session_calendar.css' %}">
 {% endblock stylesheets %}
 
@@ -24,9 +24,24 @@ Calendar
 {% endblock header_content %}
 
 {% block content %}
+<section id="content-container">
+    {% csrf_token %}
+    <div id="session-calendar">
+    </div>
+
+    <span id="user-timezone" style="display: none !important;">
+        {{ request.user.utz }}
+    </span>
+</section>
 {% endblock content %}
 
 
 {% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/@fullcalendar/core@6.1.11/index.global.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@fullcalendar/interaction@6.1.11/index.global.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@fullcalendar/daygrid@6.1.11/index.global.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@fullcalendar/timegrid@6.1.11/index.global.min.js"></script>
+
+<script src="{% static 'booking//scripts//sessionCalendar.js' %}"></script>
 {% endblock scripts %}
 

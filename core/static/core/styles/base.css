@@ -132,11 +132,15 @@ body::-webkit-scrollbar{
     font-size: 14px !important;
 }
 
+#sidebar > nav > ul > li:has(#signout){
+    margin-bottom: 20px;
+}
+
 #sidebar-collapse{
     position: absolute;
-    bottom: 20px;
+    bottom: 50px;
     left: 5px;
-    z-index: 999;
+    z-index: 99999999999;
     display: flex;
     justify-content: center;
     align-items: center;

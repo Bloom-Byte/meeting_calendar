@@ -9,15 +9,15 @@ class SessionQuerySet(models.QuerySet):
 
     def pending(self):
         """
-        Returns sessions that are pending and have not been not cancelled
+        Returns sessions that have not been held and have not been not cancelled
         """
-        return self.filter(is_pending=True, cancelled=False)
+        return self.filter(has_held=False, cancelled=False)
     
 
     def missed(self, tz: Optional[timezone.tzinfo] = None):
         """
-        Returns sessions that were missed. That is, sessions that are still
-        pending even after their end datetime.
+        Returns sessions that were missed. That is, sessions that 
+        have not been held even after their end datetime.
         """
         return self.pending().filter(end__lte=timezone.now().astimezone(tz))
     
@@ -51,7 +51,7 @@ class SessionManager(BaseManager.from_queryset(SessionQuerySet)):
     
 
     def pending(self) -> SessionQuerySet:
-        """Returns sessions that are pending and have not been not cancelled"""
+        """Returns sessions that have not been held and have not been not cancelled"""
         return self.get_queryset().pending()
     
 

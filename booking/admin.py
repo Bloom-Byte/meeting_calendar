@@ -1,7 +1,11 @@
+from typing import Any
 from django.contrib import admin
+from django.http import HttpRequest
+from django_utz.middleware import get_request_user
 
 from .models import Session, UnavailablePeriod
-from .forms import SessionForm, UnavailablePeriodForm
+from .forms import SessionForm, UnavailablePeriodAdminForm
+
 
 
 @admin.register(Session)
@@ -9,17 +13,61 @@ class SessionModelAdmin(admin.ModelAdmin):
     """Model admin for the Session model"""
     form = SessionForm
     list_display = [
-        "title", "start", "end", "booked_by", 
-        "link", "is_pending", "cancelled",
-        "created_at", "updated_at"
+        "title", "starts", "ends", "booked_by", 
+        "link", "has_held", "cancelled", "created"
     ]
-    search_fields = ["title", "booked_by__email"]
+    search_fields = ["title", "booked_by__email", "booked_by__firstname", "booked_by__lastname"]
+    readonly_fields = ["booked_by"]
+    date_hierarchy = "start"
 
+    def has_add_permission(self, request: HttpRequest) -> bool:
+        return False
+    
+    def starts(self, obj: Session) -> Any:
+        """Start time in the request user's timezone"""
+        request_user = get_request_user()
+        return request_user.to_local_timezone(obj.start)
+    
+    def ends(self, obj: Session) -> Any:
+        """End time in the request user's timezone"""
+        request_user = get_request_user()
+        return request_user.to_local_timezone(obj.end)
+    
+    def created(self, obj: Session) -> Any:
+        """Created time in the request user's timezone"""
+        request_user = get_request_user()
+        return request_user.to_local_timezone(obj.created_at)
+    
+    
 
 
 @admin.register(UnavailablePeriod)
 class UnavailablePeriodModelAdmin(admin.ModelAdmin):
     """Model admin for the UnavailablePeriod model"""
-    form = UnavailablePeriodForm
-    list_display = ["start", "end", "created_at", "updated_at"]
+    form = UnavailablePeriodAdminForm
+    list_display = ["start", "ends", "created", "updated"]
     search_fields = ["start__date", "end__date", "start__time", "end__time"]
+    date_hierarchy = "start"
+
+    def has_add_permission(self, request: HttpRequest) -> bool:
+        return request.user.is_staff
+
+    def starts(self, obj: Session) -> Any:
+        """Start time in the request user's timezone"""
+        request_user = get_request_user()
+        return request_user.to_local_timezone(obj.start)
+    
+    def ends(self, obj: Session) -> Any:
+        """End time in the request user's timezone"""
+        request_user = get_request_user()
+        return request_user.to_local_timezone(obj.end)
+    
+    def created(self, obj: Session) -> Any:
+        """Created time in the request user's timezone"""
+        request_user = get_request_user()
+        return request_user.to_local_timezone(obj.created_at)
+    
+    def updated(self, obj: Session) -> Any:
+        """Updated time in the request user's timezone"""
+        request_user = get_request_user()
+        return request_user.to_local_timezone(obj.updated_at)

@@ -1,0 +1,15 @@
+#session-calendar{
+    margin: 20px auto;
+    width: 100%;
+    min-height: 70vh;
+}
+
+.fc-button-primary{
+    background: var(--theme-color-bright) !important;
+    border: none !important;
+}
+
+.loading{
+    pointer-events: none !important;
+    opacity: 0.5 !important;
+}
