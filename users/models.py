@@ -68,12 +68,13 @@ class UserAccount(PermissionsMixin, AbstractBaseUser):
             slug = slugify(self.fullname) + "-" + str(uuid.uuid4())[:8]
             self.slug = slug
 
-        # If admin status has changed, update permissions
-        if old_instance and old_instance.is_admin != self.is_admin:
-            update_admin_only_perms_on_user(self)
-        else:
-            update_admin_only_perms_on_user(self)
-        return super().save(*args, **kwargs)
+        super().save(*args, **kwargs)
+        # # If admin status has changed, update permissions
+        # if old_instance and old_instance.is_admin != self.is_admin:
+        #     update_admin_only_perms_on_user(self)
+        # else:
+        #     update_admin_only_perms_on_user(self)
+        return 
     
 
     def send_mail(
