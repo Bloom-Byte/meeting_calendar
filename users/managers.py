@@ -1,6 +1,7 @@
 from django.contrib.auth.models import BaseUserManager
 
 
+
 class UserAccountManager(BaseUserManager):
     """Custom manager for `UserAccount` model."""
     use_in_migrations = True
@@ -15,8 +16,8 @@ class UserAccountManager(BaseUserManager):
             email=self.normalize_email(email=email),
             **extra_fields
         )
-        
         user.set_password(password)
+
         if save is True:
             user.save(using=self._db)
         return user
@@ -32,6 +33,5 @@ class UserAccountManager(BaseUserManager):
         user.is_admin = True
         user.is_staff = True
         user.is_superuser = True
-        user.is_verified = True
         user.save(using=self._db)
         return user

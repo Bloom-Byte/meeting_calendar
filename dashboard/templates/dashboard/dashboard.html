@@ -52,7 +52,7 @@ Dashboard
                 <div class="session-card-body">
                     <h2>{{ session.start | date:"jS N" }} - {{ session.start | time }}</h2>
                     {% if not session.missed %}
-                        <a href="{{ session.link }}">
+                        <a href="{{ session.link.path }}">
                             Join the meeting
                         </a>
                     {% else %}
@@ -63,7 +63,7 @@ Dashboard
         {% empty %}
             <div id="no-sessions">
                 <p>No pending sessions currently</p>
-                <a href="{% url 'booking:session_calendar' %}">
+                <a href="{% url 'booking:calendar' %}">
                     <button class="btn-secondary">Book a session</button>
                 </a>
             </div>

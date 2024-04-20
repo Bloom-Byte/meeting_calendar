@@ -10,6 +10,7 @@ from timezone_field import TimeZoneField
 from django.core.mail import EmailMessage, get_connection as get_smtp_connection
 
 from .managers import UserAccountManager
+from .permissions import update_admin_only_perms_on_user
 
 
 @model
@@ -66,8 +67,13 @@ class UserAccount(PermissionsMixin, AbstractBaseUser):
         if not self.slug or name_changed:
             slug = slugify(self.fullname) + "-" + str(uuid.uuid4())[:8]
             self.slug = slug
-        super().save(*args, **kwargs)
-        return None
+
+        # If admin status has changed, update permissions
+        if old_instance and old_instance.is_admin != self.is_admin:
+            update_admin_only_perms_on_user(self)
+        else:
+            update_admin_only_perms_on_user(self)
+        return super().save(*args, **kwargs)
     
 
     def send_mail(

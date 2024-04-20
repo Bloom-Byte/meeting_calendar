@@ -3,8 +3,11 @@ from django.db import models
 import uuid
 from django.utils.translation import gettext_lazy as _
 from django_utz.decorators import model
+from django.utils import timezone
+from typing import Optional
 
 from .managers import SessionManager
+from links.models import Link
 
 
 @model
@@ -19,9 +22,10 @@ class Session(models.Model):
         verbose_name=_("Booked by"), on_delete=models.CASCADE,
         help_text=_("Who booked this session?")
     )
-    link = models.URLField(
-        blank=True, null=True,
-        help_text=_("Provide a link to the session if any")
+    link = models.ForeignKey(
+        Link, verbose_name=_("Link"), on_delete=models.SET_NULL,
+        help_text=_("The link to the session"), null=True,
+        related_name="session", blank=True
     )
     is_pending = models.BooleanField(default=True, help_text=_("Has this session been held? If so, uncheck this."))
     cancelled = models.BooleanField(default=False, help_text=_("Check this if you want to cancel this session"))
@@ -55,6 +59,14 @@ class Session(models.Model):
     def time_period(self) -> str:
         """Returns the start and end time of the session"""
         return self.start.strftime("%H:%M"), self.end.strftime("%H:%M")
+    
+
+    def was_missed(self, tz: Optional[timezone.tzinfo] = None) -> bool:
+        """
+        Returns True if the session was missed. That is, if the session is still
+        pending even after it's end datetime.
+        """
+        return self.end <= timezone.now().astimezone(tz) and self.is_pending
     
 
     def save(self, *args, **kwargs):

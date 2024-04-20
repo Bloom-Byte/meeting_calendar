@@ -9,8 +9,9 @@ class SessionModelAdmin(admin.ModelAdmin):
     """Model admin for the Session model"""
     form = SessionForm
     list_display = [
-        "title", "start", "end", 
-        "booked_by", "link", "is_pending", "cancelled"
+        "title", "start", "end", "booked_by", 
+        "link", "is_pending", "cancelled",
+        "created_at", "updated_at"
     ]
     search_fields = ["title", "booked_by__email"]
 
@@ -20,5 +21,5 @@ class SessionModelAdmin(admin.ModelAdmin):
 class UnavailablePeriodModelAdmin(admin.ModelAdmin):
     """Model admin for the UnavailablePeriod model"""
     form = UnavailablePeriodForm
-    list_display = ["start", "end"]
+    list_display = ["start", "end", "created_at", "updated_at"]
     search_fields = ["start__date", "end__date", "start__time", "end__time"]

@@ -1,6 +1,7 @@
 import re
 from django.http import HttpRequest
 from typing import Any, Dict
+from django.conf import settings
 
 
 
@@ -9,7 +10,7 @@ def parse_query_params_from_request(request: HttpRequest) -> Dict[str, str]:
     if request.method != "POST":
         return request.GET.dict()
     
-    query_param_pattern = r"&?(?P<param_name>[a-zA-Z0-9-_\s]+)=(?P<param_value>[a-zA-Z0-9-_/\?=\\\s]+)"
+    query_param_pattern = r"&?(?P<param_name>[a-zA-Z0-9-_\.\s]+)=(?P<param_value>[a-zA-Z0-9-_/\.\?=\\\s]+)"
     request_path: str = request.META.get("HTTP_REFERER", "")
     try:
         _, query_params_part = request_path.split("?", maxsplit=1)
@@ -24,3 +25,10 @@ def parse_query_params_from_request(request: HttpRequest) -> Dict[str, str]:
 def underscore_dict_keys(_dict: Dict[str, Any]) -> Dict[str, Any]:
     """Replaces all hyphens in the dictionary keys with underscores"""
     return {key.replace('-', "_"): value for key, value in _dict.items()}
+
+
+def get_password_change_mail_body() -> str:
+    return f"""
+    Your {settings.SITE_NAME} account password has been changed successfully.\n
+    If you did not make this change, please contact the site administrator immediately.
+    """ 

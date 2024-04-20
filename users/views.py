@@ -1,23 +1,27 @@
 import json
-import random
-import re
 from typing import Any, Dict
 from django.urls import reverse
 from django.shortcuts import redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpRequest, HttpResponse, JsonResponse
-from django.utils import timezone
 from django.views import generic
 from django.conf import settings
 import functools
 from urllib.parse import urlencode as urllib_urlencode
 import pytz
 
+
 from .forms import UserCreationForm, UserUpdateForm
 from .models import UserAccount
 from .decorators import redirect_authenticated, email_request_user_on_response
-from .utils import parse_query_params_from_request
+from .utils import parse_query_params_from_request, get_password_change_mail_body
+from .password_reset import (
+    check_if_password_reset_token_exists, create_password_reset_token,
+    delete_password_reset_token, construct_password_reset_mail,
+    check_password_reset_token_validity, reset_password_for_token
+)
+from helpers.logging import log_exception
 
 
 
@@ -111,6 +115,131 @@ class UserLogoutView(generic.RedirectView):
 
 
 
+class ForgotPasswordView(generic.TemplateView):
+    """View for handling forgot password requests."""
+    template_name = "users/forgot_password.html"
+    http_method_names = ["get", "post"]
+
+    def post(self, request: HttpRequest, *args: str, **kwargs: Any) -> JsonResponse:
+        data: Dict = json.loads(request.body)
+        email: str = data.get("email", None)
+        token = None
+
+        try:
+            user = UserAccount.objects.get(email=email)
+        except UserAccount.DoesNotExist:
+            return JsonResponse(
+                data={
+                    "status": "error",
+                    "detail": f"User account with email address {email}, not found!"
+                },
+                status=404
+            )
+        
+        if check_if_password_reset_token_exists(user) is True:
+            # If a token already exists, then the user has already requested a password reset
+            # and should wait for the email to be sent to them or check their email for the link.
+            return JsonResponse(
+                data={
+                    "status": "error",
+                    "detail": f"A password reset request was recently made for this account! Please check {user.email} for a reset email!"
+                },
+                status=400
+            )
+        
+        try:
+            # Create a token that is only valid for 24 hours
+            validity_period = settings.PASSWORD_RESET_TOKEN_VALIDITY_PERIOD
+            token = create_password_reset_token(user, validity_period_in_hours=validity_period)
+            reset_url = f"{settings.SITE_URL}{reverse("users:reset_password")}"
+            message = construct_password_reset_mail(
+                user=user, 
+                password_reset_url=reset_url, 
+                token=token,
+                token_name="token",
+                token_validity_period=validity_period
+            )
+            user.send_mail("Account Password Reset", message, html=True)
+        except Exception as exc:
+            log_exception(exc)
+            if token:
+                # Delete the created token if an error occurs
+                delete_password_reset_token(token)
+            return JsonResponse(
+                data={
+                    "status": "error",
+                    "detail": "An error occurred while processing your request. Please try again."
+                },
+                status=500
+            )
+        
+        return JsonResponse(
+            data={
+                "status": "success",
+                "detail": f"Request processed successfully. An email has been sent to {user.email}.",
+                "redirect_url": reverse("users:signin")
+            },
+            status=200
+        )
+
+
+
+class UserAccountPasswordResetView(generic.TemplateView):
+    """View for resetting user account password"""
+    http_method_names = ["get", "post"]
+    template_name = "users/reset_password.html"
+    
+    def post(self, request, *args, **kwargs) -> JsonResponse:
+        data: Dict = json.loads(request.body)
+        new_password = data.get("new-password1")
+        query_params = parse_query_params_from_request(request)
+        token = query_params.get("token", None)
+        token_is_valid = check_password_reset_token_validity(token)
+        reset_successful = False
+        
+        if token_is_valid is False:
+            # Delete the token so the user can request a password rest again
+            delete_password_reset_token(token)
+            return JsonResponse(
+                data={
+                    "status": "error",
+                    "detail": "The password reset token is invalid or has expired! Please request a password reset again.",
+                },
+                status=400
+            )
+        
+        try:
+            reset_successful = reset_password_for_token(token, new_password)
+        except Exception as exc:
+            log_exception(exc)
+            return JsonResponse(
+                data={
+                    "status": "error",
+                    "detail": "An error occurred while attempting password reset!"
+                },
+                status=500
+            )
+        
+        if not reset_successful:
+            return JsonResponse(
+                data={
+                    "status": "error",
+                    "detail": "Password reset was unsuccessful! Please try again."
+                },
+                status=400
+            )
+        
+        return JsonResponse(
+            data={
+                "status": "success",
+                "detail": "Password reset was successful!",
+                "redirect_url": reverse("users:signin")
+            },
+            status=200
+        )
+
+
+
 class UserAccountDetailView(LoginRequiredMixin, generic.DetailView):
     """View for getting a user's account details."""
     model = UserAccount
@@ -133,10 +262,11 @@ class UserAccountPasswordChangeView(LoginRequiredMixin, generic.DetailView):
     slug_field = "slug"
     slug_url_kwarg = "slug"
 
-    subject = f"{settings.SITE_NAME} - Account Password Change"
-    body = f"Your {settings.SITE_NAME} account password has been changed successfully.\n\n If you did not make this change, please contact us immediately."
-
-    email_request_user_on_password_change = functools.partial(email_request_user_on_response, subject=subject, body=body)
+    email_request_user_on_password_change = functools.partial(
+        email_request_user_on_response, 
+        subject="Account Password Changed", 
+        body=get_password_change_mail_body()
+    )
 
     @email_request_user_on_password_change
     def post(self, request: HttpRequest, *args: str, **kwargs: Any) -> JsonResponse:
@@ -256,10 +386,12 @@ class UserAccountDeleteView(LoginRequiredMixin, generic.DetailView):
 
 
 
-# Account creation and verification
+# Account creation and authentication
 user_create_view = UserCreateView.as_view()
 user_login_view = UserLoginView.as_view()
 user_logout_view = UserLogoutView.as_view()
+forgot_password_view = ForgotPasswordView.as_view()
+user_password_reset_view = UserAccountPasswordResetView.as_view()
 
 
 # Account management

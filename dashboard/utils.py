@@ -18,8 +18,8 @@ def get_todays_sessions_for_user(session_qs: SessionQuerySet, user: UserAccount)
     """
     user_qs = session_qs.filter(booked_by=user)
     pending_sessions = user_qs.pending()
-    todays_sessions = pending_sessions.today(tz=user.timezone).has_link()
-    missed_sessions = todays_sessions.missed(tz=user.timezone)
+    todays_sessions = pending_sessions.today(tz=user.utz).has_link()
+    missed_sessions = todays_sessions.missed(tz=user.utz)
     for session in todays_sessions:
         if session in missed_sessions:
             session.missed = True

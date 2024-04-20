@@ -8,8 +8,7 @@ class UserAccountModelAdmin(admin.ModelAdmin):
     """Custom UserAccount model admin."""
     def save_model(self, request, obj, form, change):
         # If password is set, then set it using the set_password method
-        password = form.cleaned_data.get('password', None)
-        if password:
-            obj.set_password(password)
+        if "password" in form.changed_data:
+            obj.set_password(form.cleaned_data["password"])
         obj.save()
         return None

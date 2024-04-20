@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import Union
 from dotenv import load_dotenv, find_dotenv
 import os
 
@@ -12,9 +13,6 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 
 DEBUG = os.getenv("DEBUG", "false").lower() == "true"
 
-ALLOWED_HOSTS = []
-
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -26,12 +24,15 @@ INSTALLED_APPS = [
     # deps
     'timezone_field',
     'django_utz',
+    'rest_framework_api_key',
 
     # apps
     'users.apps.UsersConfig',
     'dashboard.apps.DashboardConfig',
     'booking.apps.BookingConfig',
     'news.apps.NewsConfig',
+    'links.apps.LinksConfig',
+    'tokens.apps.TokensConfig',
 ]
 
 MIDDLEWARE = [
@@ -41,6 +42,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django_utz.middleware.DjangoUTZMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
@@ -118,13 +120,12 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 SITE_NAME = os.getenv("SITE_NAME", "Meeting Calendar")
 
+SITE_URL = os.getenv("SITE_URL", "http://localhost:8000")
 
 
 LOGIN_URL = 'users:signin'
 
 LOGIN_REDIRECT_URL = 'dashboard:dashboard'
-
-LOGOUT_REDIRECT_URL = 'users:signin'
 
 
 # EMAIL SETTINGS
@@ -144,3 +145,33 @@ EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
 
 DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL")
+
+
+# A list of models that should only be accessible by admin users
+ADMIN_ONLY_MODELS = [
+    "booking.models.UnavailablePeriod",
+    "links.models.Link",
+]
+
+def _parse_validity_period(period: Union[str, int]) -> int:
+    """
+    Converts a password reset token validity period in hours to a valid value.
+
+    If the value set is not valid, a default of 24.
+    """
+    try:
+        return int(period)
+    except (ValueError, TypeError):
+        return 24
+
+PASSWORD_RESET_TOKEN_VALIDITY_PERIOD = _parse_validity_period(os.getenv("PASSWORD_RESET_TOKEN_VALIDITY_PERIOD"))
+
+
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+
+if DEBUG is False:
+    ALLOWED_HOSTS = ["*"] # Set to your domain
+
+else:
+    ALLOWED_HOSTS = ["*"]

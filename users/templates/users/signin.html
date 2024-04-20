@@ -68,10 +68,17 @@
                             </button>
                         </div>
 
-                        <small>
-                            Don't have an account?
-                            <a href="{% url 'users:signup' %}">Sign up</a>
-                        </small>
+                        <div id="form-footer">
+                            <small>
+                                Don't have an account?
+                                <a href="{% url 'users:signup' %}">Sign up</a>
+                            </small>
+    
+                            <small>
+                                Can't remember password?
+                                <a href="{% url 'users:forgot_password' %}">Reset password</a>
+                            </small>
+                        </div>
                     </form>
                 </div>
             </section>
