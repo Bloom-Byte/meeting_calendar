@@ -1,0 +1,16 @@
+#message{
+    display: flex;
+    margin: 10px auto;
+    padding: 10px 20px;
+    background: var(--white);
+    text-align: center;
+    max-width: 600px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+#message > p{
+    font-size: clamp(14px, 2vw, 18px);
+    font-weight: 600;
+    font-family: 'Manrope';
+    color: var(--text-dark);
+}
