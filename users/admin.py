@@ -3,11 +3,13 @@ from typing import Any
 from django_utz.middleware import get_request_user
 
 from .models import UserAccount
+from .forms import UserForm
 
 
 @admin.register(UserAccount)
 class UserAccountModelAdmin(admin.ModelAdmin):
     """Custom UserAccount model admin."""
+    form = UserForm
     readonly_fields = ["slug", "last_login"]
     list_display = [
         "email", "firstname", "lastname", "timezone", 

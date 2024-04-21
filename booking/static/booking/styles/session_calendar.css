@@ -6,7 +6,7 @@
 
 .loading{
     pointer-events: none !important;
-    opacity: 0.5 !important;
+    opacity: 0.4 !important;
 }
 
 
@@ -18,6 +18,7 @@
 
 .fc-toolbar-title{
     font-size: clamp(16px, 2vw, 20px) !important;
+    min-width: max-content !important;
 }
 
 .in-time-view{
@@ -28,7 +29,19 @@
     display: none !important;
 }
 
+.fc-viewBookings-button{
+    display: none !important;
+}
+
+.viewing-bookings{
+    opacity: 0.7 !important;
+}
+
 #session-calendar.in-time-view .fc-backToMonth-button{
+    display: block !important;
+}
+
+#session-calendar.in-time-view .fc-viewBookings-button{
     display: block !important;
 }
 
@@ -49,10 +62,42 @@
 }
 
 .unavailable-time-slot{
-    /* pointer-events: none !important; */
-    opacity: 0.5 !important;
-    background-color: red !important;
+    pointer-events: none !important;
+    background-color: rgba(255, 0, 0, 0.7) !important;
     color: var(--white) !important;
     touch-action: none !important;
+    text-align: center;
+    padding: 20px 10px !important;
 }
 
+.booked-session{
+    background-color: var(--theme-color) !important;
+    color: var(--white) !important;
+    border-radius: 8px !important;
+    border: none !important;
+    text-align: center;
+    padding: 20px 10px !important;
+}
+
+.session-cancelled{
+    background-color: rgba(255, 0, 0, 0.8) !important;
+}
+
+.session-pending{
+    background-color: var(--theme-color-light) !important;
+}
+
+.session-held{
+    background-color: var(--theme-color) !important;
+}
+
+.session-missed{
+    background-color: var(--light-gray) !important;
+}
+
+
+@media screen and (max-width: 360px){
+    .fc-backToMonth-button, .fc-viewBookings-button{
+        padding: 5px 6px !important;
+    }
+}

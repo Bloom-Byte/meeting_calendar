@@ -27,7 +27,7 @@ def get_unavailable_times_for_date(date: str, tz: Optional[timezone.tzinfo] = No
         start_in_tz = session.start.astimezone(tz).strftime("%H:%M")
         end_in_tz = session.end.astimezone(tz).strftime("%H:%M")
         booked_times.append([start_in_tz, end_in_tz])
-    return unavailable_times + booked_times
+    return [*unavailable_times, *booked_times]
 
 
 
@@ -44,7 +44,7 @@ def get_time_periods_on_date_booked_by_user(date: str, user: UserAccount):
     todays_sessions: SessionQuerySet[Session] = get_sessions_on_date_booked_by_user(date, user)
     tz = user.utz
     pending_sessions = todays_sessions.pending()
-    missed_sessions = todays_sessions.missed()
+    missed_sessions = todays_sessions.missed(tz=user.utz)
     cancelled_sessions = todays_sessions.cancelled()
     held_sessions = todays_sessions.filter(has_held=True)
     pending = {}
@@ -52,9 +52,10 @@ def get_time_periods_on_date_booked_by_user(date: str, user: UserAccount):
     cancelled = {}
     held = {}
     for session in pending_sessions:
-        start_in_tz = session.start.astimezone(tz).strftime("%H:%M")
-        end_in_tz = session.end.astimezone(tz).strftime("%H:%M")
-        pending[session.title] = [start_in_tz, end_in_tz]
+        if session not in missed_sessions:
+            start_in_tz = session.start.astimezone(tz).strftime("%H:%M")
+            end_in_tz = session.end.astimezone(tz).strftime("%H:%M")
+            pending[session.title] = [start_in_tz, end_in_tz]
 
     for session in missed_sessions:
         start_in_tz = session.start.astimezone(tz).strftime("%H:%M")

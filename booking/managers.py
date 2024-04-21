@@ -16,7 +16,7 @@ class SessionQuerySet(models.QuerySet):
 
     def missed(self, tz: Optional[timezone.tzinfo] = None):
         """
-        Returns sessions that were missed. That is, sessions that 
+        Returns previously pending sessions that were missed. That is, sessions that 
         have not been held even after their end datetime.
         """
         return self.pending().filter(end__lte=timezone.now().astimezone(tz))

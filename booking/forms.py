@@ -34,9 +34,9 @@ class BaseBookingModelForm(forms.ModelForm):
 
     def clean(self) -> Dict[str, Any]:
         cleaned_data = super().clean()
-        start_time = cleaned_data.get("start_time")
-        end_time = cleaned_data.get("end_time")
-        date = cleaned_data.get("date")
+        start_time = cleaned_data.get("start_time", None)
+        end_time = cleaned_data.get("end_time", None)
+        date = cleaned_data.get("date", None)
         timezone = cleaned_data.get("timezone")
         if start_time and end_time:
             if start_time >= end_time:
@@ -72,7 +72,7 @@ class SessionForm(BaseBookingModelForm):
         }
 
     date = forms.DateField(
-        input_formats=["%Y-%m-%d"], required=True, label=_("Date"), disabled=True,
+        input_formats=["%Y-%m-%d"], required=True, label=_("Date"), disabled=False,
         widget=forms.DateInput(
             attrs={
                 "type": "date", 
@@ -83,14 +83,14 @@ class SessionForm(BaseBookingModelForm):
         help_text=_("The date the session will take place (in your timezone).")
     )
     start_time = forms.TimeField(
-        input_formats=["%H:%M"], required=True, disabled=True,
+        input_formats=["%H:%M"], required=True, disabled=False,
         widget=forms.TimeInput(attrs={
             "type": "time",
         }),
         label=_("Starts at"), help_text=_("The time the session will start (in your timezone).")
     )
     end_time = forms.TimeField(
-        input_formats=["%H:%M"], required=True, disabled=True,
+        input_formats=["%H:%M"], required=True, disabled=False,
         widget=forms.TimeInput(attrs={
             "type": "time",
             "max": "23:59"

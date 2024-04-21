@@ -1,3 +1,4 @@
+from django.conf import settings
 from typing import Any
 from django.contrib import admin
 from django.http import HttpRequest
@@ -20,7 +21,15 @@ class SessionModelAdmin(admin.ModelAdmin):
     readonly_fields = ["booked_by"]
     date_hierarchy = "start"
 
+    def save_model(self, request: Any, obj: Any, form: Any, change: Any) -> None:
+        # Set the booked_by field to the request user
+        form.instance.booked_by = request.user
+        return super().save_model(request, obj, form, change)
+
     def has_add_permission(self, request: HttpRequest) -> bool:
+        # Only allow sessions to be created from admin during development
+        if settings.DEBUG:
+            return True
         return False
     
     def starts(self, obj: Session) -> Any:
