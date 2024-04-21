@@ -8,7 +8,7 @@ from django.shortcuts import redirect
 from links.models import Link
 from .models import Session
 from helpers.response import response_message
-from .utils import get_unavailable_times_for_date
+from .utils import get_unavailable_times_for_date, get_time_periods_on_date_booked_by_user
 
 
 
@@ -76,7 +76,8 @@ class SessionCalendarView(generic.TemplateView):
                 status=400
             )
         try:
-            unavailable_times = get_unavailable_times_for_date(date)
+            unavailable_times = get_unavailable_times_for_date(date, tz=request.user.utz)
+            booked_times = get_time_periods_on_date_booked_by_user(date, user=request.user)
         except Exception:
             return JsonResponse(
                 data={
@@ -89,7 +90,10 @@ class SessionCalendarView(generic.TemplateView):
             data={
                 "status": "success",
                 "detail": "Unavailable times for the given date fetched successfully.",
-                "data": unavailable_times
+                "data": {
+                    "unavailable_times": unavailable_times,
+                    "booked_times": booked_times
+                }
             },
             status=200
         )

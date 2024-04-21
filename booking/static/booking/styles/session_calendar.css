@@ -1,15 +1,58 @@
 #session-calendar{
     margin: 20px auto;
     width: 100%;
-    min-height: 70vh;
-}
-
-.fc-button-primary{
-    background: var(--theme-color-bright) !important;
-    border: none !important;
+    min-height: 70vh !important;
 }
 
 .loading{
     pointer-events: none !important;
     opacity: 0.5 !important;
 }
+
+
+.fc-button-primary{
+    background: var(--theme-color) !important;
+    border-color: var(--bg-gray) !important;
+    font-size: clamp(14px, 1.5vw, 16px) !important;
+}
+
+.fc-toolbar-title{
+    font-size: clamp(16px, 2vw, 20px) !important;
+}
+
+.in-time-view{
+    display: auto !important;
+}
+
+.fc-backToMonth-button{
+    display: none !important;
+}
+
+#session-calendar.in-time-view .fc-backToMonth-button{
+    display: block !important;
+}
+
+#session-calendar.in-time-view .fc-next-button{
+    display: none !important;
+}
+
+#session-calendar.in-time-view .fc-prev-button{
+    display: none !important;
+}
+
+#session-calendar.in-time-view .fc-today-button{
+    display: none !important;
+}
+
+.fc-timegrid-slot-lane{
+    padding: 5px 10px !important;
+}
+
+.unavailable-time-slot{
+    /* pointer-events: none !important; */
+    opacity: 0.5 !important;
+    background-color: red !important;
+    color: var(--white) !important;
+    touch-action: none !important;
+}
+

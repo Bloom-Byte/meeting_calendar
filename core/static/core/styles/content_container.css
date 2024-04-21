@@ -39,7 +39,7 @@
     font-size: 14px;
     font-weight: 600;
     font-family: 'Manrope';
-    color: var(--text-dark);
+    color: #888;
 }
 
 #header-text > small{

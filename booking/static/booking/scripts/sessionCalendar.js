@@ -1,6 +1,5 @@
 var sessionCalendarEl = document.querySelector('#session-calendar');
 const userTimezone =  document.querySelector('#user-timezone').innerText;
-var unavailableTimeRanges = [];
 
 sessionCalendarEl.onPost = function(){
     this.classList.add('loading');
@@ -10,43 +9,66 @@ sessionCalendarEl.onResponse = function(){
     this.classList.remove('loading');
 }
 
-function isInUnavailableTimeRanges(startTime, endTime){
-    console.log(unavailableTimeRanges);
+function timeStrToDate(timeStr){
+    let time = timeStr.split(":");
+    let date = new Date();
+    date.setHours(time[0], time[1], 0, 0);
+    return date;
+}
+
+function isInUnavailableTimeRanges(timeStr, unavailableTimeRanges){
     for (const range of unavailableTimeRanges){
         let start = range[0];
         let end = range[1];
-        start = new Date(start);
-        end = new Date(end);
-        startTime = new Date(startTime);
-        endTime = new Date(endTime);
-        if (startTime >= start && endTime <= end){
+        start = timeStrToDate(start);
+        end = timeStrToDate(end);
+        time = timeStrToDate(timeStr);
+        if (time >= start && time <= end){
             return true;
         }
     }
     return false;
 }
 
+
 document.addEventListener('DOMContentLoaded', function() {
     var sessionCalendar = new FullCalendar.Calendar(sessionCalendarEl, {
         initialView: 'dayGridMonth',
+        customButtons: {
+            backToMonth: {
+                text: 'back to month',
+                click: () => {
+                    sessionCalendar.changeView('dayGridMonth');
+                    // remove time view class
+                    sessionCalendarEl.classList.remove("in-time-view");
+                }
+            }
+        },
         headerToolbar: {
-            left: 'prev,next today',
+            left: 'prev,next',
             center: 'title',
-            right: 'dayGridMonth,timeGridDay'
+            right: 'backToMonth,today'
         },
         views: {
             dayGridMonth: {
-                titleFormat: { year: 'numeric', month: 'long' },
+                titleFormat: { 
+                    year: 'numeric', 
+                    month: 'long' 
+                },
                 selectable: false,
                 dateClick: onDateClick
             },
             timeGridDay: {
-                titleFormat: { year: 'numeric', month: 'long', day: 'numeric' },
+                titleFormat: { 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric' 
+                },
                 selectable: true,
-                allDaySlot: false,
-                slotDuration: '00:10:00',
-                slotLabelInterval: '00:10',
                 select: onTimeSelect,
+                allDaySlot: false,
+                slotDuration: '00:05:00',
+                slotLabelInterval: '00:05',
             }   
         },
     });
@@ -76,21 +98,48 @@ document.addEventListener('DOMContentLoaded', function() {
                 
             }else{
                 response.json().then((data) => {
-                    unavailableTimeRanges = data.data;
+                    const responseData = data.data;
+                    const unavailableTimeRanges = responseData.unavailable_times;
+                    for (const range of unavailableTimeRanges){
+                        sessionCalendar.addEvent({
+                            title: 'Unavailable',
+                            startTime: range[0],
+                            endTime: range[1],
+                            display: 'background',
+                            color: 'red',
+                            selectable: false,
+                            overlap: false,
+                            textColor: 'white',
+                            editable: false,
+                        });
+                    }
+
+                    const bookedTimes = responseData.booked_times;
                     // move to time grid for that day
                     sessionCalendar.changeView('timeGridDay', info.dateStr);
+                    // add time view class, enables custom css when in time view
+                    sessionCalendarEl.classList.add("in-time-view");
+                    // disableTimeslotsInUnavailableTimeRanges(unavailableTimeRanges);
                 });
             }
         });
-    
-    }
+    };
 
     function onTimeSelect(info){
         const selectStart = info.startStr;
         const selectEnd = info.endStr;
-        if (isInUnavailableTimeRanges(selectStart, selectEnd)){
-            pushNotification("error", "Selected time is unavailable");
-            return;
+        console.log(selectStart, selectEnd)
+    };
+
+    function disableTimeslotsInUnavailableTimeRanges(unavailableTimeRanges){
+        const timeGridSlotsContainer = sessionCalendarEl.querySelector('.fc-timegrid-slots');
+        const timeGridSlots = timeGridSlotsContainer.querySelectorAll('.fc-timegrid-slot-lane');
+        for (const slot of timeGridSlots){
+            const slotTime = slot.getAttribute('data-time');
+            if (isInUnavailableTimeRanges(slotTime, unavailableTimeRanges)){
+                slot.classList.add('unavailable-time-slot');
+                slot.innerHTML = "Unavailable";
+            }
         }
     }
 });
