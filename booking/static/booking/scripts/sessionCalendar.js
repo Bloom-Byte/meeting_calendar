@@ -1,5 +1,5 @@
 const sessionCalendarEl = document.querySelector('#session-calendar');
-const userTimezone =  document.querySelector('#user-timezone').innerText;
+const userTimezone =  document.querySelector('#user-timezone').innerText.trim();
 const unavailableEventTitle = 'Booked and unavailable';
 
 sessionCalendarEl.onPost = function(){
@@ -20,7 +20,16 @@ function timeStrToDate(timeStr){
     let date = new Date();
     date.setHours(time[0], time[1], 0, 0);
     return date;
-}
+};
+
+
+function formatDate(date, separator="-") {
+    var year = date.getFullYear(); // Get the year (YYYY)
+    var month = ('0' + (date.getMonth() + 1)).slice(-2); // Get the month (MM) and add leading zero if necessary
+    var day = ('0' + date.getDate()).slice(-2); // Get the day (DD) and add leading zero if necessary
+    var formattedDate = year + separator + month + separator + day; // Construct the date string in "YYYY-MM-DD" format
+    return formattedDate;
+};
 
 
 /**
@@ -78,9 +87,7 @@ function fetchBookingDataForDate(dateStr, successCallback){
             response.json().then((data) => {
                 const responseData = data.data;
                 // console.log(responseData);
-                if (successCallback){
-                    successCallback(responseData);
-                }
+                successCallback(responseData);
             });
         };
     });
@@ -127,6 +134,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 slotLabelInterval: '00:05',
             }   
         },
+        timeZone: userTimezone,
     });
     sessionCalendar.render();
 
@@ -155,15 +163,19 @@ document.addEventListener('DOMContentLoaded', function() {
         // remove time view class
         sessionCalendarEl.classList.remove("in-time-view");
         const viewBookingsButton = sessionCalendarEl.querySelector('.fc-viewBookings-button');
+        // Return view bookings button to default state
         viewBookingsButton.classList.remove('viewing-bookings');
+        // Hide booked timeslots
+        hideBookedTimeslots();
     }
 
     function onViewBookingsClick(e){
         const viewBookingButton = e.target;
         viewBookingButton.classList.toggle('viewing-bookings');
-        const date = sessionCalendar.getDate().toISOString().split('T')[0];
+        const date = formatDate(sessionCalendar.getDate(), "-");
+        const isViewingBookings = viewBookingButton.classList.contains('viewing-bookings');
 
-        if (viewBookingButton.classList.contains('viewing-bookings')){
+        if (isViewingBookings){
             const displayBookedTimePeriods = (bookingData) => {
                 showBookedTimeslots(bookingData.booked_times);
             }
@@ -171,7 +183,7 @@ document.addEventListener('DOMContentLoaded', function() {
             hideUnavailableTimeslots();
 
         }else{
-            hideBookedTimeslots();
+            // hideBookedTimeslots();
             const displayUnavailableTimePeriods = (bookingData) => {
                 showUnavailableTimeslots(bookingData.unavailable_times);
             }
@@ -198,6 +210,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     };
 
+
     function hideUnavailableTimeslots(){
         const events = sessionCalendar.getEvents();
         for (const event of events){
@@ -207,27 +220,40 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     };
 
+
     function showBookedTimeslots(bookedTimes){
         for (const [sessionCategory, categoryData] of Object.entries(bookedTimes)) {
-            for (const [sessionTitle, timeRange] of Object.entries(categoryData)){
+            for (const [sessionTitle, sessionData] of Object.entries(categoryData)){
+                const timeRange = sessionData.time_period
+                const date = sessionData.date
+                const id = sessionData.id
+                const sessionLink = sessionData.link
                 const startTime = timeRange[0];
                 const endTime = timeRange[1];
+                const startDate = date + "T" + startTime;
+                const endDate = date + "T" + endTime;
                 const classNames = [`session-${sessionCategory}`, "booked-session"];
 
-                sessionCalendar.addEvent({
+                const event = sessionCalendar.addEvent({
                     title: `${sessionTitle} (${sessionCategory})`,
-                    startTime: startTime,
-                    endTime: endTime,
-                    startRecur: startTime,
-                    endRecur: endTime,
+                    // startTime: startTime,
+                    // endTime: endTime,
+                    start: startDate,
+                    end: endDate,
                     display: 'block',
                     selectable: false,
                     overlap: false,
                     classNames: classNames,
+                    description: sessionCategory,
+                    id: id,
                 });
+                if (sessionLink){
+                    event.setProp('url', sessionLink);
+                }
             }
         }
     };
+
 
     function hideBookedTimeslots(){
         const events = sessionCalendar.getEvents();
@@ -236,7 +262,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 event.remove();
             }
         }
-    }
+    };
+
 
     function disableTimeslotsInUnavailableTimeRanges(unavailableTimeRanges){
         const timeGridSlotsContainer = sessionCalendarEl.querySelector('.fc-timegrid-slots');
@@ -248,5 +275,5 @@ document.addEventListener('DOMContentLoaded', function() {
                 slot.innerHTML = "Unavailable";
             }
         }
-    }
+    };
 });

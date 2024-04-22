@@ -23,14 +23,16 @@ class BaseBookingModelForm(forms.ModelForm):
         self.initial["timezone"] = request_user.timezone
         # When the form is displaying the data of the model instance
         # to the user, display the fields below in the request user's timezone
-        try:
-            start_date_in_user_tz = request_user.to_local_timezone(self.instance.start)
-            end_date_in_user_tz = request_user.to_local_timezone(self.instance.end)
-            self.initial['date'] = start_date_in_user_tz.strftime("%Y-%m-%d")
-            self.initial["start_time"] = start_date_in_user_tz.time()
-            self.initial["end_time"] = end_date_in_user_tz.time()
-        except (AttributeError, TypeError):
-            pass
+        if self.instance.pk:
+            try:
+                start_date_in_user_tz = request_user.to_local_timezone(self.instance.start)
+                end_date_in_user_tz = request_user.to_local_timezone(self.instance.end)
+                self.initial['date'] = start_date_in_user_tz.strftime("%Y-%m-%d")
+                self.initial["start_time"] = start_date_in_user_tz.strftime("%H:%M")
+                self.initial["end_time"] = end_date_in_user_tz.strftime("%H:%M")
+            except (AttributeError, TypeError):
+                pass
+
 
     def clean(self) -> Dict[str, Any]:
         cleaned_data = super().clean()
@@ -40,10 +42,11 @@ class BaseBookingModelForm(forms.ModelForm):
         timezone = cleaned_data.get("timezone")
         if start_time and end_time:
             if start_time >= end_time:
-                self.add_error("start_time", "Start time cannot be greater than end time")
+                self.add_error("start_time", "Start time must be less than end time")
 
-        cleaned_data["start"] = datetime.datetime.combine(date=date, time=start_time, tzinfo=timezone).astimezone()
-        cleaned_data["end"] = datetime.datetime.combine(date=date, time=end_time, tzinfo=timezone).astimezone()
+        if date and start_time and end_time:
+            cleaned_data["start"] = datetime.datetime.combine(date=date, time=start_time, tzinfo=timezone).astimezone()
+            cleaned_data["end"] = datetime.datetime.combine(date=date, time=end_time, tzinfo=timezone).astimezone()
         return cleaned_data
     
 
@@ -112,6 +115,7 @@ class SessionForm(BaseBookingModelForm):
         link: Link = self.instance.link
         if link:
             self.initial["link"] = link.url
+
 
     def clean(self) -> None:
         cleaned_data = super().clean()

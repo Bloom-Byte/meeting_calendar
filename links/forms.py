@@ -15,13 +15,14 @@ class LinkForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         request_user = get_request_user()
-        try:
-            created_at_in_user_tz = request_user.to_local_timezone(self.instance.created_at)
-            updated_at_in_user_tz = request_user.to_local_timezone(self.instance.updated_at)
-            self.initial["created_at"] = created_at_in_user_tz
-            self.initial["updated_at"] = updated_at_in_user_tz
-        except (AttributeError, TypeError):
-            pass
+        if self.instance.pk:
+            try:
+                created_at_in_user_tz = request_user.to_local_timezone(self.instance.created_at)
+                updated_at_in_user_tz = request_user.to_local_timezone(self.instance.updated_at)
+                self.initial["created_at"] = created_at_in_user_tz
+                self.initial["updated_at"] = updated_at_in_user_tz
+            except (AttributeError, TypeError):
+                pass
     
     def save(self, commit: bool = True) -> models.Link:
         instance = super().save(commit=False)

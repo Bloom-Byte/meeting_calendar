@@ -90,7 +90,18 @@
     color: var(--bluish-gray);
 }
 
+.no-link{
+    font-family: "Manrope";
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--bluish-gray);
+}
+
 .session-card:has(.missed){
+    opacity: 0.8;
+}
+
+.session-card:has(.no-link){
     opacity: 0.9;
 }
 

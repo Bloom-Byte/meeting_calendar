@@ -11,14 +11,14 @@ def get_todays_sessions_for_user(session_qs: SessionQuerySet, user: UserAccount)
     """
     Return today's pending sessions for the user (in the user's timezone).
 
-    The sessions are marked as missed if they are missed. Only sessions with a link are returned.
+    The sessions are marked as missed if they are missed.
 
     :param session_qs: Queryset of Session objects
     :param user: UserAccount instance
     """
     user_qs = session_qs.filter(booked_by=user)
     pending_sessions = user_qs.pending()
-    todays_sessions = pending_sessions.today(tz=user.utz).has_link()
+    todays_sessions = pending_sessions.today(tz=user.utz)
     missed_sessions = todays_sessions.missed(tz=user.utz)
     for session in todays_sessions:
         if session in missed_sessions:

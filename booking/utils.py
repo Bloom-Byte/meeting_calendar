@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import Dict, List, Optional, Any
 from django.utils import timezone
 
 from .models import Session, UnavailablePeriod
@@ -40,7 +40,7 @@ def get_sessions_on_date_booked_by_user(date: str, user: UserAccount):
 
 
 
-def get_time_periods_on_date_booked_by_user(date: str, user: UserAccount):
+def get_time_periods_on_date_booked_by_user(date: str, user: UserAccount) -> Dict[str, Dict[str, Any]]:
     todays_sessions: SessionQuerySet[Session] = get_sessions_on_date_booked_by_user(date, user)
     tz = user.utz
     pending_sessions = todays_sessions.pending()
@@ -55,22 +55,42 @@ def get_time_periods_on_date_booked_by_user(date: str, user: UserAccount):
         if session not in missed_sessions:
             start_in_tz = session.start.astimezone(tz).strftime("%H:%M")
             end_in_tz = session.end.astimezone(tz).strftime("%H:%M")
-            pending[session.title] = [start_in_tz, end_in_tz]
+            pending[session.title] = {
+                "id": session.pk,
+                "time_period": [start_in_tz, end_in_tz],
+                "date": date,
+                "link": session.link.path if session.link else None
+            }
 
     for session in missed_sessions:
         start_in_tz = session.start.astimezone(tz).strftime("%H:%M")
         end_in_tz = session.end.astimezone(tz).strftime("%H:%M")
-        missed[session.title] = [start_in_tz, end_in_tz]
+        missed[session.title] = {
+            "id": session.pk,
+            "time_period": [start_in_tz, end_in_tz],
+            "date": date,
+            "link": session.link.path if session.link else None
+        }
     
     for session in cancelled_sessions:
         start_in_tz = session.start.astimezone(tz).strftime("%H:%M")
         end_in_tz = session.end.astimezone(tz).strftime("%H:%M")
-        cancelled[session.title] = [start_in_tz, end_in_tz]
+        cancelled[session.title] = {
+            "id": session.pk,
+            "time_period": [start_in_tz, end_in_tz],
+            "date": date,
+            "link": session.link.path if session.link else None
+        }
 
     for session in held_sessions:
         start_in_tz = session.start.astimezone(tz).strftime("%H:%M")
         end_in_tz = session.end.astimezone(tz).strftime("%H:%M")
-        held[session.title] = [start_in_tz, end_in_tz]
+        held[session.title] = {
+            "id": session.pk,
+            "time_period": [start_in_tz, end_in_tz],
+            "date": date,
+            "link": session.link.path if session.link else None
+        }
     return {
         "pending": pending,
         "missed": missed,

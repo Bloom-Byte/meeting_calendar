@@ -16,6 +16,9 @@
     --theme-color: #497b34;
     --theme-color-light: #96daa0;
     --theme-color-bright: #88ef72;
+    --theme-color-trans: #497b34b3;
+    --theme-color-light-trans: #96daa0b3;
+    --theme-color-bright-trans: #88ef72b3;
     --bg-dark: #3e3e49;
     --bg-gray: #f0f0f0;
 }

@@ -52,9 +52,13 @@ Dashboard
                 <div class="session-card-body">
                     <h2>{{ session.start | date:"jS N" }} - {{ session.start | time }}</h2>
                     {% if not session.missed %}
-                        <a href="{{ session.link.path }}">
-                            Join the meeting
-                        </a>
+                        {% if session.link %}
+                            <a href="{{ session.link.path }}">
+                                Join the meeting
+                            </a>
+                        {% else %}
+                            <p class="no-link">Session link unavailable</p>
+                        {% endif %}
                     {% else %}
                         <p class="missed">You missed this session</p>
                     {% endif %}

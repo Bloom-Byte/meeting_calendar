@@ -63,7 +63,7 @@
 
 .unavailable-time-slot{
     pointer-events: none !important;
-    background-color: rgba(255, 0, 0, 0.7) !important;
+    background-color: rgba(255, 0, 0, 0.6) !important;
     color: var(--white) !important;
     touch-action: none !important;
     text-align: center;
@@ -71,7 +71,7 @@
 }
 
 .booked-session{
-    background-color: var(--theme-color) !important;
+    background-color: var(--theme-color-trans) !important;
     color: var(--white) !important;
     border-radius: 8px !important;
     border: none !important;
@@ -80,19 +80,20 @@
 }
 
 .session-cancelled{
-    background-color: rgba(255, 0, 0, 0.8) !important;
+    background-color: rgba(255, 0, 0, 0.5) !important;
 }
 
 .session-pending{
-    background-color: var(--theme-color-light) !important;
+    background-color: var(--theme-color-light-trans) !important;
 }
 
 .session-held{
-    background-color: var(--theme-color) !important;
+    background-color: var(--theme-color-trans) !important;
 }
 
 .session-missed{
     background-color: var(--light-gray) !important;
+    color: #888;
 }
 
 

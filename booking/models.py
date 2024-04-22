@@ -35,7 +35,7 @@ class Session(models.Model):
     objects = SessionManager()
 
     class Meta:
-        ordering = ["start"]
+        ordering = ["-start"]
         verbose_name = _("Session")
         verbose_name_plural = _("Sessions")
 

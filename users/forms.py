@@ -15,15 +15,16 @@ class UserForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         request_user = get_request_user()
-        try:
-            registered_at_in_user_tz = request_user.to_local_timezone(self.instance.registered_at)
-            updated_at_in_user_tz = request_user.to_local_timezone(self.instance.updated_at)
-            last_login_in_user_tz = request_user.to_local_timezone(self.instance.last_login)
-            self.initial["registered_at"] = registered_at_in_user_tz
-            self.initial["updated_at"] = updated_at_in_user_tz
-            self.initial["last_login"] = last_login_in_user_tz
-        except (AttributeError, TypeError):
-            pass
+        if self.instance.pk:
+            try:
+                registered_at_in_user_tz = request_user.to_local_timezone(self.instance.registered_at)
+                updated_at_in_user_tz = request_user.to_local_timezone(self.instance.updated_at)
+                last_login_in_user_tz = request_user.to_local_timezone(self.instance.last_login)
+                self.initial["registered_at"] = registered_at_in_user_tz
+                self.initial["updated_at"] = updated_at_in_user_tz
+                self.initial["last_login"] = last_login_in_user_tz
+            except (AttributeError, TypeError):
+                pass
 
 
 
