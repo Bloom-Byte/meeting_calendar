@@ -1,0 +1,30 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+
+{% block page_title %}{{ title | title }}{% endblock page_title %}
+
+{% block stylesheets %}
+<link rel="stylesheet" href="{% static 'core//styles//content_container.css' %}">
+<link rel="stylesheet" href="{% static 'core//styles//message.css' %}">
+{% endblock stylesheets %}
+
+{% block header_content %}
+<div id="content-header">
+    <div id="header-text">
+        <h1>
+            {{ type | title }} - {{ title }}
+        </h1>
+    </div>
+</div>
+{% endblock header_content %}
+
+{% block content %}
+<section id="content-container">
+    <div id="content-body">
+        <div id="message">
+            <p>{{ content }}</p>
+        </div>
+    </div>
+</section>
+{% endblock content %}

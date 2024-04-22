@@ -1,0 +1,151 @@
+{% extends 'core/main.html' %}
+{% load static %}
+
+
+{% block mainmeta %}
+
+{% block meta %}
+{% endblock meta %}
+
+{% endblock mainmeta %}
+
+
+{% block mainstylesheets %}
+<link rel="stylesheet" href="{% static 'core//styles//base.css' %}">
+
+{% block stylesheets %}
+{% endblock stylesheets %}
+
+{% endblock mainstylesheets %}
+
+
+{% block html_body %}
+<body>
+    <!-- Sidebar Section -->
+    <aside id="sidebar">
+        <!-- Logo -->
+        <div id="logo">
+            <h1>@logo</h1>
+        </div>
+
+        <!-- Navigation -->
+        <nav id="side-menu">
+            <ul>
+                <li>
+                    <a 
+                        href="{% url 'dashboard:dashboard' %}" 
+                        {% if 'dashboard' in request.path %}
+                        class="current-tab"
+                        {% endif %}
+                        title="View activities and statistics of all your stores"
+                    >
+                        <svg viewBox="0 0 24 24" width="24" height="24" xmlns="http://www.w3.org/2000/svg">
+                            <g>
+                                <path d="M0 0h24v24H0z" fill="none"/>
+                                <path fill="currentColor" d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/>
+                            </g>
+                        </svg>
+                            
+                        <span>Home</span>
+                    </a>
+                </li>
+
+                <li>
+                    <a 
+                        href="{% url 'booking:calendar' %}" 
+                        {% if 'calendar' in request.path %}
+                        class="current-tab"
+                        {% endif %}
+                        title=""
+                    >
+                    <svg 
+                        xmlns="http://www.w3.org/2000/svg" 
+                        width="24" height="24" viewBox="0 0 24 24" 
+                        style="fill: currentColor;"
+                    >
+                        <path d="M19 4h-2V2h-2v2H9V2H7v2H5c-1.103 0-2 .897-2 2v14c0 1.103.897 2 2 2h14c1.103 0 2-.897 2-2V6c0-1.103-.897-2-2-2zm-1 15h-6v-6h6v6zm1-10H5V7h14v2z"></path>
+                    </svg>
+                            
+                        <span>Calendar</span>
+                    </a>
+                </li>
+            </ul>
+
+            <ul>
+                <li>
+                    <a 
+                        href="{% url 'users:account_detail' request.user.slug %}" 
+                        {% if 'account' in request.path %}
+                        class="current-tab"
+                        {% endif %}
+                        title="View and manage your account"
+                    >
+                        <svg 
+                            xmlns="http://www.w3.org/2000/svg" 
+                            width="24" height="24" viewBox="0 0 24 24" 
+                            style="fill: currentColor;"
+                        >
+                            <path d="m2.344 15.271 2 3.46a1 1 0 0 0 1.366.365l1.396-.806c.58.457 1.221.832 1.895 1.112V21a1 1 0 0 0 1 1h4a1 1 0 0 0 1-1v-1.598a8.094 8.094 0 0 0 1.895-1.112l1.396.806c.477.275 1.091.11 1.366-.365l2-3.46a1.004 1.004 0 0 0-.365-1.366l-1.372-.793a7.683 7.683 0 0 0-.002-2.224l1.372-.793c.476-.275.641-.89.365-1.366l-2-3.46a1 1 0 0 0-1.366-.365l-1.396.806A8.034 8.034 0 0 0 15 4.598V3a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v1.598A8.094 8.094 0 0 0 7.105 5.71L5.71 4.904a.999.999 0 0 0-1.366.365l-2 3.46a1.004 1.004 0 0 0 .365 1.366l1.372.793a7.683 7.683 0 0 0 0 2.224l-1.372.793c-.476.275-.641.89-.365 1.366zM12 8c2.206 0 4 1.794 4 4s-1.794 4-4 4-4-1.794-4-4 1.794-4 4-4z"></path>
+                        </svg>
+                            
+                        <span>Settings</span>
+                    </a>
+                </li>
+
+                <li>
+                    <a 
+                        href="{% url 'users:signout' %}" 
+                        id="signout"
+                        title="Sign out of your account"
+                    >
+                        <svg fill="none" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                            <path 
+                                d="M17 16L21 12M21 12L17 8M21 12L7 12M13 16V17C13 18.6569 11.6569 20 10 20H6C4.34315 20 3 18.6569 3 17V7C3 5.34315 4.34315 4 6 4H10C11.6569 4 13 5.34315 13 7V8" 
+                                stroke="currentColor" 
+                                stroke-linecap="round" 
+                                stroke-linejoin="round" 
+                                stroke-width="2"
+                            />
+                        </svg>
+                            
+                        <span>Log out</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </aside>
+
+    <!-- Main Section -->
+    <main id="main">
+        <div id="sidebar-collapse">
+            <svg 
+                xmlns="http://www.w3.org/2000/svg" 
+                width="24" height="24" viewBox="0 0 24 24" 
+                style="fill: currentColor;"
+            >
+                <path d="M13.939 4.939 6.879 12l7.06 7.061 2.122-2.122L11.121 12l4.94-4.939z"></path>
+            </svg>
+        </div>
+
+        <header>
+            {% block header_content %}
+            {% endblock header_content %}
+        </header>
+        
+        <div id="main-content">
+            {% block content %}
+            {% endblock content %}
+        </div>
+    </main>
+</body>
+{% endblock html_body %}
+
+
+{% block mainscripts %}
+<script src="{% static 'core//scripts//base.js' %}"></script>
+
+{% block scripts %}
+{% endblock scripts %}
+
+{% endblock mainscripts %}
+

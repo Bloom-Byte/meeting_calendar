@@ -1,0 +1,184 @@
+{% extends 'core/main.html' %}
+{% load static %}
+
+
+{% block mainmeta %}
+{% endblock mainmeta %}
+
+{% block page_title %}
+Landing Page
+{% endblock page_title %}
+
+{% block mainstylesheets %}
+<link rel="stylesheet" href="{% static 'core//styles//main.css' %}">
+<link rel="stylesheet" href="{% static 'core//styles//index.css' %}">
+{% endblock mainstylesheets %}
+
+
+{% block html_body %}
+<body>
+    <header>
+        <div class="container">
+            <div id="header-logo">
+                <a href="">
+                    @logo
+                </a>
+            </div>
+
+            <nav>
+                <ul>
+                    <li>
+                        <a href="{% url 'users:signin' %}">Sign In</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <section class="hero-section container">
+        <div class="hero-content">
+            <h1>Main information of service</h1>
+            <p>
+                Lorem ipsum dolor sit amet consectetur adipisicing elit. 
+                Sint atque quidem dolorum reprehenderit quod tempora 
+                impedit asperiores distinctio modi officiis?
+            </p>
+            <a href="{% url 'users:signup' %}" class="btn-primary">Get Started</a>
+        </div>
+
+        <div class="hero-image">
+            <img src="{% static 'core/images/hero-image.jpg' %}" alt="Hero section image">
+        </div>
+    </section>
+
+    <section class="features-section">
+        <div class="features-wp">
+            <div class="feature">
+                <div class="feature-head">
+                    <div class="feature-head-img">
+                        <svg 
+                            xmlns="http://www.w3.org/2000/svg" 
+                            width="24" height="24" viewBox="0 0 24 24" 
+                            style="fill: currentColor;"
+                        >
+                            <path d="m14.303 6-3-2H6V2H4v20h2v-8h4.697l3 2H20V6z"></path>
+                        </svg>
+                    </div>
+                    <h3>Feature One</h3>
+                </div>
+    
+                <div class="feature-body">
+                    <p>
+                        Lorem ipsum dolor sit amet consectetur adipisicing elit. 
+                        Sint atque quidem dolorum reprehenderit quod tempora 
+                        impedit asperiores distinctio modi officiis?
+                    </p>
+                </div>
+            </div>
+    
+            <div class="feature">
+                <div class="feature-head">
+                    <div class="feature-head-img">
+                        <svg 
+                            xmlns="http://www.w3.org/2000/svg" 
+                            width="24" height="24" viewBox="0 0 24 24" 
+                            style="fill: currentColor;"
+                        >
+                            <path d="m10 15.586-3.293-3.293-1.414 1.414L10 18.414l9.707-9.707-1.414-1.414z"></path>
+                        </svg>
+                    </div>
+                    <h3>Feature Two</h3>
+                </div>
+    
+                <div class="feature-body">
+                    <p>
+                        Lorem ipsum dolor sit amet consectetur adipisicing elit. 
+                        Sint atque quidem dolorum reprehenderit quod tempora 
+                        impedit asperiores distinctio modi officiis?
+                    </p>
+                </div>
+            </div>
+    
+            <div class="feature">
+                <div class="feature-head">
+                    <div class="feature-head-img">
+                        <svg 
+                            xmlns="http://www.w3.org/2000/svg" 
+                            width="24" height="24" viewBox="0 0 24 24" 
+                            style="fill: currentColor;"
+                        >
+                            <path d="m6.516 14.323-1.49 6.452a.998.998 0 0 0 1.529 1.057L12 18.202l5.445 3.63a1.001 1.001 0 0 0 1.517-1.106l-1.829-6.4 4.536-4.082a1 1 0 0 0-.59-1.74l-5.701-.454-2.467-5.461a.998.998 0 0 0-1.822 0L8.622 8.05l-5.701.453a1 1 0 0 0-.619 1.713l4.214 4.107zm2.853-4.326a.998.998 0 0 0 .832-.586L12 5.43l1.799 3.981a.998.998 0 0 0 .832.586l3.972.315-3.271 2.944c-.284.256-.397.65-.293 1.018l1.253 4.385-3.736-2.491a.995.995 0 0 0-1.109 0l-3.904 2.603 1.05-4.546a1 1 0 0 0-.276-.94l-3.038-2.962 4.09-.326z"></path>
+                        </svg>
+                    </div>
+                    <h3>Feature Three</h3>
+                </div>
+    
+                <div class="feature-body">
+                    <p>
+                        Lorem ipsum dolor sit amet consectetur adipisicing elit. 
+                        Sint atque quidem dolorum reprehenderit quod tempora 
+                        impedit asperiores distinctio modi officiis?
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="explainer-section container">
+        <div class="explainer-content">
+            <h1>Heading explaining the main benefit</h1>
+            <p>
+                Lorem ipsum dolor sit amet consectetur adipisicing elit. 
+                Fugiat nemo debitis facilis, quis delectus corrupti illum quasi, 
+                vel repellendus inventore a beatae eveniet vero possimus natus. 
+                Delectus aliquam similique odio suscipit, libero illum rem quas quasi quisquam minima, 
+                asperiores pariatur quam quaerat, eum quia id magnam magni animi corporis impedit?
+            </p>
+            <p>
+                Lorem ipsum dolor sit amet consectetur adipisicing elit. 
+                Sint atque quidem dolorum reprehenderit quod tempora 
+                impedit asperiores distinctio modi officiis?
+            </p>
+        </div>
+
+        <div class="explainer-image">
+            <img src="{% static 'core/images/explainer-image.jpg' %}" alt="Hero section image">
+        </div>
+    </section>
+
+    <section class="extras-section">
+        <div class="extras-wp">
+            <h3>Extra Information</h3>
+            <p>
+                Lorem ipsum dolor sit amet consectetur adipisicing elit. 
+                Facere laboriosam, earum, beatae pariatur alias blanditiis exercitationem 
+                veniam distinctio placeat, praesentium commodi inventore maiores hic vitae 
+                ea aliquid delectus illum laborum!
+            </p>
+        </div>
+    </section>
+
+    <footer>
+        <div class="footer-links">
+            <a href="">Features</a>
+            <a href="">About</a>
+            <a href="">Testimonials</a>
+            <a href="">Contact</a>
+            <a href="">Downloads</a>
+        </div>
+
+        <div class="footer-bottom">
+            <p>
+                1717 Harrison St, San Francisco, CA 94103, USA
+            </p>
+            <p>
+                &copy; 
+                <script>
+                    document.write(new Date().getFullYear());
+                </script>
+                Meeting Calendar. All rights reserved.
+            </p>
+        </div>
+    </footer>
+</body>
+{% endblock html_body %}

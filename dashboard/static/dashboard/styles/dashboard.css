@@ -1,0 +1,244 @@
+/* SESSIONS SECTION */
+
+#session-cards{
+    width: 100%;
+    min-height: 200px;
+    padding: 20px;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 0 40px;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    scroll-snap-type: proximity;
+    scroll-snap-align: center;
+    scroll-snap-stop: always;
+}
+
+#session-cards::-webkit-scrollbar{
+    display: none;
+}
+
+#session-cards > .session-card{
+    display: flex;
+    flex-direction: column;
+    gap: 20px 0;
+    background: var(--dark-gray);
+    border-radius: 20px;
+    padding: 30px 60px 30px 30px;
+    color: var(--text-light);
+    flex-shrink: 0;
+}
+
+.session-card > .session-card-head{
+    width: 100%;
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    gap: 0 10px;
+}
+
+.session-card-head > svg{
+    color: var(--light-gray);
+    height: 100%;
+}
+
+.session-card-head > .card-head-text{
+    display: flex;
+    flex-direction: column;
+    gap: 5px 0;
+}
+
+.card-head-text > h3{
+    font-family: "DM Sans";
+    color: var(--text-light);
+    font-size: 16px;
+}
+
+.card-head-text > a{
+    font-family: "Manrope";
+    font-size: 12px;
+    color: #888;
+    text-decoration: none;
+    text-decoration: underline;
+}
+
+.session-card > .session-card-body{
+    display: flex;
+    flex-direction: column;
+    gap: 20px 0;
+}
+
+.session-card-body > h2{
+    font-family: "DM Sans";
+    font-size: clamp(22px, 2.5vw, 26px);
+    color: var(--text-light);
+}
+
+.session-card-body > a{
+    font-family: "Manrope";
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--theme-color-bright);
+    text-decoration: underline;
+}
+
+.missed{
+    font-family: "Manrope";
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--bluish-gray);
+}
+
+.no-link{
+    font-family: "Manrope";
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--bluish-gray);
+}
+
+.session-card:has(.missed){
+    opacity: 0.8;
+}
+
+.session-card:has(.no-link){
+    opacity: 0.9;
+}
+
+.session-card:has(.missed) > .session-card-head > .card-head-text > a{
+    color: var(--theme-color-bright);
+}
+
+#no-sessions{
+    display: absolute;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 10px 0;
+    padding: 20px;
+    border-radius: 10px;
+    background: rgba(0, 0, 0, 0.1);
+}
+
+#no-sessions > p{
+    font-family: "Manrope";
+    font-size: clamp(16px, 2vw, 20px);
+    font-weight: 600;
+    color: #888;
+}
+
+#no-sessions > a > button{
+    font-family: "Manrope";
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--theme-color);
+    text-decoration: none;
+}
+
+
+/* NEWS SECTION */
+#news-section{
+    width: 100%;
+    min-height: 400px;
+    max-height: 650px;
+    overflow-y: auto;
+    background-color: var(--white);
+    border-radius: 24px;
+    padding: 20px 30px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+}
+
+#news-section > .section-head{
+    width: 100%;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 0 5px;
+    padding: 10px 5px;
+    border-bottom: 1px solid var(--light-gray);
+}
+
+#news-section > .section-head > svg{
+    color: var(--light-gray);
+    height: 100%;
+}
+
+#news-section > .section-head > h3{
+    font-family: "Raleway";
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-dark);
+}
+
+#news-section > .section-body{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px 0;
+    padding: 20px 0;
+    position: relative;
+}
+
+.news{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 10px 20px;
+    background: var(--bg-gray);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.1s ease-out;
+    gap: 10px 0;
+}
+
+.news > .news-headline{
+    font-family: "DM Sans";
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-dark);
+    text-decoration: none;
+    text-transform: capitalize;
+}
+
+.news:hover{
+    background: var(--bg-gray);
+}
+
+
+.news > .news-content{
+    font-family: "Manrope";
+    font-size: 14px;
+    color: var(--text-dark);
+}
+
+#no-news{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-family: "DM Sans";
+    font-size: clamp(16px, 2vw, 18px);
+    font-weight: 600;
+    color: #888;
+}
+
+/* Media queries */
+
+@media screen and (max-width: 480px) {
+    #news-section{
+        max-height: 500px;
+        padding: 16px 10px;
+        border-radius: 10px;
+    }
+}

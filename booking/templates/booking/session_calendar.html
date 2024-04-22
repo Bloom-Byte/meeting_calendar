@@ -1,0 +1,45 @@
+{% extends 'core/base.html' %}
+{% load static %}
+{% load tz %}
+
+{% block page_title %}
+Calendar
+{% endblock page_title %}
+
+{% block stylesheets %}
+<link rel="stylesheet" href="{% static 'core//styles//content_container.css' %}">
+<link rel="stylesheet" href="{% static 'booking//styles//session_calendar.css' %}">
+{% endblock stylesheets %}
+
+{% block header_content %}
+<div id="content-header">
+    <div id="header-text">
+        <h1>
+            Session Calendar
+        </h1>
+        
+        <p>View your bookings or book a new session using the calendar</p>
+    </div>
+</div>
+{% endblock header_content %}
+
+{% block content %}
+<section id="content-container">
+    {% csrf_token %}
+    <div id="session-calendar">
+    </div>
+
+    <span id="user-timezone" style="display: none !important;">{{ request.user.utz }}</span>
+</section>
+{% endblock content %}
+
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/@fullcalendar/core@6.1.11/index.global.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@fullcalendar/interaction@6.1.11/index.global.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@fullcalendar/daygrid@6.1.11/index.global.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@fullcalendar/timegrid@6.1.11/index.global.min.js"></script>
+
+<script src="{% static 'booking//scripts//sessionCalendar.js' %}"></script>
+{% endblock scripts %}
+

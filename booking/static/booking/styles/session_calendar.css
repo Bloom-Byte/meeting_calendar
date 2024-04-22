@@ -1,0 +1,104 @@
+#session-calendar{
+    margin: 20px auto;
+    width: 100%;
+    min-height: 70vh !important;
+}
+
+.loading{
+    pointer-events: none !important;
+    opacity: 0.4 !important;
+}
+
+
+.fc-button-primary{
+    background: var(--theme-color) !important;
+    border-color: var(--bg-gray) !important;
+    font-size: clamp(14px, 1.5vw, 16px) !important;
+}
+
+.fc-toolbar-title{
+    font-size: clamp(16px, 2vw, 20px) !important;
+    min-width: max-content !important;
+}
+
+.in-time-view{
+    display: auto !important;
+}
+
+.fc-backToMonth-button{
+    display: none !important;
+}
+
+.fc-viewBookings-button{
+    display: none !important;
+}
+
+.viewing-bookings{
+    opacity: 0.7 !important;
+}
+
+#session-calendar.in-time-view .fc-backToMonth-button{
+    display: block !important;
+}
+
+#session-calendar.in-time-view .fc-viewBookings-button{
+    display: block !important;
+}
+
+#session-calendar.in-time-view .fc-next-button{
+    display: none !important;
+}
+
+#session-calendar.in-time-view .fc-prev-button{
+    display: none !important;
+}
+
+#session-calendar.in-time-view .fc-today-button{
+    display: none !important;
+}
+
+.fc-timegrid-slot-lane{
+    padding: 5px 10px !important;
+}
+
+.unavailable-time-slot{
+    pointer-events: none !important;
+    background-color: rgba(255, 0, 0, 0.6) !important;
+    color: var(--white) !important;
+    touch-action: none !important;
+    text-align: center;
+    padding: 20px 10px !important;
+}
+
+.booked-session{
+    background-color: var(--theme-color-trans) !important;
+    color: var(--white) !important;
+    border-radius: 8px !important;
+    border: none !important;
+    text-align: center;
+    padding: 20px 10px !important;
+}
+
+.session-cancelled{
+    background-color: rgba(255, 0, 0, 0.5) !important;
+}
+
+.session-pending{
+    background-color: var(--theme-color-light-trans) !important;
+}
+
+.session-held{
+    background-color: var(--theme-color-trans) !important;
+}
+
+.session-missed{
+    background-color: var(--light-gray) !important;
+    color: #888;
+}
+
+
+@media screen and (max-width: 360px){
+    .fc-backToMonth-button, .fc-viewBookings-button{
+        padding: 5px 6px !important;
+    }
+}

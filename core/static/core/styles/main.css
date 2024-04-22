@@ -1,0 +1,199 @@
+@import url('https://fonts.googleapis.com/css?family=Manrope');
+@import url('https://fonts.googleapis.com/css?family=DM+Sans');
+@import url('https://fonts.googleapis.com/css?family=Raleway');
+
+:root{
+    --bluish-gray: #d5dce5;
+    --light-gray: #e2e2e2;
+    --dark-gray: #373b3f;
+    --white: #fff;
+    --text-dark: #2f2f2f;
+    --text-light: #f4f4f4;
+    --deep-blue: #031926;
+    --teal: #468189;
+    --cambridge-blue: #77aca2;
+    --ash-gray: #9dbebb;
+    --theme-color: #497b34;
+    --theme-color-light: #96daa0;
+    --theme-color-bright: #88ef72;
+    --theme-color-trans: #497b34b3;
+    --theme-color-light-trans: #96daa0b3;
+    --theme-color-bright-trans: #88ef72b3;
+    --bg-dark: #3e3e49;
+    --bg-gray: #f0f0f0;
+}
+
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.container{
+    margin: 0 auto;
+    width: 90%;
+}
+
+.stop_scroll{
+    height: 100%;
+    overflow: hidden !important;
+}
+
+body{
+    font-family: "Manrope";  
+    overflow-wrap: break-word;
+    -webkit-font-smoothing: antialiased !important;
+    -moz-osx-font-smoothing: grayscale !important;
+    font-smooth: always !important;
+    -webkit-text-size-adjust: none !important;
+    -webkit-tap-highlight-color: transparent !important;
+    color: var(--text-dark);
+    background: var(--white);
+    overflow-x: hidden !important;
+    width: 100%;
+    min-height: 100vh;
+}
+
+h1,h2, h3, h4, h5, h6{
+    font-family: "Manrope";
+    color: var(--text-dark);
+}
+
+a{
+    text-decoration: underline;
+}
+
+a:hover{
+    transition: 0.05s ease-out color;
+}
+
+p, li, a{
+    font-family: "Manrope";
+    color: var(--text-dark);
+    line-height: 1.6;
+}
+
+li{
+    list-style: none;
+}
+
+::placeholder{
+    color: var(--bluish-gray);
+    font-family: "Manrope";
+}
+
+input{
+    font-family: "Manrope";
+    border-radius: 4px;
+    border: 1px solid var(--dark-gray);
+    outline: none;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-dark);
+    padding: 4px;
+}
+
+input:focus-within{
+    border: 1px solid var(--teal);
+    margin: -1px !important;
+}
+
+input:not(:placeholder-shown){
+    border: 1px solid var(--teal);
+    margin: -1px !important;
+}
+
+input[type="checkbox"]{
+    width: 16px;
+    height: 16px;
+    margin: 0;
+    padding: 0;
+    border: 1px solid var(--dark-gray);
+    border-radius: 2px;
+    outline: none;
+    cursor: pointer;
+}
+
+input[type="checkbox"]:checked{
+    background: var(--teal);
+    border: 1px solid var(--teal);
+}
+
+.input-invalid{
+    box-shadow: 0px 1px 2px var(--theme-color) !important;
+}
+
+label{
+    color: var(--text-dark);
+    font-weight: 700;
+}
+
+button{
+    font-family: "Manrope";
+    border-radius: 4px;
+    border: none;
+    font-size: clamp(16px, 2vw, 18px);
+    font-weight: 500;
+    padding: 10px 20px;
+    outline: none !important;
+    transition: all 0.1s ease-out;
+    cursor: pointer;
+}
+
+.btn-primary{
+    background: var(--theme-color);
+    color: var(--white);
+    box-shadow: 0px 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+.btn-primary:active{
+    background: var(--theme-color-light);
+    color: var(--white);
+}
+
+.btn-primary:hover{
+    background: var(--theme-color);
+    color: var(--white);
+    box-shadow: 0px 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+.btn-secondary{
+    background: var(--theme-color-light);
+    color: var(--text-dark);
+}
+
+.btn-secondary:active{
+    background: transparent;
+    color: var(--text-dark);
+}
+
+.btn-secondary:hover{
+    opacity: 0.8;
+    color: var(--text-dark);
+}
+
+button:disabled, input:disabled{
+    opacity: 0.5;
+    pointer-events: none;
+    cursor: not-allowed !important;
+}
+
+.show-block{
+    display: block !important;
+}
+
+.show-flex{
+    display: flex !important;
+}
+
+.remove{
+    display: none !important;
+}
+
+.no-item{
+    font-family: "Manrope";
+    font-size: clamp(18px, 2vw, 24px);
+    font-weight: 600;
+    color: var(--light-gray);
+    padding: 40px 20px;
+}
