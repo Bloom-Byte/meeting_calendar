@@ -3,7 +3,6 @@ from django import forms
 from timezone_field.forms import TimeZoneFormField
 from django.utils.translation import gettext_lazy as _
 from django.utils import timezone
-from django.db.models import Q
 import datetime
 from django.contrib.auth import get_user_model
 from django_utz.middleware import get_request_user
@@ -11,7 +10,7 @@ from django_utz.middleware import get_request_user
 from . import models
 from links.models import Link
 from links.forms import LinkForm
-from .utils import get_sessions_booked_within_time_period
+from .utils import check_if_time_period_is_available
 
 UserModel = get_user_model()
 
@@ -47,8 +46,17 @@ class BaseBookingModelForm(forms.ModelForm):
                 self.add_error("start_time", "Start time must be less than end time")
 
         if date and start_time and end_time:
-            cleaned_data["start"] = datetime.datetime.combine(date=date, time=start_time, tzinfo=timezone).astimezone()
-            cleaned_data["end"] = datetime.datetime.combine(date=date, time=end_time, tzinfo=timezone).astimezone()
+            start = datetime.datetime.combine(date=date, time=start_time, tzinfo=timezone).astimezone()
+            end = datetime.datetime.combine(date=date, time=end_time, tzinfo=timezone).astimezone()
+            # Check if there are no sessions booked within the unavailable period
+            # Or if no other unavailable period overlaps with the current one
+            time_period_is_available = check_if_time_period_is_available(start, end)
+            if not time_period_is_available:
+                raise forms.ValidationError(
+                    "The time period chosen is not available. Please choose another time period."
+                )
+            cleaned_data["start"] = start
+            cleaned_data["end"] = end
         return cleaned_data
     
 
@@ -187,34 +195,4 @@ class UnavailablePeriodAdminForm(BaseBookingModelForm):
         disabled=True
     )
 
-
-    def clean(self) -> Dict[str, Any]:
-        cleaned_data = super().clean()
-        start = cleaned_data.get("start", None)
-        end = cleaned_data.get("end", None)
-
-        if start and end:
-            # Check if there are no sessions booked within the unavailable period
-            sessions_within_unavailable_period = get_sessions_booked_within_time_period(start, end)
-            if sessions_within_unavailable_period.exists():
-                raise forms.ValidationError(
-                    "There are sessions already booked within the specified time range."
-                    "You cannot be unavailable during this time."
-                )
-        return cleaned_data
     
-
-    def save(self, commit: bool = True) -> models.UnavailablePeriod:
-        # Check if there are no overlapping unavailable periods
-        # for the same user
-        instance: models.UnavailablePeriod = super().save(commit=False)
-        # Check if there are no overlapping unavailable periods
-        overlapping_periods = instance.get_overlapping_periods()
-        if overlapping_periods.exists():
-            raise forms.ValidationError(
-                "An unavailable period already exists within the specified time range."
-                "You cannot have overlapping unavailable periods."
-            )
-        if commit:
-            instance.save()
-        return instance

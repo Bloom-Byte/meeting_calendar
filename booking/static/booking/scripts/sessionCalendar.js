@@ -1,6 +1,8 @@
 const sessionCalendarEl = document.querySelector('#session-calendar');
 const userTimezone =  document.querySelector('#user-timezone').innerText.trim();
+const bookSessionButton = document.querySelector('#book-session-button');
 const unavailableEventTitle = 'Booked and unavailable';
+
 
 sessionCalendarEl.onPost = function(){
     this.classList.add('loading');
@@ -9,6 +11,16 @@ sessionCalendarEl.onPost = function(){
 sessionCalendarEl.onResponse = function(){
     this.classList.remove('loading');
 }
+
+
+function showBookSessionButton(){
+    bookSessionButton.classList.add("show-block");
+}
+
+function hideBookSessionButton(){
+    bookSessionButton.classList.remove("show-block");
+}
+
 
 /**
  * Converts a time string to a Date object with today's date and the time from the time string
@@ -32,24 +44,34 @@ function formatDate(date, separator="-") {
 };
 
 
+function checkIfTimeIsInThePast(timeStr){
+    const datetime = timeStrToDate(timeStr);
+    const now = new Date();
+    return datetime < now;
+}
+
+
 /**
- * Checks if a time string is within any of the unavailable time ranges
+ * Checks if a time string is within any of the unavailable time periods
  * @param {String} timeStr  The time to check in the format 'HH:MM'
- * @param {Array[Array]} unavailableTimeRanges An array of arrays containing the start and end times of the unavailable time ranges
- * @returns {Boolean} Returns true if the time is within any of the unavailable time ranges, otherwise false
+ * @returns {Boolean} Returns true if the time is within any of the unavailable time periods, otherwise false
  */
-function isInUnavailableTimeRanges(timeStr, unavailableTimeRanges){
-    for (const range of unavailableTimeRanges){
-        let start = range[0];
-        let end = range[1];
-        start = timeStrToDate(start);
-        end = timeStrToDate(end);
-        time = timeStrToDate(timeStr);
-        if (time >= start && time <= end){
-            return true;
+function timeIsUnavailable(timeStr, dateStr){
+    const callback = (bookingData) => {
+        const unavailableTimes = bookingData.unavailable_times;
+        for (const range of unavailableTimes){
+            let start = range[0];
+            let end = range[1];
+            start = timeStrToDate(start);
+            end = timeStrToDate(end);
+            time = timeStrToDate(timeStr);
+            if (time >= start && time <= end){
+                return true;
+            }
         }
-    }
-    return false;
+        return false;
+    };
+    return fetchBookingDataForDate(dateStr, callback);
 }
 
 
@@ -87,7 +109,7 @@ function fetchBookingDataForDate(dateStr, successCallback){
             response.json().then((data) => {
                 const responseData = data.data;
                 // console.log(responseData);
-                successCallback(responseData);
+                return successCallback(responseData);
             });
         };
     });
@@ -112,12 +134,16 @@ document.addEventListener('DOMContentLoaded', function() {
             center: 'title',
             right: 'backToMonth,today'
         },
+        buttonText: {
+            today: 'Today'
+        },
         views: {
             dayGridMonth: {
                 titleFormat: { 
                     year: 'numeric', 
                     month: 'long' 
                 },
+                // Disallows user from selecting date slots
                 selectable: false,
                 dateClick: onDateClick
             },
@@ -127,8 +153,19 @@ document.addEventListener('DOMContentLoaded', function() {
                     month: 'long', 
                     day: 'numeric' 
                 },
+                // Allows user to select time slots
                 selectable: true,
+                // Unselects time slots automatically if user clicks outside the calendar
+                unselectAuto: true,
+                // Excludes the book session button from the unselectAuto feature
+                unselectCancel: 'book-session-button',
+                // Shows event details as user selects
+                selectMirror: true,
                 select: onTimeSelect,
+                unselect: onTimeUnselect,
+                // User cannot select slots occupied by event(sessions)
+                selectOverlap: false,
+                dragScroll: true,
                 allDaySlot: false,
                 slotDuration: '00:05:00',
                 slotLabelInterval: '00:05',
@@ -152,11 +189,34 @@ document.addEventListener('DOMContentLoaded', function() {
     };
 
     // CALLBACKS
-    function onTimeSelect(info){
-        const selectStart = info.startStr;
-        const selectEnd = info.endStr;
-        console.log(selectStart, selectEnd)
+    function onTimeSelect(selectInfo){
+        const startTimestr = selectInfo.startStr.split("T")[1];
+        const endTimestr = selectInfo.endStr.split("T")[1];
+        const dateStr = selectInfo.startStr.split("T")[0];
+
+        if (checkIfTimeIsInThePast(startTimestr)){
+            pushNotification("error", "You cannot book a session in the past");
+            sessionCalendar.unselect();
+            return;
+        }
+        
+        const startIsUnavailable = timeIsUnavailable(startTimestr, dateStr);
+        const endIsUnavailable = timeIsUnavailable(endTimestr, dateStr);
+
+        if (startIsUnavailable || endIsUnavailable){
+            pushNotification("error", "You cannot book a session during an unavailable time");
+            sessionCalendar.unselect();
+            return;
+        }
+        showBookSessionButton();
+        console.log(startTimestr, endTimestr);
     };
+
+
+    function onTimeUnselect(selectInfo){
+        hideBookSessionButton();
+    };
+
 
     function onBackToMonthClick() {
         sessionCalendar.changeView('dayGridMonth');
@@ -168,6 +228,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Hide booked timeslots
         hideBookedTimeslots();
     }
+
 
     function onViewBookingsClick(e){
         const viewBookingButton = e.target;
@@ -236,8 +297,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 const event = sessionCalendar.addEvent({
                     title: `${sessionTitle} (${sessionCategory})`,
-                    // startTime: startTime,
-                    // endTime: endTime,
                     start: startDate,
                     end: endDate,
                     display: 'block',

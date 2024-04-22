@@ -24,7 +24,7 @@ def get_unavailable_times_for_date(date: str, tz: Optional[timezone.tzinfo] = No
 
     # Get booked times
     booked_times = []
-    booked_sessions = Session.objects.filter(start__date=date)
+    booked_sessions = Session.objects.exclude(cancelled=True).filter(start__date=date)
     for session in booked_sessions:
         start_in_tz = session.start.astimezone(tz).strftime("%H:%M")
         end_in_tz = session.end.astimezone(tz).strftime("%H:%M")
@@ -101,7 +101,50 @@ def get_time_periods_on_date_booked_by_user(date: str, user: UserAccount) -> Dic
     }
 
 
+def get_unavailable_periods_within_time_period(start: timezone.datetime, end: timezone.datetime):
+    """
+    Returns all unavailable periods that fall within the given (time period) start and end datetime
+
+    :param start: Start datetime of the time period
+    :param end: End datetime of the time period
+    """
+    q = models.Q(start__range=(start, end)) | models.Q(end__range=(start, end))
+    return UnavailablePeriod.objects.filter(q)
+
+
 def get_sessions_booked_within_time_period(start: datetime.datetime, end: datetime.datetime):
-    """Return the session booked by the user within the given time period"""
-    q = models.Q(start__range=[start, end]) | models.Q(end__range=[start, end])
+    """
+    Return the session booked by the user within the given time period
+
+    :param start: Start datetime of the time period
+    :param end: End datetime of the time period
+    """
+    q = models.Q(start__range=(start, end)) | models.Q(end__range=(start, end))
     return Session.objects.filter(q)
+
+
+def get_overlapping_unavailable_periods(instance: UnavailablePeriod):
+    """
+    Returns all existing unavailable periods with start and end datetime overlap with the 
+    start and end datetime of the given instance
+
+    :param instance: UnavailablePeriod instance
+    """
+    time_period = [instance.start, instance.end]
+    unavailable_periods_within_time_period = get_unavailable_periods_within_time_period(*time_period)
+    return unavailable_periods_within_time_period.exclude(pk=instance.pk)
+
+
+def check_if_time_period_is_available(start: datetime.datetime, end: datetime.datetime) -> bool:
+    """
+    Check if the time period is available for booking. That is,
+    if there are no sessions booked within the time period 
+    and no unavailable period overlaps with it.
+
+    :param start: Start datetime of the time period
+    :param end: End datetime of the time period
+    :returns: True if the time period is available for booking, False otherwise
+    """
+    booked = get_sessions_booked_within_time_period(start, end).exists()
+    unavailable = get_unavailable_periods_within_time_period(start, end).exists()
+    return not booked and not unavailable

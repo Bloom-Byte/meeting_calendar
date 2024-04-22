@@ -3,7 +3,7 @@ const accountUpdateFormCard = accountUpdateForm.parentElement;
 const accountUpdateButton = accountUpdateForm.querySelector('.submit-btn');
 const emailField = accountUpdateForm.querySelector('#email');
 const autoSelectTimezoneButton = accountUpdateForm.querySelector('#auto-timezone');
-
+const accountDeleteButton = document.getElementById("account-delete");
 
 addOnPostAndOnResponseFuncAttr(accountUpdateButton, 'Saving changes...');
 
@@ -86,3 +86,11 @@ accountUpdateForm.onsubmit = function(e) {
     });
 };
 
+
+accountDeleteButton.addEventListener("click", (e) => {
+    e.preventDefault();
+    // Show an alert asking if they want to proceed
+    let response = confirm("Are you sure you want to delete your account? This action cannot be undone.");
+    if (!response) return;
+    window.location.href = e.target.href;
+})

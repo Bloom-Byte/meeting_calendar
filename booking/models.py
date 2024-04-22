@@ -121,12 +121,3 @@ class UnavailablePeriod(models.Model):
             raise ValueError("Start and end datetime must be on the same day")
         super().save(*args, **kwargs)
 
-
-    def get_overlapping_periods(self):
-        """
-        Returns all existing unavailable periods that overlap with the 
-        start and end datetime of this instance
-        """
-        range = [self.start, self.end]
-        q = models.Q(start__range=range) | models.Q(end__range=range)
-        return self.__class__.objects.filter(q).exclude(pk=self.pk)

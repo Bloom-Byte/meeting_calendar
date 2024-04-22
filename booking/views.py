@@ -59,7 +59,7 @@ class SessionLinkView(LoginRequiredMixin, generic.DetailView):
 
 
 
-class SessionCalendarView(generic.TemplateView):
+class SessionCalendarView(LoginRequiredMixin, generic.TemplateView):
     template_name = 'booking/session_calendar.html'
     http_method_names = ["get", "post"]
 

@@ -1,7 +1,21 @@
 #session-calendar{
-    margin: 20px auto;
+    margin: 10px auto;
     width: 100%;
     min-height: 70vh !important;
+}
+
+#calendar-extras{
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 10px 5px;
+}
+
+#book-session-button{
+    font-size: clamp(12px, 1.5vw, 14px);
+    display: none;
+    padding: 10px;
 }
 
 .loading{

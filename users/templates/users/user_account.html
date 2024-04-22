@@ -190,7 +190,11 @@
         </div>
 
         <div id="more-account-options">
-            <a id="account-delete" href="{% url 'users:account_delete' user.slug %}" title="This action is irreversible. Are you sure want to perform this action?">
+            <a 
+                id="account-delete" 
+                href="{% url 'users:account_delete' user.slug %}" 
+                title="This action is irreversible. Are you sure want to perform this action?"
+            >
                 Delete my account
             </a>
         </div>

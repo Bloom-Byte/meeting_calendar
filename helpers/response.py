@@ -24,4 +24,4 @@ def response_message(
     }
     if not request.user.is_authenticated:
         raise PermissionError("User must be authenticated to view this message.")
-    return render(request, "base/message.html", context, status=status)
+    return render(request, "core/message.html", context, status=status)

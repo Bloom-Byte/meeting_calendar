@@ -25,6 +25,12 @@ Calendar
 
 {% block content %}
 <section id="content-container">
+    <div id="calendar-extras">
+        <button id="book-session-button" class="btn-primary  book-session-button">
+            Book Session
+        </button>
+    </div>
+
     {% csrf_token %}
     <div id="session-calendar">
     </div>
