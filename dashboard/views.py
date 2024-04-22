@@ -6,7 +6,7 @@ from booking.models import Session
 from news.models import News
 from .utils import get_todays_sessions_for_user, get_todays_news_for_user
 
-session_qs = Session.objects.select_related('booked_by').all().order_by("start")
+session_qs = Session.objects.select_related('booked_by').all()
 news_qs = News.objects.all()
 
 

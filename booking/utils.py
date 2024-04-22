@@ -1,5 +1,7 @@
 from typing import Dict, List, Optional, Any
 from django.utils import timezone
+import datetime
+from django.db import models
 
 from .models import Session, UnavailablePeriod
 from .managers import SessionQuerySet
@@ -97,3 +99,9 @@ def get_time_periods_on_date_booked_by_user(date: str, user: UserAccount) -> Dic
         "cancelled": cancelled,
         "held": held
     }
+
+
+def get_sessions_booked_within_time_period(start: datetime.datetime, end: datetime.datetime):
+    """Return the session booked by the user within the given time period"""
+    q = models.Q(start__range=[start, end]) | models.Q(end__range=[start, end])
+    return Session.objects.filter(q)

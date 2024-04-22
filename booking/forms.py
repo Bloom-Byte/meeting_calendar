@@ -3,6 +3,7 @@ from django import forms
 from timezone_field.forms import TimeZoneFormField
 from django.utils.translation import gettext_lazy as _
 from django.utils import timezone
+from django.db.models import Q
 import datetime
 from django.contrib.auth import get_user_model
 from django_utz.middleware import get_request_user
@@ -10,6 +11,7 @@ from django_utz.middleware import get_request_user
 from . import models
 from links.models import Link
 from links.forms import LinkForm
+from .utils import get_sessions_booked_within_time_period
 
 UserModel = get_user_model()
 
@@ -184,3 +186,34 @@ class UnavailablePeriodAdminForm(BaseBookingModelForm):
         help_text=_("Your timezone."),
         disabled=True
     )
+
+
+    def clean(self) -> Dict[str, Any]:
+        cleaned_data = super().clean()
+        start = cleaned_data.get("start", None)
+        end = cleaned_data.get("end", None)
+
+        # Check if there are no sessions booked within the unavailable period
+        sessions_within_unavailable_period = get_sessions_booked_within_time_period(start, end)
+        if sessions_within_unavailable_period.exists():
+            raise forms.ValidationError(
+                "There are sessions already booked within the specified time range."
+                "You cannot be unavailable during this time."
+            )
+        return cleaned_data
+    
+
+    def save(self, commit: bool = True) -> models.UnavailablePeriod:
+        # Check if there are no overlapping unavailable periods
+        # for the same user
+        instance: models.UnavailablePeriod = super().save(commit=False)
+        # Check if there are no overlapping unavailable periods
+        overlapping_periods = instance.get_overlapping_periods()
+        if overlapping_periods.exists():
+            raise forms.ValidationError(
+                "An unavailable period already exists within the specified time range."
+                "You cannot have overlapping unavailable periods."
+            )
+        if commit:
+            instance.save()
+        return instance

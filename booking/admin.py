@@ -20,6 +20,7 @@ class SessionModelAdmin(admin.ModelAdmin):
     search_fields = ["title", "booked_by__email", "booked_by__firstname", "booked_by__lastname"]
     readonly_fields = ["booked_by"]
     date_hierarchy = "start"
+    ordering = ["-start"]
 
     def save_model(self, request: Any, obj: Any, form: Any, change: Any) -> None:
         # Set the booked_by field to the request user
@@ -54,9 +55,10 @@ class SessionModelAdmin(admin.ModelAdmin):
 class UnavailablePeriodModelAdmin(admin.ModelAdmin):
     """Model admin for the UnavailablePeriod model"""
     form = UnavailablePeriodAdminForm
-    list_display = ["start", "ends", "created", "updated"]
+    list_display = ["start", "till", "created", "updated"]
     search_fields = ["start__date", "end__date", "start__time", "end__time"]
     date_hierarchy = "start"
+    ordering = ["-start"]
 
     def has_add_permission(self, request: HttpRequest) -> bool:
         return request.user.is_staff
@@ -66,7 +68,7 @@ class UnavailablePeriodModelAdmin(admin.ModelAdmin):
         request_user = get_request_user()
         return request_user.to_local_timezone(obj.start)
     
-    def ends(self, obj: Session) -> Any:
+    def till(self, obj: Session) -> Any:
         """End time in the request user's timezone"""
         request_user = get_request_user()
         return request_user.to_local_timezone(obj.end)

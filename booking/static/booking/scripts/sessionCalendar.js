@@ -183,7 +183,7 @@ document.addEventListener('DOMContentLoaded', function() {
             hideUnavailableTimeslots();
 
         }else{
-            // hideBookedTimeslots();
+            hideBookedTimeslots();
             const displayUnavailableTimePeriods = (bookingData) => {
                 showUnavailableTimeslots(bookingData.unavailable_times);
             }

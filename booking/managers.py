@@ -80,3 +80,4 @@ class SessionManager(BaseManager.from_queryset(SessionQuerySet)):
     def has_link(self) -> SessionQuerySet:
         """Returns only sessions with a link attached"""
         return self.get_queryset().has_link()
+
