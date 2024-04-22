@@ -193,13 +193,14 @@ class UnavailablePeriodAdminForm(BaseBookingModelForm):
         start = cleaned_data.get("start", None)
         end = cleaned_data.get("end", None)
 
-        # Check if there are no sessions booked within the unavailable period
-        sessions_within_unavailable_period = get_sessions_booked_within_time_period(start, end)
-        if sessions_within_unavailable_period.exists():
-            raise forms.ValidationError(
-                "There are sessions already booked within the specified time range."
-                "You cannot be unavailable during this time."
-            )
+        if start and end:
+            # Check if there are no sessions booked within the unavailable period
+            sessions_within_unavailable_period = get_sessions_booked_within_time_period(start, end)
+            if sessions_within_unavailable_period.exists():
+                raise forms.ValidationError(
+                    "There are sessions already booked within the specified time range."
+                    "You cannot be unavailable during this time."
+                )
         return cleaned_data
     
 
