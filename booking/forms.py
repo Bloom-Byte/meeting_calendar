@@ -29,8 +29,8 @@ class BaseBookingModelForm(forms.ModelForm):
                 start_date_in_user_tz = request_user.to_local_timezone(self.instance.start)
                 end_date_in_user_tz = request_user.to_local_timezone(self.instance.end)
                 self.initial['date'] = start_date_in_user_tz.strftime("%Y-%m-%d")
-                self.initial["start_time"] = start_date_in_user_tz.strftime("%H:%M")
-                self.initial["end_time"] = end_date_in_user_tz.strftime("%H:%M")
+                self.initial["start_time"] = start_date_in_user_tz.strftime("%H:%M", "%H:%M:%S")
+                self.initial["end_time"] = end_date_in_user_tz.strftime("%H:%M", "%H:%M:%S")
             except (AttributeError, TypeError):
                 pass
 
@@ -40,14 +40,21 @@ class BaseBookingModelForm(forms.ModelForm):
         start_time = cleaned_data.get("start_time", None)
         end_time = cleaned_data.get("end_time", None)
         date = cleaned_data.get("date", None)
-        timezone = cleaned_data.get("timezone")
+        tz = cleaned_data.get("timezone")
+
         if start_time and end_time:
             if start_time >= end_time:
                 self.add_error("start_time", "Start time must be less than end time")
 
         if date and start_time and end_time:
-            start = datetime.datetime.combine(date=date, time=start_time, tzinfo=timezone).astimezone()
-            end = datetime.datetime.combine(date=date, time=end_time, tzinfo=timezone).astimezone()
+            start = datetime.datetime.combine(date=date, time=start_time, tzinfo=tz).astimezone()
+            end = datetime.datetime.combine(date=date, time=end_time, tzinfo=tz).astimezone()
+
+            # Check if the start time is in the past, if so, raise an error
+            # The user cannot book a session in the past
+            if start < timezone.now().astimezone(tz):
+                self.add_error("date", "You cannot book a session in the past")
+
             # Check if there are no sessions booked within the unavailable period
             # Or if no other unavailable period overlaps with the current one
             time_period_is_available = check_if_time_period_is_available(start, end)
@@ -96,14 +103,14 @@ class SessionForm(BaseBookingModelForm):
         help_text=_("The date the session will take place (in your timezone).")
     )
     start_time = forms.TimeField(
-        input_formats=["%H:%M"], required=True, disabled=False,
+        input_formats=["%H:%M", "%H:%M:%S"], required=True, disabled=False,
         widget=forms.TimeInput(attrs={
             "type": "time",
         }),
         label=_("Starts at"), help_text=_("The time the session will start (in your timezone).")
     )
     end_time = forms.TimeField(
-        input_formats=["%H:%M"], required=True, disabled=False,
+        input_formats=["%H:%M", "%H:%M:%S"], required=True, disabled=False,
         widget=forms.TimeInput(attrs={
             "type": "time",
             "max": "23:59"
@@ -138,8 +145,8 @@ class SessionForm(BaseBookingModelForm):
                 if link_form.has_changed():
                     cleaned_data["link"] = link_form.save()
                 else:
-                    # Remove the link from cleaned_data if no change has occurred
-                    cleaned_data.pop("link")
+                    # Set the link to the instance's link
+                    cleaned_data["link"] = self.instance.link
             else:
                 # Else, create a new Link object and attach it to the instance
                 link_form = LinkForm(data={"url": link})
@@ -175,14 +182,14 @@ class UnavailablePeriodAdminForm(BaseBookingModelForm):
         help_text=_("On what date you will be unavailable?")
     )
     start_time = forms.TimeField(
-        input_formats=["%H:%M"], label=_("From"), required=True,
+        input_formats=["%H:%M", "%H:%M:%S"], label=_("From"), required=True,
         widget=forms.TimeInput(attrs={
             "type": "time",
         }),
         help_text=_("From what time you will be unavailable?")
     )
     end_time = forms.TimeField(
-        input_formats=["%H:%M"], label=_("Till"), required=True,
+        input_formats=["%H:%M", "%H:%M:%S"], label=_("Till"), required=True,
         widget=forms.TimeInput(attrs={
             "type": "time",
             "max": "23:59"

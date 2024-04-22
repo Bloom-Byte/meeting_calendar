@@ -5,17 +5,7 @@ const emailField = document.querySelector('#signin-form #email');
 const passwordField = document.querySelector('#signin-form #password');
 
 
-signInButton.onPost = function(){
-    this.disabled = true;
-    this.innerHTML = 'Signing in...';
-}
-
-
-signInButton.onResponse = function(){
-    this.disabled = false;
-    this.innerHTML = 'Sign In';
-}
-
+addOnPostAndOnResponseFuncAttr(signInButton, 'Signing in...');
 
 signInForm.onsubmit = (e) => {
     e.stopImmediatePropagation();

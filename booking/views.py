@@ -7,6 +7,7 @@ from django.shortcuts import redirect
 
 from links.models import Link
 from .models import Session
+from .forms import SessionForm
 from helpers.response import response_message
 from .utils import get_unavailable_times_for_date, get_time_periods_on_date_booked_by_user
 
@@ -100,5 +101,41 @@ class SessionCalendarView(LoginRequiredMixin, generic.TemplateView):
 
 
 
+class SessionBookingView(generic.View):
+    model = Session
+    form_class = SessionForm
+    http_method_names = ["post"]
+
+    def post(self, request: HttpRequest, *args: Any, **kwargs: Any) -> JsonResponse:
+        data: Dict = json.loads(request.body)
+        data["booked_by"] = request.user
+        session_form = self.form_class(data=data)
+
+        if session_form.is_valid():
+            session = session_form.save(commit=False)
+            session.save()
+            return JsonResponse(
+                data={
+                    "status": "success",
+                    "detail": "Session booked successfully.",
+                    "data": {
+                        "session_id": session.id
+                    }
+                },
+                status=201
+            )
+        return JsonResponse(
+            data={
+                "status": "error",
+                "detail": "An error occurred. Please try again.",
+                "errors": session_form.errors
+            },
+            status=400
+        )
+
+
+
 session_link_view = SessionLinkView.as_view()
 session_calendar_view = SessionCalendarView.as_view()
+session_booking_view = SessionBookingView.as_view()
+

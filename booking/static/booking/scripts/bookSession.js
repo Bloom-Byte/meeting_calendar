@@ -1,31 +1,21 @@
+// Depends on "sessionCalendar.js". So make sure to include it before this script
 
-const signUpForm = document.querySelector('#signup-form');
-const signUpButton = document.querySelector('#signup-form #submit-btn');
-const emailField = document.querySelector('#signup-form #email');
-const passwordField1 = document.querySelector('#signup-form #password1');
-const passwordField2 = document.querySelector('#signup-form #password2');
+const bookSessionButton = sessionBookingForm.querySelector('.submit-btn');
 
 
-addOnPostAndOnResponseFuncAttr(signUpButton, 'Please wait...')
+addOnPostAndOnResponseFuncAttr(bookSessionButton, 'Booking session...')
 
-signUpForm.onsubmit = (e) => {
+sessionBookingForm.onsubmit = (e) => {
     e.stopImmediatePropagation();
     e.preventDefault();
 
-    if (!isValidEmail(emailField.value)) {
-        formFieldHasError(emailField.parentElement, 'Invalid email address!');
-        return;
-    }
-    if (!validatePassword(passwordField1, passwordField2)) return;
-    
-    const formData = new FormData(signUpForm);
+    const formData = new FormData(sessionBookingForm);
     const data = {};
     for (const [key, value] of formData.entries()) {
         data[key] = value;
     }
-    data['timezone'] = getClientTimezone();
 
-    signUpButton.onPost();
+    bookSessionButton.onPost();
 
     const options = {
         method: 'POST',
@@ -37,16 +27,16 @@ signUpForm.onsubmit = (e) => {
         body: JSON.stringify(data),
     }
 
-    fetch(signUpForm.action, options).then((response) => {
+    fetch(sessionBookingForm.action, options).then((response) => {
         if (response.status !== 201) {
-            signUpButton.onResponse();
+            bookSessionButton.onResponse();
             response.json().then((data) => {
                 const errors = data.errors ?? null;
                 if(errors){
                     if(!typeof errors === Object) throw new TypeError("Invalid response type for 'errors'")
 
                     for (const [fieldName, msg] of Object.entries(errors)){
-                        let field = signUpForm.querySelector(`input[name=${fieldName}]`);
+                        let field = sessionBookingForm.querySelector(`input[name=${fieldName}]`);
                         if(!field){
                             pushNotification("error", msg);
                             continue;
@@ -61,13 +51,14 @@ signUpForm.onsubmit = (e) => {
             
         }else{
             response.json().then((data) => {
-                pushNotification("success", data.detail ?? 'Sign up successful!');
-                const redirectURL  = data.redirect_url ?? null
-                if(!redirectURL) return;
+                pushNotification("success", data.detail ?? 'Session booked successfully!');
                 
-                setTimeout(() => {
-                    window.location.href = redirectURL;
-                }, 3000);
+                // Since sessions can only be booked in the unavailable time periods view,
+                // Clicking the view bookings button switches to the bookings view, 
+                // where the new booking is fetched and displayed
+                const viewBookingsButton = document.querySelector('button.fc-viewBookings-button');
+                viewBookingsButton.click();
+                hideSessionBookingModal();
             });
         }
     });

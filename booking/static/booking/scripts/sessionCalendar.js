@@ -1,6 +1,10 @@
 const sessionCalendarEl = document.querySelector('#session-calendar');
 const userTimezone =  document.querySelector('#user-timezone').innerText.trim();
-const bookSessionButton = document.querySelector('#book-session-button');
+const sessionBookingModal = document.getElementById('session-booking-modal');
+const sessionBookingForm = sessionBookingModal.querySelector('#session-booking-form');
+const dateField = sessionBookingForm.querySelector("#date");
+const startTimeField = sessionBookingForm.querySelector("#start-time");
+const endTimeField = sessionBookingForm.querySelector("#end-time");
 const unavailableEventTitle = 'Booked and unavailable';
 
 
@@ -13,28 +17,56 @@ sessionCalendarEl.onResponse = function(){
 }
 
 
-function showBookSessionButton(){
-    bookSessionButton.classList.add("show-block");
-}
+/**
+ * Shows the session booking modal and sets the date, start time and end time fields
+ * to the provided values
+ * @param {String} date The date in the format 'YYYY-MM-DD'
+ * @param {String} startTime The start time in the format 'HH:MM'
+ * @param {String} endTime The end time in the format 'HH:MM'
+ * @returns {void}
+ */
+function showSessionBookingModal(date, startTime, endTime){
+    dateField.value = date;
+    startTimeField.value = startTime;
+    endTimeField.value = endTime;
 
-function hideBookSessionButton(){
-    bookSessionButton.classList.remove("show-block");
-}
+    sessionBookingModal.classList.add("show-block");
+};
 
 
 /**
- * Converts a time string to a Date object with today's date and the time from the time string
+ * Hides the session booking modal and resets the session booking form fields
+ */
+function hideSessionBookingModal(){
+    sessionBookingForm.reset();
+    sessionBookingModal.classList.remove("show-block");
+};
+
+
+/**
+ * Converts a time string to a Date object with date provided or today's date, and the time from the time string
  * @param {String} timeStr The time to convert in the format 'HH:MM' 
+ * @param {String} dateStr A string representing the date in the format 'YYYY-MM-DD'
  * @returns {Date} A Date object with today's date and the time from the time string
  */
-function timeStrToDate(timeStr){
+function timeStrToDate(timeStr, dateStr=null){
     let time = timeStr.split(":");
-    let date = new Date();
+    if (dateStr){
+        date = new Date(dateStr);
+    }else{
+        let date = new Date();
+    }
     date.setHours(time[0], time[1], 0, 0);
     return date;
 };
 
 
+/**
+ * Formats a Date object to a string in the format 'YYYY'+separator+'MM'+separator+'DD'
+ * @param {Date} date The Date object to format 
+ * @param {String} separator The separator to use between the year, month and day
+ * @returns {String} The formatted date string in the format 'YYYY'+separator+'MM'+separator+'DD'
+ */
 function formatDate(date, separator="-") {
     var year = date.getFullYear(); // Get the year (YYYY)
     var month = ('0' + (date.getMonth() + 1)).slice(-2); // Get the month (MM) and add leading zero if necessary
@@ -44,11 +76,17 @@ function formatDate(date, separator="-") {
 };
 
 
-function checkIfTimeIsInThePast(timeStr){
-    const datetime = timeStrToDate(timeStr);
-    const now = new Date();
-    return datetime < now;
-}
+/**
+ * Checks if a time string is in the past relative to the current date
+ * @param {String} timeStr The time to check in the format 'HH:MM'
+ * @param {String} currentDateStr A string representing the current date in the format 'YYYY-MM-DD'
+ * @returns {Boolean} Returns true if the time is in the past, otherwise false
+ */
+function checkIfTimeIsInThePast(timeStr, currentDateStr=null){
+    const dateFromTime = timeStrToDate(timeStr, currentDateStr);
+    const dateNow = new Date();
+    return dateNow > dateFromTime;
+};
 
 
 /**
@@ -122,11 +160,13 @@ document.addEventListener('DOMContentLoaded', function() {
         customButtons: {
             backToMonth: {
                 text: 'Back to month',
-                click: onBackToMonthClick
+                click: onBackToMonthClick,
+                hint: 'Return to month view',
             },
             viewBookings: {
                 text: 'View bookings',
-                click: onViewBookingsClick
+                click: onViewBookingsClick,
+                hint: 'View booked sessions',
             }
         },
         headerToolbar: {
@@ -155,26 +195,28 @@ document.addEventListener('DOMContentLoaded', function() {
                 },
                 // Allows user to select time slots
                 selectable: true,
-                // Unselects time slots automatically if user clicks outside the calendar
-                unselectAuto: true,
-                // Excludes the book session button from the unselectAuto feature
-                unselectCancel: 'book-session-button',
-                // Shows event details as user selects
-                selectMirror: true,
                 select: onTimeSelect,
                 unselect: onTimeUnselect,
-                // User cannot select slots occupied by event(sessions)
-                selectOverlap: false,
-                dragScroll: true,
                 allDaySlot: false,
                 slotDuration: '00:05:00',
                 slotLabelInterval: '00:05',
             }   
         },
         timeZone: userTimezone,
+        longPressDelay: 250,
+        navLinks: false,
+        // Shows event details as user selects
+        selectMirror: true,
+        unselectAuto: true,
+        unselectCancel: "#session-booking-modal",
+        // User cannot select slots that overlap with existing events
+        selectOverlap: false,
+        // User cannot select slots occupied by event(sessions)
+        dragScroll: true,
     });
     sessionCalendar.render();
 
+    // CALLBACKS
     function onDateClick(info){
         const displayUnavailableTimePeriods = (bookingData) => {
             const unavailableTimeRanges = bookingData.unavailable_times;
@@ -188,17 +230,17 @@ document.addEventListener('DOMContentLoaded', function() {
         fetchBookingDataForDate(info.dateStr, displayUnavailableTimePeriods);
     };
 
-    // CALLBACKS
+
     function onTimeSelect(selectInfo){
         const startTimestr = selectInfo.startStr.split("T")[1];
         const endTimestr = selectInfo.endStr.split("T")[1];
         const dateStr = selectInfo.startStr.split("T")[0];
 
-        if (checkIfTimeIsInThePast(startTimestr)){
+        if (checkIfTimeIsInThePast(startTimestr, dateStr)){
             pushNotification("error", "You cannot book a session in the past");
             sessionCalendar.unselect();
             return;
-        }
+        };
         
         const startIsUnavailable = timeIsUnavailable(startTimestr, dateStr);
         const endIsUnavailable = timeIsUnavailable(endTimestr, dateStr);
@@ -207,14 +249,14 @@ document.addEventListener('DOMContentLoaded', function() {
             pushNotification("error", "You cannot book a session during an unavailable time");
             sessionCalendar.unselect();
             return;
-        }
-        showBookSessionButton();
-        console.log(startTimestr, endTimestr);
+        };
+
+        showSessionBookingModal(dateStr, startTimestr, endTimestr);
     };
 
 
     function onTimeUnselect(selectInfo){
-        hideBookSessionButton();
+        hideSessionBookingModal();
     };
 
 
@@ -237,6 +279,8 @@ document.addEventListener('DOMContentLoaded', function() {
         const isViewingBookings = viewBookingButton.classList.contains('viewing-bookings');
 
         if (isViewingBookings){
+            // Users can only book sessions when not viewing bookings
+            sessionCalendar.setOption('selectable', false);
             const displayBookedTimePeriods = (bookingData) => {
                 showBookedTimeslots(bookingData.booked_times);
             }
@@ -244,6 +288,7 @@ document.addEventListener('DOMContentLoaded', function() {
             hideUnavailableTimeslots();
 
         }else{
+            sessionCalendar.setOption('selectable', true);
             hideBookedTimeslots();
             const displayUnavailableTimePeriods = (bookingData) => {
                 showUnavailableTimeslots(bookingData.unavailable_times);
@@ -254,6 +299,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
     // HELPER FUNCTIONS
+    /**
+     * Shows unavailable time periods as background events on the calendar
+     * @param {Array} unavailableTimeRanges An array of arrays containing the start and end times of the unavailable time periods
+     */
     function showUnavailableTimeslots(unavailableTimeRanges){
         for (const range of unavailableTimeRanges){
             sessionCalendar.addEvent({
@@ -272,6 +321,9 @@ document.addEventListener('DOMContentLoaded', function() {
     };
 
 
+    /**
+     * Hides all unavailable time slots from the calendar
+     */
     function hideUnavailableTimeslots(){
         const events = sessionCalendar.getEvents();
         for (const event of events){
@@ -282,6 +334,10 @@ document.addEventListener('DOMContentLoaded', function() {
     };
 
 
+    /**
+     * Shows booked time periods as events on the calendar
+     * @param {Object} bookedTimes An object containing the booked time periods
+     */
     function showBookedTimeslots(bookedTimes){
         for (const [sessionCategory, categoryData] of Object.entries(bookedTimes)) {
             for (const [sessionTitle, sessionData] of Object.entries(categoryData)){
@@ -314,24 +370,14 @@ document.addEventListener('DOMContentLoaded', function() {
     };
 
 
+    /**
+     * Hides all booked time slots from the calendar
+     */
     function hideBookedTimeslots(){
         const events = sessionCalendar.getEvents();
         for (const event of events){
             if (event.classNames.includes('booked-session')){
                 event.remove();
-            }
-        }
-    };
-
-
-    function disableTimeslotsInUnavailableTimeRanges(unavailableTimeRanges){
-        const timeGridSlotsContainer = sessionCalendarEl.querySelector('.fc-timegrid-slots');
-        const timeGridSlots = timeGridSlotsContainer.querySelectorAll('.fc-timegrid-slot-lane');
-        for (const slot of timeGridSlots){
-            const slotTime = slot.getAttribute('data-time');
-            if (isInUnavailableTimeRanges(slotTime, unavailableTimeRanges)){
-                slot.classList.add('unavailable-time-slot');
-                slot.innerHTML = "Unavailable";
             }
         }
     };
