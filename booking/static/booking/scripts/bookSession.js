@@ -6,6 +6,7 @@ const bookSessionButton = sessionBookingForm.querySelector('.submit-btn');
 addOnPostAndOnResponseFuncAttr(bookSessionButton, 'Booking session...')
 
 sessionBookingForm.onsubmit = (e) => {
+    mustAcceptTandC();
     e.stopImmediatePropagation();
     e.preventDefault();
 

@@ -196,6 +196,7 @@ function fetchBookingDataForDate(dateStr, successCallback){
 
 document.addEventListener('DOMContentLoaded', function() {
     var sessionCalendar = new FullCalendar.Calendar(sessionCalendarEl, {
+        themeSystem: 'standard',
         initialView: 'dayGridMonth',
         customButtons: {
             backToMonth: {
@@ -266,6 +267,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     sessionCalendar.render();
 
+    // If a date is provided in the URL, navigate to that date
     const preferredDate = URLParams.date ?? null;
     if (preferredDate){
         try{

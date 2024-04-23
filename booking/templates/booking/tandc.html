@@ -1,0 +1,40 @@
+{% load static %}
+
+<link rel="stylesheet" href="{% static 'booking/styles/tandc.css' %}">
+
+<div id="tandc-modal">
+    <div id="tandc-modal-content">
+        <div id="tandc-modal-head">
+            <h2>Terms and Conditions</h2>
+        </div>
+
+        <div id="tandc-modal-body">
+            <p>
+                By clicking the "I agree" button, you agree to the following terms and conditions:
+            </p>
+
+            <ul>
+                <li>
+                    You will be charged a fee of $10 for every missed session.
+                </li>
+                <li>
+                    You will be charged a fee of $5 for every session rescheduled within 24 hours of the session start time.
+                </li>
+                <li>
+                    You will be charged a fee of $5 for every session cancelled within 24 hours of the session start time.
+                </li>
+            </ul>
+            
+            <p>
+                If you have any questions or concerns, please contact us at <a href="mailto:" class="email">xyz@gmail.com</a>
+            </p>
+        </div>
+
+        <div id="tandc-modal-foot">
+            <button id="tandc-agree" class="btn-primary">I agree</button>
+            <button id="tandc-disagree" class="btn-secondary">I disagree</button>
+        </div>
+    </div>
+</div>
+
+<script src="{% static 'booking/scripts/tandc.js' %}"></script>
