@@ -28,10 +28,11 @@
 }
 
 
-
 .in-time-view{
     display: auto !important;
 }
+
+
 
 /* Custom buttons */
 
@@ -114,9 +115,13 @@
 
 .session-missed{
     background-color: var(--light-gray) !important;
-    color: #888;
+    color: #888 !important;
 }
 
+.session-has-url{
+    cursor: pointer;
+    outline: 1px solid var(--ash-gray);
+}
 
 /* Session Forms */
 .booking-modal{

@@ -14,12 +14,28 @@ class SessionQuerySet(models.QuerySet):
         return self.filter(has_held=False, cancelled=False)
     
 
+    def has_link(self):
+        """Returns only sessions with a link attached"""
+        return self.exclude(link__isnull=True)
+    
+
+    def approved(self):
+        """Returns sessions that are pending and already have a session link attached"""
+        return self.pending().has_link()
+    
+
+    def unapproved(self):
+        """Returns sessions that are pending and do not have a session link attached"""
+        return self.pending().filter(link__isnull=True)
+
+
     def missed(self, tz: Optional[timezone.tzinfo] = None):
         """
-        Returns previously pending sessions that were missed. That is, sessions that 
-        have not been held even after their end datetime.
+        Returns approved sessions that were missed. That is, sessions that 
+        have not been held even after their end datetime, although they have
+        a link attached.
         """
-        return self.pending().filter(end__lte=timezone.now().astimezone(tz))
+        return self.approved().filter(end__lte=timezone.now().astimezone(tz))
     
 
     def cancelled(self):
@@ -35,11 +51,6 @@ class SessionQuerySet(models.QuerySet):
         """
         today = timezone.now().astimezone(tz)
         return self.filter(start__date=today.date())
-    
-    
-    def has_link(self):
-        """Returns only sessions with a link attached"""
-        return self.exclude(link__isnull=True)
 
 
 
@@ -53,6 +64,21 @@ class SessionManager(BaseManager.from_queryset(SessionQuerySet)):
     def pending(self) -> SessionQuerySet:
         """Returns sessions that have not been held and have not been not cancelled"""
         return self.get_queryset().pending()
+    
+
+    def has_link(self) -> SessionQuerySet:
+        """Returns only sessions with a link attached"""
+        return self.get_queryset().has_link()
+    
+
+    def approved(self) -> SessionQuerySet:
+        """Returns sessions that are pending and already have a session link attached"""
+        return self.get_queryset().approved()
+    
+
+    def unapproved(self) -> SessionQuerySet:
+        """Returns sessions that are pending and do not have a session link attached"""
+        return self.get_queryset().unapproved()
     
 
     def missed(self, tz: Optional[timezone.tzinfo] = None):
@@ -75,9 +101,4 @@ class SessionManager(BaseManager.from_queryset(SessionQuerySet)):
         :param tz: Timezone to use for filtering
         """
         return self.get_queryset().today(tz=tz)
-
-
-    def has_link(self) -> SessionQuerySet:
-        """Returns only sessions with a link attached"""
-        return self.get_queryset().has_link()
 

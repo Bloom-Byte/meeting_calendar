@@ -41,7 +41,6 @@ class BaseBookingModelForm(forms.ModelForm):
         end_time = cleaned_data.get("end_time", None)
         date = cleaned_data.get("date", None)
         tz = cleaned_data.get("timezone")
-        has_held = cleaned_data.get("has_held", False)
 
         if start_time and end_time:
             if start_time >= end_time:
@@ -51,33 +50,23 @@ class BaseBookingModelForm(forms.ModelForm):
             start = datetime.datetime.combine(date=date, time=start_time, tzinfo=tz).astimezone()
             end = datetime.datetime.combine(date=date, time=end_time, tzinfo=tz).astimezone()
 
-            # Check if the start time is in the past, if so, raise an error
-            # The user cannot book a session in the past
-            if start < timezone.now().astimezone(tz):
-                self.add_error("date", "You cannot book a session in the past")
+            # If the object is being created, check if the start time is in the past
+            # If so, raise an error
+            if not self.instance.pk and start < timezone.now().astimezone(tz):
+                self.add_error("date", "Start time cannot be in the past")
 
             # Check if there are no sessions booked within the unavailable period
             # Or if no other unavailable period overlaps with the current one
-            time_period_is_available = check_if_time_period_is_available(
-                start=start, 
-                end=end, 
-                # Exclude the current session if it is being updated
-                exclude_sessions=[self.instance] if self.instance.pk else None
-            )
+
+            # Exclude the current session if it is being updated
+            excluded_sessions = [self.instance] if isinstance(self.instance, models.UnavailablePeriod) and self.instance.pk else None
+            time_period_is_available = check_if_time_period_is_available(start, end, excluded_sessions)
             if not time_period_is_available:
                 raise forms.ValidationError(
                     "The time period chosen is not available. Please choose another time period."
                 )
             cleaned_data["start"] = start
             cleaned_data["end"] = end
-
-        # Check if the session has been marked as held before it ends
-        # If so, raise an error
-        session_end_in_tz = cleaned_data.get("end", None)
-        if session_end_in_tz:
-            time_now_in_tz = timezone.now().astimezone(tz)
-            if has_held is True and time_now_in_tz < session_end_in_tz:
-                self.add_error("has_held", "You cannot mark a session as held before it ends.")
         return cleaned_data
     
 
@@ -151,6 +140,11 @@ class SessionForm(BaseBookingModelForm):
     def clean(self) -> None:
         cleaned_data = super().clean()
         link = cleaned_data["link"]
+        has_held = cleaned_data.get("has_held", False)
+        cancelled = cleaned_data.get("cancelled", False)
+        tz = cleaned_data.get("timezone")
+        request_user = get_request_user()
+         
         if link:
             if self.instance.link:
                 # If instance already has a link attached,
@@ -171,6 +165,43 @@ class SessionForm(BaseBookingModelForm):
         else:
             # If the link is not set, set it to None
             cleaned_data["link"] = None
+
+
+        if request_user.is_admin:
+            if has_held is True and not link:
+                raise forms.ValidationError(
+                    "You cannot mark a session as held when it does not have a link attached in the first place."
+                )
+            if has_held is True and cancelled is True:
+                raise forms.ValidationError("You cannot cancel a session that has already been held")
+            
+        else:
+            # If the user is not an admin, they cannot mark a session has held.
+            if "has_held" in self.changed_data:
+                raise forms.ValidationError("Only admins can mark a session as held.")
+            else:
+                # If "has_held" was not changed by the non-admin user, and the session was already marked as held by an
+                # admin, then the user can't edit the session
+                if has_held is True:
+                    raise forms.ValidationError("You cannot edit a session that has already been held")
+
+            # If the user is not an admin, they cannot cancel a session 
+            if "cancelled" in self.changed_data:
+                raise forms.ValidationError("Only admins can cancel a session.")
+            else:
+                # If "cancelled" was not changed by the non-admin user, and the session was already cancelled by an
+                # admin, then the user can't edit the session
+                if cancelled is True:
+                    raise forms.ValidationError("You cannot edit a session that has already been cancelled")
+
+
+        # Check if the session has been marked as held before it ends
+        # If so, raise an error
+        session_end_in_tz = cleaned_data.get("end", None)
+        if session_end_in_tz:
+            time_now_in_tz = timezone.now().astimezone(tz)
+            if has_held is True and time_now_in_tz < session_end_in_tz:
+                self.add_error("has_held", "You cannot mark a session as held before it ends.")
         return cleaned_data
 
 

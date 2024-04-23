@@ -15,7 +15,7 @@ const sessionEditFormDateField = sessionEditForm.querySelector("#date");
 const sessionEditFormStartTimeField = sessionEditForm.querySelector("#start-time");
 const sessionEditFormEndTimeField = sessionEditForm.querySelector("#end-time");
 
-const unavailableEventTitle = 'Booked and unavailable';
+const unavailableEventTitle = 'Booked/unavailable';
 
 
 sessionCalendarEl.onPost = function(){
@@ -287,7 +287,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const dateStr = selectInfo.startStr.split("T")[0];
 
         if (checkIfTimeIsInThePast(startTimestr, dateStr)){
-            pushNotification("error", "You cannot book a session in the past");
+            pushNotification("warning", "You cannot book a session in the past");
             sessionCalendar.unselect();
             return;
         };
@@ -296,7 +296,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const endIsUnavailable = timeIsUnavailable(endTimestr, dateStr);
 
         if (startIsUnavailable || endIsUnavailable){
-            pushNotification("error", "You cannot book a session during an unavailable time");
+            pushNotification("warning", "You cannot book a session during an unavailable time");
             sessionCalendar.unselect();
             return;
         };
@@ -313,14 +313,29 @@ document.addEventListener('DOMContentLoaded', function() {
     function onEventDropOrResize(info){
         const event = info.event;
         const oldEvent = info.oldEvent;
-        const id = oldEvent.extendedProps.id;
+        const id = oldEvent.id;
         const startTimestr = event.startStr.split("T")[1];
         const endTimestr = event.endStr.split("T")[1];
         const dateStr = event.startStr.split("T")[0];
         const title = oldEvent.extendedProps.sessionTitle;
+        const sessionType = event.extendedProps.type;
+        
+        // Check if the session has already been held
+        if (sessionType === "held"){
+            pushNotification("warning", "You cannot edit a session that has already been held");
+            info.revert();
+            return;
+        };
+
+        // Check if the session has already been cancelled
+        if (sessionType === "cancelled"){
+            pushNotification("warning", "You cannot edit a session that has already been cancelled");
+            info.revert();
+            return;
+        };
 
         if (checkIfTimeIsInThePast(startTimestr, dateStr)){
-            pushNotification("error", "You cannot book a session in the past");
+            pushNotification("warning", "You cannot book a session in the past");
             // revert the event to its original position
             info.revert();
             return;
@@ -330,7 +345,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const endIsUnavailable = timeIsUnavailable(endTimestr, dateStr);
 
         if (startIsUnavailable || endIsUnavailable){
-            pushNotification("error", "You cannot book a session during an unavailable time");
+            pushNotification("warning", "You cannot book a session during an unavailable time");
             // revert the event to its original position
             info.revert();
             return;
@@ -345,7 +360,7 @@ document.addEventListener('DOMContentLoaded', function() {
             hideSessionEditModal();
         };
     });
-    
+
 
     function onBackToMonthClick() {
         sessionCalendar.changeView('dayGridMonth');
@@ -459,6 +474,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 const startDate = date + "T" + startTime;
                 const endDate = date + "T" + endTime;
                 const classNames = [`session-${sessionCategory}`, "booked-session"];
+                if (sessionLink){
+                    classNames.push("session-has-url");
+                }
 
                 const event = sessionCalendar.addEvent({
                     title: `${sessionTitle} (${sessionCategory})`,
@@ -468,11 +486,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     selectable: false,
                     overlap: false,
                     classNames: classNames,
-                    description: sessionCategory,
                     id: id,
                     extendedProps: {
-                        id: id,
                         sessionTitle: sessionTitle,
+                        type: sessionCategory
                     }
                 });
                 if (sessionLink){

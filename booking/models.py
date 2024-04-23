@@ -69,9 +69,9 @@ class Session(models.Model):
     def was_missed(self, tz: Optional[timezone.tzinfo] = None) -> bool:
         """
         Returns True if the session was missed. That is, if the session is still
-        pending even after it's end datetime.
+        pending even after it's end datetime, although a session link was attached.
         """
-        return self.end <= timezone.now().astimezone(tz) and self.is_pending
+        return self.end <= timezone.now().astimezone(tz) and self.is_pending and self.link
     
 
     def save(self, *args, **kwargs):
