@@ -1,21 +1,21 @@
 // Depends on "sessionCalendar.js". So make sure to include it before this script
 
-const bookSessionButton = sessionBookingForm.querySelector('.submit-btn');
+const editSessionButton = sessionEditForm.querySelector('.submit-btn');
 
 
-addOnPostAndOnResponseFuncAttr(bookSessionButton, 'Booking session...')
+addOnPostAndOnResponseFuncAttr(editSessionButton, 'Updating info...')
 
-sessionBookingForm.onsubmit = (e) => {
+sessionEditForm.onsubmit = (e) => {
     e.stopImmediatePropagation();
     e.preventDefault();
 
-    const formData = new FormData(sessionBookingForm);
+    const formData = new FormData(sessionEditForm);
     const data = {};
     for (const [key, value] of formData.entries()) {
         data[key] = value;
     }
 
-    bookSessionButton.onPost();
+    editSessionButton.onPost();
 
     const options = {
         method: 'POST',
@@ -27,16 +27,16 @@ sessionBookingForm.onsubmit = (e) => {
         body: JSON.stringify(data),
     }
 
-    fetch(sessionBookingForm.action, options).then((response) => {
-        bookSessionButton.onResponse();
-        if (response.status !== 201) {
+    fetch(sessionEditForm.action, options).then((response) => {
+        editSessionButton.onResponse();
+        if (!response.ok) {
             response.json().then((data) => {
                 const errors = data.errors ?? null;
                 if(errors){
                     if(!typeof errors === Object) throw new TypeError("Invalid response type for 'errors'")
 
                     for (const [fieldName, msg] of Object.entries(errors)){
-                        let field = sessionBookingForm.querySelector(`input[name=${fieldName}]`);
+                        let field = sessionEditForm.querySelector(`input[name=${fieldName}]`);
                         if(!field){
                             pushNotification("error", msg);
                             continue;
@@ -51,14 +51,14 @@ sessionBookingForm.onsubmit = (e) => {
             
         }else{
             response.json().then((data) => {
-                pushNotification("success", data.detail ?? 'Session booked successfully!');
+                pushNotification("success", data.detail ?? 'Session Info updated successfully!');
                 
                 // Since sessions can only be booked in the unavailable time periods view,
                 // Clicking the view bookings button switches to the bookings view, 
                 // where the new booking is fetched and displayed
-                const viewBookingsButton = document.querySelector('button.fc-viewBookings-button');
-                viewBookingsButton.click();
-                hideSessionBookingModal();
+                const editButton = document.querySelector('button.fc-edit-button');
+                editButton.click();
+                hideSessionEditModal();
             });
         }
     });

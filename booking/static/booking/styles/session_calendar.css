@@ -1,3 +1,21 @@
+/* Overriding Fullcalendar styling */
+.fc-button-primary{
+    background: var(--dark-gray) !important;
+    border-color: var(--bg-gray) !important;
+    font-size: clamp(14px, 1.5vw, 16px) !important;
+}
+
+.fc-toolbar-title{
+    font-size: clamp(16px, 2vw, 20px) !important;
+    min-width: max-content !important;
+}
+
+.fc-timegrid-slot-lane{
+    padding: 5px 10px !important;
+}
+
+
+/* Session Calendar */
 #session-calendar{
     margin: 10px auto;
     width: 100%;
@@ -10,20 +28,12 @@
 }
 
 
-.fc-button-primary{
-    background: var(--theme-color) !important;
-    border-color: var(--bg-gray) !important;
-    font-size: clamp(14px, 1.5vw, 16px) !important;
-}
-
-.fc-toolbar-title{
-    font-size: clamp(16px, 2vw, 20px) !important;
-    min-width: max-content !important;
-}
 
 .in-time-view{
     display: auto !important;
 }
+
+/* Custom buttons */
 
 .fc-backToMonth-button{
     display: none !important;
@@ -34,7 +44,16 @@
 }
 
 .viewing-bookings{
-    opacity: 0.7 !important;
+    opacity: 0.65 !important;
+}
+
+.fc-edit-button{
+    display: none !important;
+    background-color: var(--dark-gray) !important;
+}
+
+.editing{
+    opacity: 0.65 !important;
 }
 
 #session-calendar.in-time-view .fc-backToMonth-button{
@@ -42,6 +61,11 @@
 }
 
 #session-calendar.in-time-view .fc-viewBookings-button{
+    display: block !important;
+}
+
+/* Edit button will only be visible when viewing bookings */
+#session-calendar.in-time-view:has(.fc-viewBookings-button.viewing-bookings) .fc-edit-button{
     display: block !important;
 }
 
@@ -57,9 +81,6 @@
     display: none !important;
 }
 
-.fc-timegrid-slot-lane{
-    padding: 5px 10px !important;
-}
 
 .unavailable-time-slot{
     pointer-events: none !important;
@@ -97,8 +118,8 @@
 }
 
 
-/* Session Booking Form */
-#session-booking-modal{
+/* Session Forms */
+.booking-modal{
     display: none;
     position: absolute;
     top: 40%;
@@ -109,11 +130,11 @@
     width: 90%;
 }
 
-#main-content:has(#session-booking-modal.show-block){
+#main-content:has(.booking-modal.show-block){
     overflow-y: hidden !important;
 }
 
-#session-booking-form :is(input[type='date'], input[type='time']){
+.booking-modal > form :is(input[type='date'], input[type='time']){
     pointer-events: none !important;
     opacity: 0.4 !important;
 }

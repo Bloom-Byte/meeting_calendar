@@ -29,8 +29,8 @@ class BaseBookingModelForm(forms.ModelForm):
                 start_date_in_user_tz = request_user.to_local_timezone(self.instance.start)
                 end_date_in_user_tz = request_user.to_local_timezone(self.instance.end)
                 self.initial['date'] = start_date_in_user_tz.strftime("%Y-%m-%d")
-                self.initial["start_time"] = start_date_in_user_tz.strftime("%H:%M", "%H:%M:%S")
-                self.initial["end_time"] = end_date_in_user_tz.strftime("%H:%M", "%H:%M:%S")
+                self.initial["start_time"] = start_date_in_user_tz.strftime("%H:%M")
+                self.initial["end_time"] = end_date_in_user_tz.strftime("%H:%M")
             except (AttributeError, TypeError):
                 pass
 
@@ -41,6 +41,7 @@ class BaseBookingModelForm(forms.ModelForm):
         end_time = cleaned_data.get("end_time", None)
         date = cleaned_data.get("date", None)
         tz = cleaned_data.get("timezone")
+        has_held = cleaned_data.get("has_held", False)
 
         if start_time and end_time:
             if start_time >= end_time:
@@ -57,13 +58,26 @@ class BaseBookingModelForm(forms.ModelForm):
 
             # Check if there are no sessions booked within the unavailable period
             # Or if no other unavailable period overlaps with the current one
-            time_period_is_available = check_if_time_period_is_available(start, end)
+            time_period_is_available = check_if_time_period_is_available(
+                start=start, 
+                end=end, 
+                # Exclude the current session if it is being updated
+                exclude_sessions=[self.instance] if self.instance.pk else None
+            )
             if not time_period_is_available:
                 raise forms.ValidationError(
                     "The time period chosen is not available. Please choose another time period."
                 )
             cleaned_data["start"] = start
             cleaned_data["end"] = end
+
+        # Check if the session has been marked as held before it ends
+        # If so, raise an error
+        session_end_in_tz = cleaned_data.get("end", None)
+        if session_end_in_tz:
+            time_now_in_tz = timezone.now().astimezone(tz)
+            if has_held is True and time_now_in_tz < session_end_in_tz:
+                self.add_error("has_held", "You cannot mark a session as held before it ends.")
         return cleaned_data
     
 

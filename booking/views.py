@@ -109,6 +109,7 @@ class SessionBookingView(generic.View):
     def post(self, request: HttpRequest, *args: Any, **kwargs: Any) -> JsonResponse:
         data: Dict = json.loads(request.body)
         data["booked_by"] = request.user
+        data["timezone"] = request.user.utz
         session_form = self.form_class(data=data)
 
         if session_form.is_valid():
@@ -135,7 +136,71 @@ class SessionBookingView(generic.View):
 
 
 
+class SessionUpdateView(generic.UpdateView):
+    model = Session
+    form_class = SessionForm
+    http_method_names = ["post"]
+
+    def post(self, request: HttpRequest, *args: Any, **kwargs: Any) -> JsonResponse:
+        data: Dict = json.loads(request.body)
+        session_id = data.pop('session-id', None)
+
+        if not session_id:
+            return JsonResponse(
+                data={
+                    "status": "error",
+                    "detail": "Session ID is required."
+                },
+                status=400
+            )
+        try:
+            session = Session.objects.get(id=session_id)
+        except Session.DoesNotExist:
+            return JsonResponse(
+                data={
+                    "status": "error",
+                    "detail": "Session not found."
+                },
+                status=404
+            )
+        if session.booked_by != request.user:
+            return JsonResponse(
+                data={
+                    "status": "error",
+                    "detail": "You are not authorized to perform this action."
+                },
+                status=403
+            )
+        
+        data["booked_by"] = request.user
+        session_form = self.form_class(data=data, instance=session)
+
+        if session_form.is_valid():
+            session: Session = session_form.save(commit=False)
+            session.save()
+            return JsonResponse(
+                data={
+                    "status": "success",
+                    "detail": "Session updated successfully.",
+                    "data": {
+                        "session_id": session.id
+                    }
+                },
+                status=200
+            )
+        return JsonResponse(
+            data={
+                "status": "error",
+                "detail": "An error occurred. Please try again.",
+                "errors": session_form.errors
+            },
+            status=400
+        )
+
+
+
 session_link_view = SessionLinkView.as_view()
 session_calendar_view = SessionCalendarView.as_view()
 session_booking_view = SessionBookingView.as_view()
+session_update_view = SessionUpdateView.as_view()
 

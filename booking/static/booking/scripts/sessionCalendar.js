@@ -1,10 +1,20 @@
 const sessionCalendarEl = document.querySelector('#session-calendar');
 const userTimezone =  document.querySelector('#user-timezone').innerText.trim();
+
 const sessionBookingModal = document.getElementById('session-booking-modal');
 const sessionBookingForm = sessionBookingModal.querySelector('#session-booking-form');
-const dateField = sessionBookingForm.querySelector("#date");
-const startTimeField = sessionBookingForm.querySelector("#start-time");
-const endTimeField = sessionBookingForm.querySelector("#end-time");
+const sessionBookingFormDateField = sessionBookingForm.querySelector("#date");
+const sessionBookingFormStartTimeField = sessionBookingForm.querySelector("#start-time");
+const sessionBookingFormEndTimeField = sessionBookingForm.querySelector("#end-time");
+
+const sessionEditModal = document.getElementById('session-edit-modal');
+const sessionEditForm = sessionEditModal.querySelector('#session-edit-form');
+const sessionEditFormIDField = sessionEditForm.querySelector("#session-id");
+const sessionEditFormTitleField = sessionEditForm.querySelector("#title");
+const sessionEditFormDateField = sessionEditForm.querySelector("#date");
+const sessionEditFormStartTimeField = sessionEditForm.querySelector("#start-time");
+const sessionEditFormEndTimeField = sessionEditForm.querySelector("#end-time");
+
 const unavailableEventTitle = 'Booked and unavailable';
 
 
@@ -26,9 +36,9 @@ sessionCalendarEl.onResponse = function(){
  * @returns {void}
  */
 function showSessionBookingModal(date, startTime, endTime){
-    dateField.value = date;
-    startTimeField.value = startTime;
-    endTimeField.value = endTime;
+    sessionBookingFormDateField.value = date;
+    sessionBookingFormStartTimeField.value = startTime;
+    sessionBookingFormEndTimeField.value = endTime;
 
     sessionBookingModal.classList.add("show-block");
 };
@@ -40,6 +50,36 @@ function showSessionBookingModal(date, startTime, endTime){
 function hideSessionBookingModal(){
     sessionBookingForm.reset();
     sessionBookingModal.classList.remove("show-block");
+};
+
+
+/**
+ * Shows the session edit modal and sets the date, start time and end time fields
+ * to the provided values
+ * @param {String} id The id of the session to edit
+ * @param {String} date The date in the format 'YYYY-MM-DD'
+ * @param {String} startTime The start time in the format 'HH:MM'
+ * @param {String} endTime The end time in the format 'HH:MM'
+ * @returns {void}
+ */
+function showSessionEditModal(sessionId, title, date, startTime, endTime){
+    sessionEditFormIDField.value = sessionId;
+    sessionEditFormTitleField.value = title;
+    sessionEditFormDateField.value = date;
+    sessionEditFormStartTimeField.value = startTime;
+    sessionEditFormEndTimeField.value = endTime;
+    sessionEditForm.querySelector("#session-id").value = sessionId;
+
+    sessionEditModal.classList.add("show-block");
+};
+
+
+/**
+ * Hides the session edit modal and resets the session edit form fields
+ */
+function hideSessionEditModal(){
+    sessionEditForm.reset();
+    sessionEditModal.classList.remove("show-block");
 };
 
 
@@ -167,12 +207,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 text: 'View bookings',
                 click: onViewBookingsClick,
                 hint: 'View booked sessions',
+            },
+            edit: {
+                text: 'Edit',
+                click: onEditClick,
             }
         },
         headerToolbar: {
             left: 'prev,next,viewBookings',
             center: 'title',
-            right: 'backToMonth,today'
+            right: 'edit,backToMonth,today'
         },
         buttonText: {
             today: 'Today'
@@ -200,6 +244,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 allDaySlot: false,
                 slotDuration: '00:05:00',
                 slotLabelInterval: '00:05',
+                eventResizableFromStart: true,
+                eventDurationEditable: true,
+                eventDrop: onEventDropOrResize,
+                eventResize: onEventDropOrResize,
             }   
         },
         timeZone: userTimezone,
@@ -213,6 +261,8 @@ document.addEventListener('DOMContentLoaded', function() {
         selectOverlap: false,
         // User cannot select slots occupied by event(sessions)
         dragScroll: true,
+        // By default, user cannot edit events
+        editable: false,
     });
     sessionCalendar.render();
 
@@ -260,6 +310,43 @@ document.addEventListener('DOMContentLoaded', function() {
     };
 
 
+    function onEventDropOrResize(info){
+        const event = info.event;
+        const oldEvent = info.oldEvent;
+        const id = oldEvent.extendedProps.id;
+        const startTimestr = event.startStr.split("T")[1];
+        const endTimestr = event.endStr.split("T")[1];
+        const dateStr = event.startStr.split("T")[0];
+        const title = oldEvent.extendedProps.sessionTitle;
+
+        if (checkIfTimeIsInThePast(startTimestr, dateStr)){
+            pushNotification("error", "You cannot book a session in the past");
+            // revert the event to its original position
+            info.revert();
+            return;
+        };
+        
+        const startIsUnavailable = timeIsUnavailable(startTimestr, dateStr);
+        const endIsUnavailable = timeIsUnavailable(endTimestr, dateStr);
+
+        if (startIsUnavailable || endIsUnavailable){
+            pushNotification("error", "You cannot book a session during an unavailable time");
+            // revert the event to its original position
+            info.revert();
+            return;
+        };
+        showSessionEditModal(id, title, dateStr, startTimestr, endTimestr);
+    };
+
+
+    // Close edit modal when user clicks outside the modal
+    document.addEventListener("click", (e) => {
+        if (!sessionEditModal.contains(e.target) && sessionEditModal.classList.contains("show-block")){
+            hideSessionEditModal();
+        };
+    });
+    
+
     function onBackToMonthClick() {
         sessionCalendar.changeView('dayGridMonth');
         // remove time view class
@@ -269,7 +356,7 @@ document.addEventListener('DOMContentLoaded', function() {
         viewBookingsButton.classList.remove('viewing-bookings');
         // Hide booked timeslots
         hideBookedTimeslots();
-    }
+    };
 
 
     function onViewBookingsClick(e){
@@ -281,6 +368,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (isViewingBookings){
             // Users can only book sessions when not viewing bookings
             sessionCalendar.setOption('selectable', false);
+
             const displayBookedTimePeriods = (bookingData) => {
                 showBookedTimeslots(bookingData.booked_times);
             }
@@ -289,12 +377,33 @@ document.addEventListener('DOMContentLoaded', function() {
 
         }else{
             sessionCalendar.setOption('selectable', true);
+            // When exiting bookings view, check if user is editing a session
+            // If they are, exit edit mode
+            const editButton = sessionCalendarEl.querySelector('.fc-edit-button');
+            if (editButton && editButton.classList.contains('editing')){
+                editButton.click();
+            };
+
             hideBookedTimeslots();
             const displayUnavailableTimePeriods = (bookingData) => {
                 showUnavailableTimeslots(bookingData.unavailable_times);
             }
             fetchBookingDataForDate(date, displayUnavailableTimePeriods);
         }
+    };
+
+
+    function onEditClick(e){
+        const editButton = e.target;
+        const editable = sessionCalendar.getOption("editable");
+
+        if (editable){
+            sessionCalendar.setOption("editable", false);
+            editButton.classList.remove("editing");
+        }else{
+            sessionCalendar.setOption("editable", true);
+            editButton.classList.add("editing");
+        };
     };
 
 
@@ -361,6 +470,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     classNames: classNames,
                     description: sessionCategory,
                     id: id,
+                    extendedProps: {
+                        id: id,
+                        sessionTitle: sessionTitle,
+                    }
                 });
                 if (sessionLink){
                     event.setProp('url', sessionLink);

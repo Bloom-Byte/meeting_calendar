@@ -6,6 +6,7 @@ const passwordField1 = document.querySelector('#signup-form #password1');
 const passwordField2 = document.querySelector('#signup-form #password2');
 
 
+
 addOnPostAndOnResponseFuncAttr(signUpButton, 'Please wait...')
 
 signUpForm.onsubmit = (e) => {

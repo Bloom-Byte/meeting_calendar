@@ -15,7 +15,7 @@ class SessionModelAdmin(admin.ModelAdmin):
     form = SessionForm
     list_display = [
         "title", "starts", "ends", "booked_by", 
-        "link", "has_held", "cancelled", "created"
+        "link", "has_held", "cancelled", "booked_at"
     ]
     search_fields = ["title", "booked_by__email", "booked_by__firstname", "booked_by__lastname"]
     readonly_fields = ["booked_by"]
@@ -43,7 +43,7 @@ class SessionModelAdmin(admin.ModelAdmin):
         request_user = get_request_user()
         return request_user.to_local_timezone(obj.end)
     
-    def created(self, obj: Session) -> Any:
+    def booked_at(self, obj: Session) -> Any:
         """Created time in the request user's timezone"""
         request_user = get_request_user()
         return request_user.to_local_timezone(obj.created_at)

@@ -26,7 +26,7 @@ Calendar
 
 {% block content %}
 <section id="content-container">
-    <div class="form-card" id="session-booking-modal">
+    <div class="form-card booking-modal" id="session-booking-modal">
         <div class="form-header">
             <h2>Session Booking Form</h2>
             <p>
@@ -99,6 +99,89 @@ Calendar
         </form>
     </div>
 
+    <div class="form-card booking-modal" id="session-edit-modal">
+        <div class="form-header">
+            <h2>Edit Booking Info</h2>
+            <p>
+                Click on save to update the booking info.
+            </p>
+        </div>
+
+        <!-- Session Edit Form Section -->
+        <form action="{% url 'booking:update_session' %}" id="session-edit-form">
+            {% csrf_token %}
+
+            <div class="form-fields">
+                <input
+                    type="text"
+                    id="session-id" 
+                    name="session-id" 
+                    class="form-input"
+                    placeholder="Session ID"
+                    required
+                    hidden
+                >
+
+                <div class="form-field">
+                    <label for="title" hidden>Session Title</label>
+                    <input
+                        id="title" 
+                        name="title" 
+                        class="form-input"
+                        placeholder="Session title"
+                        required
+                    >
+                    <small class="field-message"></small>
+                </div>
+
+                <div class="form-field">
+                    <label for="date" hidden>Date</label>
+                    <input
+                        id="date" 
+                        type="date"
+                        name="date" 
+                        class="form-input"
+                        placeholder="What day do you want to book?"
+                        required
+                    >
+                    <small class="field-message"></small>
+                </div>
+
+                <div class="form-field">
+                    <label for="start-time" hidden>Start Time</label>
+                    <input
+                        id="start-time" 
+                        type="time"
+                        name="start_time" 
+                        class="form-input"
+                        placeholder="What time do you want to start?"
+                        required
+                    >
+                    <small class="field-message"></small>
+                </div>
+
+                <div class="form-field">
+                    <label for="end-time" hidden>End Time</label>
+                    <input
+                        id="end-time" 
+                        type="time"
+                        name="end_time" 
+                        class="form-input"
+                        placeholder="What time do you want to end?"
+                        required
+                    >
+                    <small class="field-message"></small>
+                </div>
+            </div>
+
+            <div class="submit-btn-wrapper">
+                <button class="btn-primary submit-btn" type="submit">
+                    Save
+                </button>
+            </div>
+        </form>
+    </div>
+
     {% csrf_token %}
     <div id="session-calendar">
     </div>
@@ -116,5 +199,6 @@ Calendar
 
 <script src="{% static 'booking//scripts//sessionCalendar.js' %}"></script>
 <script src="{% static 'booking//scripts//bookSession.js' %}"></script>
+<script src="{% static 'booking//scripts//editSession.js' %}"></script>
 {% endblock scripts %}
 

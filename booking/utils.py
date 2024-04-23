@@ -135,7 +135,7 @@ def get_overlapping_unavailable_periods(instance: UnavailablePeriod):
     return unavailable_periods_within_time_period.exclude(pk=instance.pk)
 
 
-def check_if_time_period_is_available(start: datetime.datetime, end: datetime.datetime) -> bool:
+def check_if_time_period_is_available(start: datetime.datetime, end: datetime.datetime, exclude_sessions: Optional[List[Session]] = None) -> bool:
     """
     Check if the time period is available for booking. That is,
     if there are no sessions booked within the time period 
@@ -143,8 +143,13 @@ def check_if_time_period_is_available(start: datetime.datetime, end: datetime.da
 
     :param start: Start datetime of the time period
     :param end: End datetime of the time period
+    :param exclude_sessions: These sessions will not be considered when checking for availability
+    of the time period.
     :returns: True if the time period is available for booking, False otherwise
     """
-    booked = get_sessions_booked_within_time_period(start, end).exists()
+    exclude_sessions = exclude_sessions or []
+    booked = get_sessions_booked_within_time_period(start, end).exclude(
+        pk__in=[session.pk for session in exclude_sessions]
+    ).exists()
     unavailable = get_unavailable_periods_within_time_period(start, end).exists()
     return not booked and not unavailable
