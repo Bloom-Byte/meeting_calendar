@@ -20,7 +20,7 @@ class SessionModelAdmin(admin.ModelAdmin):
     search_fields = ["title", "booked_by__email", "booked_by__firstname", "booked_by__lastname"]
     readonly_fields = ["booked_by"]
     date_hierarchy = "start"
-    ordering = ["-start"]
+    ordering = ["-start__date", "start__time"]
 
     def save_model(self, request: Any, obj: Any, form: Any, change: Any) -> None:
         # Set the booked_by field to the request user

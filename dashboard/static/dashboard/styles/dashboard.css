@@ -28,6 +28,7 @@
     padding: 30px 60px 30px 30px;
     color: var(--text-light);
     flex-shrink: 0;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
 }
 
 .session-card > .session-card-head{

@@ -17,12 +17,12 @@ function mustAcceptTandC(acceptCallback=null, rejectCallback=null) {
             acceptCallback();
         }
         tandcModal.classList.remove('show-flex');
-    }
+    };
 
     disagreeButton.onclick = () => {
         if (rejectCallback) {
             rejectCallback();
         }
         tandcModal.classList.remove('show-flex');
-    }
-}
+    };
+};
