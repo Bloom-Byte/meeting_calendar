@@ -50,21 +50,22 @@ class BaseBookingModelForm(forms.ModelForm):
             start = datetime.datetime.combine(date=date, time=start_time, tzinfo=tz).astimezone()
             end = datetime.datetime.combine(date=date, time=end_time, tzinfo=tz).astimezone()
 
-            # If the object is being created, check if the start time is in the past
+            # If the object is just being created, check if the start time is in the past
             # If so, raise an error
-            if not self.instance.pk and start < timezone.now().astimezone(tz):
-                self.add_error("date", "Start time cannot be in the past")
+            if not self.instance.pk:
+                if start < timezone.now().astimezone(tz):
+                    self.add_error("date", "Start time cannot be in the past")
 
-            # Check if there are no sessions booked within the unavailable period
-            # Or if no other unavailable period overlaps with the current one
+                # Check if there are no sessions booked within the unavailable period
+                # Or if no other unavailable period overlaps with the current one
 
-            # Exclude the current session if it is being updated
-            excluded_sessions = [self.instance] if isinstance(self.instance, models.UnavailablePeriod) and self.instance.pk else None
-            time_period_is_available = check_if_time_period_is_available(start, end, excluded_sessions)
-            if not time_period_is_available:
-                raise forms.ValidationError(
-                    "The time period chosen is not available. Please choose another time period."
-                )
+                # Exclude the current session if it is being updated
+                excluded_sessions = [self.instance] if isinstance(self.instance, models.UnavailablePeriod) and self.instance.pk else None
+                time_period_is_available = check_if_time_period_is_available(start, end, excluded_sessions)
+                if not time_period_is_available:
+                    raise forms.ValidationError(
+                        "The time period chosen is not available. Please choose another time period."
+                    )
             cleaned_data["start"] = start
             cleaned_data["end"] = end
         return cleaned_data
