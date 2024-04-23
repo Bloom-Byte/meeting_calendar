@@ -1,3 +1,37 @@
+// Purpose: Contains utility functions used in the project
+
+// Get the URL parameters and store them in a Proxy object
+const URLParams = new Proxy(new URLSearchParams(window.location.search), {
+    get: (searchParams, prop) => searchParams.get(prop),
+});
+
+
+/**
+ * Waits for the given element to be available in the DOM
+ * @param {String} selector The CSS selector of the element to wait for
+ * @returns {Promise<Element>} The element that was waited for
+ */
+function waitForElement(selector) {
+    return new Promise(resolve => {
+        if (document.querySelector(selector)) {
+            return resolve(document.querySelector(selector));
+        }
+
+        const observer = new MutationObserver(mutations => {
+            if (document.querySelector(selector)) {
+                observer.disconnect();
+                resolve(document.querySelector(selector));
+            }
+        });
+
+        // If you get "parameter 1 is not of type 'Node'" error, see https://stackoverflow.com/a/77855838/492336
+        observer.observe(document.body, {
+            childList: true,
+            subtree: true
+        });
+    });
+};
+
 
 function getCookie(name) {
     let cookieValue = null;

@@ -266,6 +266,15 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     sessionCalendar.render();
 
+    const preferredDate = URLParams.date ?? null;
+    if (preferredDate){
+        try{
+            navigateToBookingsForDate(preferredDate);
+        }catch(err){
+            console.error("Invalid date provided in URL");
+        };
+    };
+
     // CALLBACKS
     function onDateClick(info){
         const displayUnavailableTimePeriods = (bookingData) => {
@@ -277,7 +286,7 @@ document.addEventListener('DOMContentLoaded', function() {
             sessionCalendarEl.classList.add("in-time-view");
         };
 
-        fetchBookingDataForDate(info.dateStr, displayUnavailableTimePeriods);
+        return fetchBookingDataForDate(info.dateStr, displayUnavailableTimePeriods);
     };
 
 
@@ -381,6 +390,8 @@ document.addEventListener('DOMContentLoaded', function() {
         const isViewingBookings = viewBookingButton.classList.contains('viewing-bookings');
 
         if (isViewingBookings){
+            console.log("Viewing bookings");
+            hideUnavailableTimeslots();
             // Users can only book sessions when not viewing bookings
             sessionCalendar.setOption('selectable', false);
 
@@ -388,7 +399,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 showBookedTimeslots(bookingData.booked_times);
             }
             fetchBookingDataForDate(date, displayBookedTimePeriods);
-            hideUnavailableTimeslots();
 
         }else{
             sessionCalendar.setOption('selectable', true);
@@ -423,6 +433,24 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
     // HELPER FUNCTIONS
+    /**
+     * Navigates to bookings for the date provided in the URL
+     * @param {String} dateStr A string representing the date in the format 'YYYY-MM-DD'
+     */
+    function navigateToBookingsForDate(dateStr){
+        dateStr = formatDate(new Date(dateStr), "-");
+        // Simulate a date click event by calling the onDateClick function
+        onDateClick({dateStr: dateStr});
+            
+        // Wait for the unavailable time slots to be displayed
+        waitForElement('.unavailable-time-slot').then(() => {
+            // Get the viewBookings button and click it to view bookings
+            const viewBookingsButton = sessionCalendarEl.querySelector('.fc-viewBookings-button');
+            viewBookingsButton.click();
+        });
+    };
+
+
     /**
      * Shows unavailable time periods as background events on the calendar
      * @param {Array} unavailableTimeRanges An array of arrays containing the start and end times of the unavailable time periods

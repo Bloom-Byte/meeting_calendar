@@ -45,7 +45,7 @@ Dashboard
 
                     <div class="card-head-text">
                         <h3>{{ session.title | title }}</h3>
-                        <a href="">Reschedule</a>
+                        <a href="{% url 'booking:calendar' %}?date={{ session.date }}">Reschedule</a>
                     </div>
                 </div>
 
