@@ -17,11 +17,12 @@ const sessionEditFormEndTimeField = sessionEditForm.querySelector("#end-time");
 
 const unavailableEventTitle = 'Booked/Unavailable';
 
-
+// Always call this when ever a request is made on behalf of the calendar
 sessionCalendarEl.onPost = function(){
     this.classList.add('loading');
 }
 
+// Call this when a response is received
 sessionCalendarEl.onResponse = function(){
     this.classList.remove('loading');
 }
@@ -266,14 +267,32 @@ document.addEventListener('DOMContentLoaded', function() {
         dragScroll: true,
         // By default, user cannot edit events
         editable: false,
+        eventRender: (event, element, view) => {
+            /* The anchor tag is where the id gets set */
+            element.attr('id', 'event-id-' + event.id);
+        }
     });
     sessionCalendar.render();
 
     // If a date is provided in the URL, navigate to that date
     const preferredDate = URLParams.date ?? null;
+    const eventID = URLParams.event ?? null;
+    const edit = URLParams.edit ?? "false";
     if (preferredDate){
         try{
             navigateToBookingsForDate(preferredDate);
+
+            // If an event id is provided, scroll the event into view
+            if (eventID){
+                scrollEventIntoView(eventID);
+            };
+
+            // If edit is set to true, simulate a click on the edit button
+            if (edit.toLowerCase() === "true"){
+                const editButton = sessionCalendarEl.querySelector('.fc-edit-button');
+                editButton.click();
+            };
+
         }catch(err){
             console.error("Invalid date provided in URL");
         };
@@ -394,7 +413,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const isViewingBookings = viewBookingButton.classList.contains('viewing-bookings');
 
         if (isViewingBookings){
-            console.log("Viewing bookings");
             hideUnavailableTimeslots();
             // Users can only book sessions when not viewing bookings
             sessionCalendar.setOption('selectable', false);
@@ -450,9 +468,27 @@ document.addEventListener('DOMContentLoaded', function() {
         waitForElement('.unavailable-time-slot').then(() => {
             // Get the viewBookings button and click it to view bookings
             const viewBookingsButton = sessionCalendarEl.querySelector('.fc-viewBookings-button');
-            viewBookingsButton.click();
+            if (viewBookingsButton){
+                viewBookingsButton.click();
+            }
         });
     };
+
+
+    /**
+     * Scrolls the event with the given id into view on the calendar
+     * @param {String} eventId The id of the event to scroll into view
+     */
+    function scrollEventIntoView(eventId){
+        // Wait for the booked sessions events to be displayed
+        waitForElement('.booked-session').then(() => {
+            const eventEl = document.getElementById(`event-id-${eventId}`);
+            if (eventEl){
+                console.log(eventEl)
+                eventEl.scrollIntoView({behavior: "smooth", block: "center"});
+            };
+        });
+    }
 
 
     /**

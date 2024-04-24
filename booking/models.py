@@ -77,7 +77,7 @@ class Session(models.Model):
         This means that the admin has approved the session and the session
         can be held.
         """
-        return self.is_pending and self.link
+        return self.is_pending and self.link is not None
     
 
     def was_missed(self, tz: Optional[timezone.tzinfo] = None) -> bool:

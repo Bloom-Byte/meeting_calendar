@@ -53,6 +53,11 @@
 .fc-button-group > .fc-button{
     max-width: max-content !important;
     font-size: clamp(12px, 1.5vw, 14px) !important;
+    border-radius: 4px !important;
+}
+
+.fc-button-group > .fc-button:hover{
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2) !important;
 }
 
 .fc-header-toolbar #fc-dom-1.fc-toolbar-title{

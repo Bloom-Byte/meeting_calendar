@@ -25,8 +25,10 @@ sessionBookingForm.onsubmit = (e) => {
         }
         
         bookSessionButton.onPost();
+        sessionCalendarEl.onPost();
         fetch(sessionBookingForm.action, options).then((response) => {
             bookSessionButton.onResponse();
+            sessionCalendarEl.onResponse();
             if (response.status !== 201) {
                 response.json().then((data) => {
                     const errors = data.errors ?? null;

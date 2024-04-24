@@ -49,29 +49,32 @@ class BaseBookingModelForm(forms.ModelForm):
         if date and start_time and end_time:
             start = datetime.datetime.combine(date=date, time=start_time, tzinfo=tz).astimezone()
             end = datetime.datetime.combine(date=date, time=end_time, tzinfo=tz).astimezone()
-
             # If the object is just being created, check if the start time is in the past
             # If so, raise an error
             if not self.instance.pk:
-                if start < timezone.now().astimezone(tz):
+                now = timezone.now().astimezone(tz)
+                if start < now:
                     self.add_error("date", "Start time cannot be in the past")
 
-                # Check if there are no sessions booked within the unavailable period
-                # Or if no other unavailable period overlaps with the current one
-
-                # Exclude the current session if it is being updated
-                excluded_sessions = [self.instance] if isinstance(self.instance, models.UnavailablePeriod) and self.instance.pk else None
-                time_period_is_available = check_if_time_period_is_available(start, end, excluded_sessions)
-                if not time_period_is_available:
-                    raise forms.ValidationError(
-                        "The time period chosen is not available. Please choose another time period."
-                    )
+            # Check if the period booked is available, that is, the period
+            # is not already booked by another session or set as unavailable
+            # Exclude the current session if it is being updated
+            if isinstance(self.instance, models.Session) and self.instance.pk:
+                excluded_sessions = (self.instance,)
+            else:
+                excluded_sessions = None
+            time_period_is_available = check_if_time_period_is_available(start, end, excluded_sessions)
+            if time_period_is_available is False:
+                raise forms.ValidationError(
+                    "The time period chosen is not available. Please choose another time period."
+                )
+            # Update the cleaned data with the start and end datetime objects
             cleaned_data["start"] = start
             cleaned_data["end"] = end
         return cleaned_data
     
 
-    def save(self, commit: bool = True) -> models.Session:
+    def save(self, commit: bool = True):
         instance = super().save(commit=False)
         instance.start = self.cleaned_data["start"]
         instance.end = self.cleaned_data["end"]
@@ -82,7 +85,11 @@ class BaseBookingModelForm(forms.ModelForm):
 
 
 class SessionForm(BaseBookingModelForm):
-    """Form for creating a new session"""
+    """
+    Form for creating and updating sessions. Always use this form to create and update sessions.
+
+    Contains necessary validations and checks to ensure that the session is created or updated correctly.
+    """
     class Meta:
         model = models.Session
         fields = [

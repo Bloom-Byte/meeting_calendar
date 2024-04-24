@@ -114,7 +114,7 @@ def get_overlapping_unavailable_periods(instance: UnavailablePeriod):
 
     :param instance: UnavailablePeriod instance
     """
-    time_period = [instance.start, instance.end]
+    time_period = (instance.start, instance.end)
     unavailable_periods_within_time_period = get_unavailable_periods_within_time_period(*time_period)
     return unavailable_periods_within_time_period.exclude(pk=instance.pk)
 
@@ -137,3 +137,4 @@ def check_if_time_period_is_available(start: datetime.datetime, end: datetime.da
     ).exists()
     unavailable = get_unavailable_periods_within_time_period(start, end).exists()
     return not booked and not unavailable
+

@@ -15,8 +15,6 @@ sessionEditForm.onsubmit = (e) => {
         data[key] = value;
     }
 
-    editSessionButton.onPost();
-
     const options = {
         method: 'POST',
         headers: {
@@ -27,8 +25,12 @@ sessionEditForm.onsubmit = (e) => {
         body: JSON.stringify(data),
     }
 
+    editSessionButton.onPost();
+    sessionCalendarEl.onPost();
     fetch(sessionEditForm.action, options).then((response) => {
         editSessionButton.onResponse();
+        sessionCalendarEl.onResponse();
+        
         if (!response.ok) {
             response.json().then((data) => {
                 const errors = data.errors ?? null;

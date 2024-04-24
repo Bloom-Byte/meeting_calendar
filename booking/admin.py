@@ -63,7 +63,7 @@ class SessionModelAdmin(admin.ModelAdmin):
 class UnavailablePeriodModelAdmin(admin.ModelAdmin):
     """Model admin for the UnavailablePeriod model"""
     form = UnavailablePeriodAdminForm
-    list_display = ["start", "till", "created", "updated"]
+    list_display = ["starts", "until", "created", "updated"]
     search_fields = ["start__date", "end__date", "start__time", "end__time"]
     date_hierarchy = "start"
     ordering = ["-start"]
@@ -76,10 +76,14 @@ class UnavailablePeriodModelAdmin(admin.ModelAdmin):
         request_user = get_request_user()
         return request_user.to_local_timezone(obj.start)
     
-    def till(self, obj: Session) -> Any:
+    starts.short_description = "From"
+    
+    def until(self, obj: Session) -> Any:
         """End time in the request user's timezone"""
         request_user = get_request_user()
         return request_user.to_local_timezone(obj.end)
+    
+    until.short_description = "To"
     
     def created(self, obj: Session) -> Any:
         """Created time in the request user's timezone"""
