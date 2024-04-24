@@ -1,0 +1,15 @@
+version: '3.12.1'
+
+services:
+  app:
+    build: .
+    volumes:
+      - .:/django
+    env_file:
+      - path: .env
+        required: true
+    ports:
+      - 8000:8000
+    image: app:django
+    container_name: my_django_container
+    command: bash -c "python manage.py migrate && python manage.py collectstatic --noinput && python manage.py runserver 0.0.0.0:8000"
