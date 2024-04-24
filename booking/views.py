@@ -9,7 +9,7 @@ from links.models import Link
 from .models import Session
 from .forms import SessionForm
 from helpers.response import response_message
-from .utils import get_unavailable_times_for_date, get_time_periods_on_date_booked_by_user
+from .utils import get_unavailable_times_for_date, get_periods_booked_by_user_on_date
 
 
 
@@ -78,7 +78,7 @@ class SessionCalendarView(LoginRequiredMixin, generic.TemplateView):
             )
         try:
             unavailable_times = get_unavailable_times_for_date(date, tz=request.user.utz)
-            booked_times = get_time_periods_on_date_booked_by_user(date, user=request.user)
+            booked_times = get_periods_booked_by_user_on_date(date, user=request.user)
         except Exception:
             return JsonResponse(
                 data={

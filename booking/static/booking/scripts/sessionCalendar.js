@@ -94,10 +94,11 @@ function hideSessionEditModal(){
  */
 function timeStrToDate(timeStr, dateStr=null){
     let time = timeStr.split(":");
+    let date;
     if (dateStr){
         date = new Date(dateStr);
     }else{
-        let date = new Date();
+        date = new Date();
     }
     date.setHours(time[0], time[1], 0, 0);
     return date;
@@ -139,7 +140,8 @@ function checkIfTimeIsInThePast(timeStr, currentDateStr=null){
  */
 function timeIsUnavailable(timeStr, dateStr){
     const callback = (bookingData) => {
-        const unavailableTimes = bookingData.unavailable_times;
+        // use let instead of const to allow for redeclaration
+        let unavailableTimes = bookingData.unavailable_times;
         for (const range of unavailableTimes){
             let start = range[0];
             let end = range[1];
@@ -148,7 +150,7 @@ function timeIsUnavailable(timeStr, dateStr){
             time = timeStrToDate(timeStr);
             if (time >= start && time <= end){
                 return true;
-            }
+            };
         }
         return false;
     };
@@ -260,17 +262,13 @@ document.addEventListener('DOMContentLoaded', function() {
         // Shows event details as user selects
         selectMirror: true,
         unselectAuto: true,
-        unselectCancel: "#session-booking-modal",
+        unselectCancel: ".booking-modal",
         // User cannot select slots that overlap with existing events
         selectOverlap: false,
         // User cannot select slots occupied by event(sessions)
         dragScroll: true,
         // By default, user cannot edit events
-        editable: false,
-        eventRender: (event, element, view) => {
-            /* The anchor tag is where the id gets set */
-            element.attr('id', 'event-id-' + event.id);
-        }
+        editable: false
     });
     sessionCalendar.render();
 
@@ -301,14 +299,14 @@ document.addEventListener('DOMContentLoaded', function() {
     // CALLBACKS
     function onDateClick(info){
         const displayUnavailableTimePeriods = (bookingData) => {
-            const unavailableTimeRanges = bookingData.unavailable_times;
+            // Use let instead of const to allow for redeclaration
+            let unavailableTimeRanges = bookingData.unavailable_times;
             showUnavailableTimeslots(unavailableTimeRanges);
             // move to time grid for that day
             sessionCalendar.changeView('timeGridDay', info.dateStr);
             // add time view class, enables custom css when in time view
             sessionCalendarEl.classList.add("in-time-view");
         };
-
         return fetchBookingDataForDate(info.dateStr, displayUnavailableTimePeriods);
     };
 
@@ -403,6 +401,8 @@ document.addEventListener('DOMContentLoaded', function() {
         viewBookingsButton.classList.remove('viewing-bookings');
         // Hide booked timeslots
         hideBookedTimeslots();
+        // Hide unavailable timeslots
+        hideUnavailableTimeslots();
     };
 
 
@@ -420,9 +420,11 @@ document.addEventListener('DOMContentLoaded', function() {
             const displayBookedTimePeriods = (bookingData) => {
                 showBookedTimeslots(bookingData.booked_times);
             }
+            // Fetch booking data for the current date and display booked time periods
             fetchBookingDataForDate(date, displayBookedTimePeriods);
 
-        }else{
+        }
+        else{
             sessionCalendar.setOption('selectable', true);
             // When exiting bookings view, check if user is editing a session
             // If they are, exit edit mode
@@ -431,10 +433,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 editButton.click();
             };
 
+            // Hide booked timeslots
             hideBookedTimeslots();
             const displayUnavailableTimePeriods = (bookingData) => {
                 showUnavailableTimeslots(bookingData.unavailable_times);
             }
+            // Fetch booking data for the current date and display unavailable time periods
             fetchBookingDataForDate(date, displayUnavailableTimePeriods);
         }
     };
@@ -445,9 +449,11 @@ document.addEventListener('DOMContentLoaded', function() {
         const editable = sessionCalendar.getOption("editable");
 
         if (editable){
+            // If user is editing a session, exit edit mode
             sessionCalendar.setOption("editable", false);
             editButton.classList.remove("editing");
         }else{
+            // If user is not editing a session, enter edit mode
             sessionCalendar.setOption("editable", true);
             editButton.classList.add("editing");
         };
@@ -569,7 +575,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
     /**
-     * Hides all booked time slots from the calendar
+     * Hides any event for booked time slots shown on the calendar
      */
     function hideBookedTimeslots(){
         const events = sessionCalendar.getEvents();
@@ -577,6 +583,6 @@ document.addEventListener('DOMContentLoaded', function() {
             if (event.classNames.includes('booked-session')){
                 event.remove();
             }
-        }
+        };
     };
 });

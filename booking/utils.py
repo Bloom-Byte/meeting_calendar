@@ -8,9 +8,25 @@ from .managers import SessionQuerySet
 from users.models import UserAccount
 
 
+def session_to_simple_dict(session: Session, tz: Optional[timezone.tzinfo] = None) -> Dict[str, Any]:
+    """Parse the session object to a simple dictionary with the necessary fields"""
+    start_in_tz = session.start.astimezone(tz).strftime("%H:%M")
+    end_in_tz = session.end.astimezone(tz).strftime("%H:%M")
+    return {
+        "id": session.pk,
+        "date": session.start.strftime("%Y-%m-%d"),
+        "time_period": [start_in_tz, end_in_tz],
+        "link": session.link.path if session.link else None,
+        "is_approved": session.is_approved,
+    }
+
+
 def get_unavailable_times_for_date(date: str, tz: Optional[timezone.tzinfo] = None) -> List[str]:
     """
     Return a list of unavailable times for the given date and timezone
+
+    :param date: Date in the format "YYYY-MM-DD"
+    :param tz: timezone of the date
     """
     if tz:
         date = timezone.datetime.strptime(date, "%Y-%m-%d").astimezone(tz).strftime("%Y-%m-%d")
@@ -26,9 +42,8 @@ def get_unavailable_times_for_date(date: str, tz: Optional[timezone.tzinfo] = No
     booked_times = []
     booked_sessions = Session.objects.exclude(cancelled=True).filter(start__date=date)
     for session in booked_sessions:
-        start_in_tz = session.start.astimezone(tz).strftime("%H:%M")
-        end_in_tz = session.end.astimezone(tz).strftime("%H:%M")
-        booked_times.append([start_in_tz, end_in_tz])
+        session_dict = session_to_simple_dict(session, tz)
+        booked_times.append(session_dict["time_period"])
     return [*unavailable_times, *booked_times]
 
 
@@ -41,20 +56,7 @@ def get_sessions_on_date_booked_by_user(date: str, user: UserAccount):
     return Session.objects.filter(start__date=date, booked_by=user)
 
 
-def session_to_simple_dict(session: Session, tz: Optional[timezone.tzinfo] = None) -> Dict[str, Any]:
-    """Parse the session object to a simple dictionary with the necessary fields"""
-    start_in_tz = session.start.astimezone(tz).strftime("%H:%M")
-    end_in_tz = session.end.astimezone(tz).strftime("%H:%M")
-    return {
-        "id": session.pk,
-        "date": session.start.strftime("%Y-%m-%d"),
-        "time_period": [start_in_tz, end_in_tz],
-        "link": session.link.path if session.link else None,
-        "is_approved": session.is_approved,
-    }
-
-
-def get_time_periods_on_date_booked_by_user(date: str, user: UserAccount) -> Dict[str, Dict[str, Any]]:
+def get_periods_booked_by_user_on_date(date: str, user: UserAccount) -> Dict[str, Dict[str, Any]]:
     todays_sessions: SessionQuerySet[Session] = get_sessions_on_date_booked_by_user(date, user)
     tz = user.utz
     pending_sessions = todays_sessions.pending()
