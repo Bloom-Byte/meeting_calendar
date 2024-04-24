@@ -25,6 +25,7 @@ INSTALLED_APPS = [
     'timezone_field',
     'django_utz',
     'rest_framework_api_key',
+    "django_admin_logs",
 
     # apps
     'core.apps.CoreConfig',
@@ -170,3 +171,11 @@ if DEBUG is False:
 
 else:
     ALLOWED_HOSTS = ["*"]
+
+
+# For Admin logs
+DJANGO_ADMIN_LOGS_ENABLED = True
+
+DJANGO_ADMIN_LOGS_DELETABLE = False
+
+DJANGO_ADMIN_LOGS_IGNORE_UNCHANGED = True

@@ -1,6 +1,7 @@
 django==5.0.4
 whitenoise==6.6.0
 django-timezone-field==6.1.0
-django-utz>=0.1.9
+django-utz==0.1.9
 python-dotenv==1.0.1
 djangorestframework-api-key==2.3.0
+django-admin-logs==1.2.0

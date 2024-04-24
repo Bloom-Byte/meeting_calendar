@@ -15,10 +15,11 @@ class SessionModelAdmin(admin.ModelAdmin):
     form = SessionForm
     list_display = [
         "title", "starts", "ends", "booked_by", 
-        "link", "has_held", "cancelled", "booked_at"
+        "link", "has_held", "cancelled", "booked_at",
+        "rescheduled"
     ]
     search_fields = ["title", "booked_by__email", "booked_by__firstname", "booked_by__lastname"]
-    readonly_fields = ["booked_by"]
+    readonly_fields = ["booked_by", "rescheduled_at"]
     date_hierarchy = "start"
     ordering = ["-start__date", "start__time"]
 
@@ -47,6 +48,13 @@ class SessionModelAdmin(admin.ModelAdmin):
         """Created time in the request user's timezone"""
         request_user = get_request_user()
         return request_user.to_local_timezone(obj.created_at)
+    
+    def rescheduled(self, obj: Session) -> Any:
+        """Updated time in the request user's timezone"""
+        request_user = get_request_user()
+        if not obj.rescheduled_at:
+            return None
+        return request_user.to_local_timezone(obj.rescheduled_at)
     
     
 

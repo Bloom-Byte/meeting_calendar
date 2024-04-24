@@ -95,6 +95,20 @@ function formFieldHasError(formField, errorMsg) {
 
 
 /**
+ * Clears the error messages from the form fields
+ * @param {HTMLFormElement} form The form to clear the error messages from
+ */
+function clearFieldErrors(form){
+    form.querySelectorAll('.form-input').forEach(input => {
+        input.classList.remove('invalid-field');
+    });
+    form.querySelectorAll('.field-message').forEach(msgEl => {
+        msgEl.innerHTML = '';
+    });
+}
+
+
+/**
  * Checks if the email is valid 
  * @param {string} email The email to validate
  * @returns {boolean} true if the email is valid, false otherwise

@@ -15,7 +15,7 @@ const sessionEditFormDateField = sessionEditForm.querySelector("#date");
 const sessionEditFormStartTimeField = sessionEditForm.querySelector("#start-time");
 const sessionEditFormEndTimeField = sessionEditForm.querySelector("#end-time");
 
-const unavailableEventTitle = 'Booked/unavailable';
+const unavailableEventTitle = 'Booked/Unavailable';
 
 
 sessionCalendarEl.onPost = function(){
@@ -50,6 +50,7 @@ function showSessionBookingModal(date, startTime, endTime){
 function hideSessionBookingModal(){
     sessionBookingForm.reset();
     sessionBookingModal.classList.remove("show-block");
+    clearFieldErrors(sessionBookingForm);
 };
 
 
@@ -80,6 +81,7 @@ function showSessionEditModal(sessionId, title, date, startTime, endTime){
 function hideSessionEditModal(){
     sessionEditForm.reset();
     sessionEditModal.classList.remove("show-block");
+    clearFieldErrors(sessionEditForm);
 };
 
 

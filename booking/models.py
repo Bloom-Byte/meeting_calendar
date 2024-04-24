@@ -29,6 +29,10 @@ class Session(models.Model):
     )
     has_held = models.BooleanField(default=False, help_text=_("Has this session been held? If so, check this."))
     cancelled = models.BooleanField(default=False, help_text=_("Check this if you want to cancel this session"))
+    rescheduled_at = models.DateTimeField(
+        _("Rescheduled at"),  null=True, blank=True,
+        help_text=_("When was this session date or time changed?")
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -63,7 +67,17 @@ class Session(models.Model):
     @property
     def is_pending(self) -> bool:
         """Returns True if the session has not been held, else False"""
-        return not self.has_held
+        return not self.has_held and not self.cancelled
+    
+    @property
+    def is_approved(self) -> bool:
+        """
+        Returns True if the session is pending and has a link attached
+
+        This means that the admin has approved the session and the session
+        can be held.
+        """
+        return self.is_pending and self.link
     
 
     def was_missed(self, tz: Optional[timezone.tzinfo] = None) -> bool:
@@ -79,6 +93,13 @@ class Session(models.Model):
             raise ValueError("End datetime must be greater than start datetime")
         if self.start.date() != self.end.date():
             raise ValueError("Start and end datetime must be on the same day")
+        
+        # Check if the session has been rescheduled
+        old_instance = Session.objects.filter(pk=self.pk).first()
+        if old_instance:
+            schedule_changed = old_instance.start != self.start or old_instance.end != self.end
+            if schedule_changed:
+                self.rescheduled_at = timezone.now()
         super().save(*args, **kwargs)
 
 

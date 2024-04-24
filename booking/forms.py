@@ -88,7 +88,8 @@ class SessionForm(BaseBookingModelForm):
         fields = [
             "title", "date", "start_time", 
             "end_time", "timezone", "booked_by", 
-            "link", "has_held", "cancelled"
+            "link", "has_held", "cancelled",
+            "rescheduled_at"
         ]
         labels = {
             "cancelled": _("Cancel session"),

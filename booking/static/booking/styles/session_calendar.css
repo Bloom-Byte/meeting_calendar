@@ -36,6 +36,29 @@
 
 /* Custom buttons */
 
+.fc-header-toolbar{
+    align-items: center !important;
+    gap: 4px !important;
+}
+
+.fc-header-toolbar .fc-button-group{
+    display: inline-flex !important;
+    gap: 2px !important;
+    flex-wrap: wrap-reverse !important;
+    justify-content: flex-end !important;
+    align-self: flex-start !important;
+    max-width: max-content !important;
+}
+
+.fc-button-group > .fc-button{
+    max-width: max-content !important;
+    font-size: clamp(12px, 1.5vw, 14px) !important;
+}
+
+.fc-header-toolbar #fc-dom-1.fc-toolbar-title{
+    text-align: center !important;
+}
+
 .fc-backToMonth-button{
     display: none !important;
 }

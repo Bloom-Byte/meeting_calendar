@@ -41,6 +41,18 @@ def get_sessions_on_date_booked_by_user(date: str, user: UserAccount):
     return Session.objects.filter(start__date=date, booked_by=user)
 
 
+def session_to_simple_dict(session: Session, tz: Optional[timezone.tzinfo] = None) -> Dict[str, Any]:
+    """Parse the session object to a simple dictionary with the necessary fields"""
+    start_in_tz = session.start.astimezone(tz).strftime("%H:%M")
+    end_in_tz = session.end.astimezone(tz).strftime("%H:%M")
+    return {
+        "id": session.pk,
+        "date": session.start.strftime("%Y-%m-%d"),
+        "time_period": [start_in_tz, end_in_tz],
+        "link": session.link.path if session.link else None,
+        "is_approved": session.is_approved,
+    }
+
 
 def get_time_periods_on_date_booked_by_user(date: str, user: UserAccount) -> Dict[str, Dict[str, Any]]:
     todays_sessions: SessionQuerySet[Session] = get_sessions_on_date_booked_by_user(date, user)
@@ -55,44 +67,16 @@ def get_time_periods_on_date_booked_by_user(date: str, user: UserAccount) -> Dic
     held = {}
     for session in pending_sessions:
         if session not in missed_sessions:
-            start_in_tz = session.start.astimezone(tz).strftime("%H:%M")
-            end_in_tz = session.end.astimezone(tz).strftime("%H:%M")
-            pending[session.title] = {
-                "id": session.pk,
-                "time_period": [start_in_tz, end_in_tz],
-                "date": date,
-                "link": session.link.path if session.link else None
-            }
+            pending[session.title] = session_to_simple_dict(session, tz)
 
     for session in missed_sessions:
-        start_in_tz = session.start.astimezone(tz).strftime("%H:%M")
-        end_in_tz = session.end.astimezone(tz).strftime("%H:%M")
-        missed[session.title] = {
-            "id": session.pk,
-            "time_period": [start_in_tz, end_in_tz],
-            "date": date,
-            "link": session.link.path if session.link else None
-        }
+        missed[session.title] = session_to_simple_dict(session, tz)
     
     for session in cancelled_sessions:
-        start_in_tz = session.start.astimezone(tz).strftime("%H:%M")
-        end_in_tz = session.end.astimezone(tz).strftime("%H:%M")
-        cancelled[session.title] = {
-            "id": session.pk,
-            "time_period": [start_in_tz, end_in_tz],
-            "date": date,
-            "link": session.link.path if session.link else None
-        }
+        cancelled[session.title] = session_to_simple_dict(session, tz)
 
     for session in held_sessions:
-        start_in_tz = session.start.astimezone(tz).strftime("%H:%M")
-        end_in_tz = session.end.astimezone(tz).strftime("%H:%M")
-        held[session.title] = {
-            "id": session.pk,
-            "time_period": [start_in_tz, end_in_tz],
-            "date": date,
-            "link": session.link.path if session.link else None
-        }
+        held[session.title] = session_to_simple_dict(session, tz)
     return {
         "pending": pending,
         "missed": missed,

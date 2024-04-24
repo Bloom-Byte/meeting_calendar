@@ -1,23 +1,19 @@
 // Depends on "sessionCalendar.js". So make sure to include it before this script
 
 const bookSessionButton = sessionBookingForm.querySelector('.submit-btn');
-
-
 addOnPostAndOnResponseFuncAttr(bookSessionButton, 'Booking session...')
+
 
 sessionBookingForm.onsubmit = (e) => {
     e.stopImmediatePropagation();
     e.preventDefault();
-    
+    const formData = new FormData(sessionBookingForm);
+    const data = {};
+    for (const [key, value] of formData.entries()) {
+        data[key] = value;
+    }
+
     function bookSession(){
-        const formData = new FormData(sessionBookingForm);
-        const data = {};
-        for (const [key, value] of formData.entries()) {
-            data[key] = value;
-        }
-
-        bookSessionButton.onPost();
-
         const options = {
             method: 'POST',
             headers: {
@@ -27,7 +23,8 @@ sessionBookingForm.onsubmit = (e) => {
             mode: 'same-origin',
             body: JSON.stringify(data),
         }
-
+        
+        bookSessionButton.onPost();
         fetch(sessionBookingForm.action, options).then((response) => {
             bookSessionButton.onResponse();
             if (response.status !== 201) {
@@ -65,5 +62,5 @@ sessionBookingForm.onsubmit = (e) => {
         });
     };
 
-    mustAcceptTandC(bookSession);
+    mustAcceptTandC(bookSession, null);
 };
