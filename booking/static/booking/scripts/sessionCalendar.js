@@ -486,15 +486,16 @@ document.addEventListener('DOMContentLoaded', function() {
      * @param {String} eventId The id of the event to scroll into view
      */
     function scrollEventIntoView(eventId){
-        // Wait for the booked sessions events to be displayed
-        waitForElement('.booked-session').then(() => {
-            const eventEl = document.getElementById(`event-id-${eventId}`);
+        // Wait for the event to be displayed
+        console.log(`.event-${eventId}`);
+        waitForElement(`.booked-session`).then(() => {
+            const eventEl = document.querySelector(`event-${eventId}`);
+            console.log(eventEl);
             if (eventEl){
-                console.log(eventEl)
                 eventEl.scrollIntoView({behavior: "smooth", block: "center"});
             };
         });
-    }
+    };
 
 
     /**
@@ -547,7 +548,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 const endTime = timeRange[1];
                 const startDate = date + "T" + startTime;
                 const endDate = date + "T" + endTime;
-                const classNames = [`session-${sessionCategory}`, "booked-session"];
+                const classNames = [
+                    `session-${sessionCategory}`, 
+                    // Unique identifier (class) for each event
+                    `event-${id}`,
+                    "booked-session"
+                ];
                 if (sessionLink){
                     classNames.push("session-has-url");
                 }
