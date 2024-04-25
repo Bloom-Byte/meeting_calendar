@@ -3,9 +3,11 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 import uuid
 from django.conf import settings
+from django_utz.decorators import model
 
 
 
+@model
 class News(models.Model):
     """Model to represent news for application users"""
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -24,6 +26,10 @@ class News(models.Model):
         ordering = ["-created_at"]
         verbose_name = "News"
         verbose_name_plural = "News"
+    
+    class UTZMeta:
+        datetime_fields = "__all__"
+        attribute_suffix = "user_tz"
 
     def __str__(self) -> str:
         return self.headline

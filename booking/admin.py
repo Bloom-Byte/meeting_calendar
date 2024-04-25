@@ -2,7 +2,6 @@ from django.conf import settings
 from typing import Any
 from django.contrib import admin
 from django.http import HttpRequest
-from django_utz.middleware import get_request_user
 
 from .models import Session, UnavailablePeriod
 from .forms import SessionForm, UnavailablePeriodAdminForm
@@ -36,25 +35,21 @@ class SessionModelAdmin(admin.ModelAdmin):
     
     def starts(self, obj: Session) -> Any:
         """Start time in the request user's timezone"""
-        request_user = get_request_user()
-        return request_user.to_local_timezone(obj.start)
+        return obj.start_user_tz
     
     def ends(self, obj: Session) -> Any:
         """End time in the request user's timezone"""
-        request_user = get_request_user()
-        return request_user.to_local_timezone(obj.end)
+        return obj.end_user_tz
     
     def booked_at(self, obj: Session) -> Any:
         """Created time in the request user's timezone"""
-        request_user = get_request_user()
-        return request_user.to_local_timezone(obj.created_at)
+        return obj.created_at_user_tz
     
     def rescheduled(self, obj: Session) -> Any:
         """Updated time in the request user's timezone"""
-        request_user = get_request_user()
         if not obj.rescheduled_at:
             return None
-        return request_user.to_local_timezone(obj.rescheduled_at)
+        return obj.rescheduled_at_user_tz
     
     
 
@@ -73,24 +68,20 @@ class UnavailablePeriodModelAdmin(admin.ModelAdmin):
 
     def starts(self, obj: Session) -> Any:
         """Start time in the request user's timezone"""
-        request_user = get_request_user()
-        return request_user.to_local_timezone(obj.start)
+        return obj.start_user_tz
     
     starts.short_description = "From"
     
     def until(self, obj: Session) -> Any:
         """End time in the request user's timezone"""
-        request_user = get_request_user()
-        return request_user.to_local_timezone(obj.end)
+        return obj.end_user_tz
     
     until.short_description = "To"
     
     def created(self, obj: Session) -> Any:
         """Created time in the request user's timezone"""
-        request_user = get_request_user()
-        return request_user.to_local_timezone(obj.created_at)
+        return obj.created_at_user_tz
     
     def updated(self, obj: Session) -> Any:
         """Updated time in the request user's timezone"""
-        request_user = get_request_user()
-        return request_user.to_local_timezone(obj.updated_at)
+        return obj.updated_at_user_tz

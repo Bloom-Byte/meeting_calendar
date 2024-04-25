@@ -3,8 +3,10 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.conf import settings
 
+from django_utz.decorators import model
 
 
+@model
 class PasswordResetToken(AbstractAPIKey):
     """Make shift password reset token model"""
     name = models.CharField(
@@ -38,4 +40,8 @@ class PasswordResetToken(AbstractAPIKey):
         verbose_name_plural = _("Password Reset Tokens")
         # Use a unique constraint to ensure that only one token per user is valid at a time
         unique_together = ["user", "hashed_key"]
+    
+    class UTZMeta:
+        datetime_fields = "__all__"
+        attribute_suffix = "user_tz"
 

@@ -1,5 +1,4 @@
 from django import forms
-from django_utz.middleware import get_request_user
 
 from .models import News
 
@@ -12,12 +11,11 @@ class NewsForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        request_user = get_request_user()
         if self.instance.pk:
             try:
-                self.initial["display_at"] = request_user.to_local_timezone(self.instance.display_at)
-                self.initial["created_at"] = request_user.to_local_timezone(self.instance.created_at)
-                self.initial["updated_at"] = request_user.to_local_timezone(self.instance.updated_at)
+                self.initial["display_at"] = self.instance.display_at_user_tz
+                self.initial["created_at"] = self.instance.created_at_user_tz
+                self.initial["updated_at"] = self.instance.updated_at_user_tz
             except (AttributeError, TypeError):
                 pass
             

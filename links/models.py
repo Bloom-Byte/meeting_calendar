@@ -3,10 +3,12 @@ from django.db import models
 import uuid
 from django.shortcuts import resolve_url
 from django.utils.translation import gettext_lazy as _
+from django_utz.decorators import model
 
 from .utils import generate_unique_identifier
 
 
+@model
 class Link(models.Model):
     """
     Model to represent a wrapped URL
@@ -26,6 +28,10 @@ class Link(models.Model):
 
     class Meta:
         ordering = ['-created_at']
+
+    class UTZMeta:
+        datetime_fields = "__all__"
+        attribute_suffix = "user_tz"
 
     def __str__(self) -> str:
         return self.identifier

@@ -19,7 +19,7 @@
 #session-calendar{
     margin: 10px auto;
     width: 100%;
-    min-height: 80vh !important;
+    min-height: 75vh !important;
 }
 
 .loading{
@@ -126,7 +126,7 @@
     border-radius: 8px !important;
     border: none !important;
     text-align: center;
-    padding: 20px 10px !important;
+    padding: 15px 10px !important;
 }
 
 .session-cancelled{
@@ -154,17 +154,18 @@
 /* Session Forms */
 .booking-modal{
     display: none;
-    position: absolute;
-    top: 40%;
-    left: 50%;
-    transform: translate(-50%, -40%);
+    position: fixed !important;
+    top: 50%;
+    left: 60%;
+    transform: translate(-60%, -50%);
     z-index: 99;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
     width: 90%;
+    isolation: isolate;
 }
 
 #main-content:has(.booking-modal.show-block){
-    overflow-y: hidden !important;
+    overflow: hidden !important;
 }
 
 .booking-modal > form :is(input[type='date'], input[type='time']){

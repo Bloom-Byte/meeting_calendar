@@ -45,6 +45,7 @@ class Session(models.Model):
 
     class UTZMeta:
         datetime_fields = "__all__"
+        attribute_suffix = "user_tz"
 
     def __str__(self) -> str:
         return f"'{self.title}' with {self.booked_by.fullname} ({self.booked_by.email})"
@@ -120,6 +121,7 @@ class UnavailablePeriod(models.Model):
     
     class UTZMeta:
         datetime_fields = "__all__"
+        attribute_suffix = "user_tz"
 
     def __str__(self) -> str:
         return f"Unavailable from {self.start} to {self.end}"

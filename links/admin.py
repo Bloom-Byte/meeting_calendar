@@ -1,7 +1,6 @@
 from django.contrib import admin
 from typing import Any
 from django.http import HttpRequest
-from django_utz.middleware import get_request_user
 
 from .models import Link
 from .forms import LinkForm
@@ -21,10 +20,8 @@ class LinkModelAdmin(admin.ModelAdmin):
 
     def created(self, obj: Link) -> Any:
         """Created time in the request user's timezone"""
-        request_user = get_request_user()
-        return request_user.to_local_timezone(obj.created_at)
+        return obj.created_at_user_tz
     
     def updated(self, obj: Link) -> Any:
         """Updated time in the request user's timezone"""
-        request_user = get_request_user()
-        return request_user.to_local_timezone(obj.updated_at)
+        return obj.updated_at_user_tz

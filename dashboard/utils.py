@@ -35,5 +35,5 @@ def get_todays_news_for_user(news_qs: models.QuerySet[News], user: UserAccount) 
     :param news_qs: Queryset of News objects
     :param user: UserAccount instance
     """
-    today = user.to_local_timezone(timezone.now())
-    return news_qs.filter(created_at__date=today.date())
+    today_user_tz = user.to_local_timezone(timezone.now())
+    return news_qs.filter(display_at__date=today_user_tz.date())

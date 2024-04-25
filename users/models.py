@@ -43,6 +43,7 @@ class UserAccount(PermissionsMixin, AbstractBaseUser):
     class UTZMeta:
         timezone_field = "timezone"
         datetime_fields = "__all__"
+        attribute_suffix = "user_tz"
     
 
     def __str__(self) -> str:
@@ -68,13 +69,7 @@ class UserAccount(PermissionsMixin, AbstractBaseUser):
             slug = slugify(self.fullname) + "-" + str(uuid.uuid4())[:8]
             self.slug = slug
 
-        super().save(*args, **kwargs)
-        # # If admin status has changed, update permissions
-        # if old_instance and old_instance.is_admin != self.is_admin:
-        #     update_admin_only_perms_on_user(self)
-        # else:
-        #     update_admin_only_perms_on_user(self)
-        return 
+        return super().save(*args, **kwargs)
     
 
     def send_mail(

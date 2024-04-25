@@ -26,11 +26,11 @@ class BaseBookingModelForm(forms.ModelForm):
         # to the user, display the fields below in the request user's timezone
         if self.instance.pk:
             try:
-                start_date_in_user_tz = request_user.to_local_timezone(self.instance.start)
-                end_date_in_user_tz = request_user.to_local_timezone(self.instance.end)
-                self.initial['date'] = start_date_in_user_tz.strftime("%Y-%m-%d")
-                self.initial["start_time"] = start_date_in_user_tz.strftime("%H:%M")
-                self.initial["end_time"] = end_date_in_user_tz.strftime("%H:%M")
+                # django-utz will automatically adds datetime fields with the suffix `user_tz`
+                # which are in the preferred timezone (the request user's timezone)
+                self.initial['date'] = self.instance.start_user_tz.strftime("%Y-%m-%d")
+                self.initial["start_time"] = self.instance.start_user_tz.strftime("%H:%M")
+                self.initial["end_time"] = self.instance.end_user_tz.strftime("%H:%M")
             except (AttributeError, TypeError):
                 pass
 
@@ -40,7 +40,7 @@ class BaseBookingModelForm(forms.ModelForm):
         start_time = cleaned_data.get("start_time", None)
         end_time = cleaned_data.get("end_time", None)
         date = cleaned_data.get("date", None)
-        tz = cleaned_data.get("timezone")
+        tz = cleaned_data.get("timezone", None)
 
         if start_time and end_time:
             if start_time >= end_time:
@@ -206,6 +206,7 @@ class SessionForm(BaseBookingModelForm):
 
         # Check if the session has been marked as held before it ends
         # If so, raise an error
+        # Session edn datetime is already in the user's timezone from the parent `clean` method
         session_end_in_tz = cleaned_data.get("end", None)
         if session_end_in_tz:
             time_now_in_tz = timezone.now().astimezone(tz)

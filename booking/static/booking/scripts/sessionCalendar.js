@@ -487,10 +487,8 @@ document.addEventListener('DOMContentLoaded', function() {
      */
     function scrollEventIntoView(eventId){
         // Wait for the event to be displayed
-        console.log(`.event-${eventId}`);
-        waitForElement(`.booked-session`).then(() => {
-            const eventEl = document.querySelector(`event-${eventId}`);
-            console.log(eventEl);
+        waitForElement(`.event-${eventId}`).then(() => {
+            const eventEl = document.querySelector(`.event-${eventId}`);
             if (eventEl){
                 eventEl.scrollIntoView({behavior: "smooth", block: "center"});
             };

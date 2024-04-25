@@ -1,6 +1,5 @@
 from django.contrib import admin
 from typing import Any
-from django_utz.middleware import get_request_user
 
 from .models import UserAccount
 from .forms import UserForm
@@ -35,11 +34,9 @@ class UserAccountModelAdmin(admin.ModelAdmin):
     
     def registered(self, obj: UserAccount) -> Any:
         """Registered time in the request user's timezone"""
-        request_user = get_request_user()
-        return request_user.to_local_timezone(obj.registered_at)
+        return obj.registered_at_user_tz
     
     def updated(self, obj: UserAccount) -> Any:
         """Updated time in the request user's timezone"""
-        request_user = get_request_user()
-        return request_user.to_local_timezone(obj.updated_at)
+        return obj.updated_at_user_tz
 
