@@ -28,11 +28,11 @@ The project is an app where you can book a session and view the meetings you hav
 
 - You can sign up by providing your email, first name, last name, and password. Your email is used as the username. Also, your timezone info is automatically detected and stored alongside your profile on sign up.
 - You can log in using your email and password.
-- You can reset their password by navigating to the forgot password page from the sign up page, and providing your account email.
+- You can reset your password by navigating to the forgot password page from the sign up page, and providing your account email.
 
 ### User Dashboard
 
-- On logging in, you are redirected to their dashboard where you can see cards showing the sessions that you have booked for that day, if any. These cards contains links to join the meeting when the time comes (If available) or to reschedule the meeting.
+- On logging in, you are redirected to the dashboard where you can see cards showing the sessions that you have booked for that day, if any. These cards contains links to join the meeting when the time comes (If available) or to reschedule the meeting.
 
 > The time displayed is in the user's timezone.
 
@@ -47,7 +47,7 @@ The project is an app where you can book a session and view the meetings you hav
 
 - The time slots are in durations of 5 minutes.
 
-- To select a time slot on mobile, long press on the time slot for about 2 seconds until the time slot is highlight in blue. On PC, left click on the time slot. You can then drag the time slot to the duration you want. The time period is displayed on the blue box that appears.
+- To select a time slot on mobile, long press on the time slot for about 2 seconds until the time slot is highlighted blue. On PC, left click on the time slot. You can then drag the time slot to the duration you want. The time period is displayed on the blue box that appears.
 
 - After selecting an available time slot, a modal appears where you can enter the session title and confirm that the details of the booking are correct. If they are not, you can tap outside the modal and it will close for you reselect the timeslot again.
 
