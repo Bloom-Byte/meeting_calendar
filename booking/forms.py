@@ -134,8 +134,8 @@ class SessionForm(BaseBookingModelForm):
         help_text=_("Your timezone"), disabled=True
     )
     link = forms.CharField(
-        required=False, label=_("Link"),
-        help_text=_("The link to the session"),
+        required=False, label=_("Meeting Link"),
+        help_text=_("The link the user will use to join the session meeting"),
         empty_value=None
     )
 

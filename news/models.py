@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 import uuid
 from django.conf import settings
@@ -15,6 +16,7 @@ class News(models.Model):
         related_name="news", help_text=_("Author of the news"),
         blank=True, null=True
     )
+    display_at = models.DateTimeField(default=timezone.now, help_text=_("Date to display the news"))
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

@@ -1,4 +1,5 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.utils import timezone
 from django.views import generic
 from typing import Any, Dict
 import json
@@ -32,6 +33,8 @@ class SessionLinkView(LoginRequiredMixin, generic.DetailView):
                 content="This link is invalid or has expired. Please check the link and try again.",
                 status=404
             )
+        
+        # Check if the link can be associated with a session
         try:
             session = Session.objects.get(link=link)
         except Session.DoesNotExist:
@@ -41,20 +44,45 @@ class SessionLinkView(LoginRequiredMixin, generic.DetailView):
                 content="No session can be associated with this link.",
                 status=404
             )
+        
         else:
+            # Check if the session is cancelled or missed
             if session.cancelled:
                 return response_message(
                     request,
                     title="Session Cancelled",
                     content="This session has been cancelled.",
-                    status=404
+                    status=400
                 )
             if session.was_missed(tz=request.user.utz):
                 return response_message(
                     request,
                     title="Session Missed",
                     content="This session was missed. Please reschedule and try again.",
-                    status=404
+                    status=400
+                )
+            
+            # Check if the session has not ended. If it has, it should not be accessible
+            # Link becomes inactive 5 minutes after the session ends
+            now = timezone.now().astimezone(request.user.utz)
+            end_plus_5mins = session.end + timezone.timedelta(minutes=5)
+            if now > end_plus_5mins:
+                return response_message(
+                    request,
+                    title="Session Ended",
+                    content="This link is no longer valid. The session has ended.",
+                    status=400
+                )
+            
+            # Check if the session has not started. If it has, it should not be accessible
+            # Link becomes active 5 minutes before the session starts
+            start_minus_5mins = session.start - timezone.timedelta(minutes=5)
+            if now < start_minus_5mins:
+                return response_message(
+                    request,
+                    title="Session Not Started",
+                    content="This link is not yet active. The session has not started.",
+                    status=400
                 )
         return redirect(link.url)
 

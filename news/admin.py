@@ -3,13 +3,15 @@ from typing import Any
 from django_utz.middleware import get_request_user
 
 from .models import News
-
+from .forms import NewsForm
 
 
 @admin.register(News)
 class NewsModelAdmin(admin.ModelAdmin):
     """Model admin for the News model"""
+    form = NewsForm
     list_display = ["headline", "author", "created", "updated"]
+    readonly_fields = ["created_at", "updated_at", "author"]
     search_fields = ["headline", "author__email", "author__firstname", "author__lastname"]
     date_hierarchy = "created_at"
 
