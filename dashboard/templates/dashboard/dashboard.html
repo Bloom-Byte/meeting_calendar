@@ -91,7 +91,6 @@ Dashboard
             {%  for news in todays_news %}
                 <div class="news">
                     <h4 class="news-headline">{{ news.headline | title }}</h4>
-                    
                     <p class="news-content">
                         {{ news.content | urlize }}
                     </p>

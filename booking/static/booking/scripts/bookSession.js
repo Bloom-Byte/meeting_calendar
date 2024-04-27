@@ -52,12 +52,6 @@ sessionBookingForm.onsubmit = (e) => {
             }else{
                 response.json().then((data) => {
                     pushNotification("success", data.detail ?? 'Session booked successfully!');
-                    
-                    // Since sessions can only be booked in the unavailable time periods view,
-                    // Clicking the view bookings button switches to the bookings view, 
-                    // where the new booking is fetched and displayed
-                    const viewBookingsButton = document.querySelector('button.fc-viewBookings-button');
-                    viewBookingsButton.click();
                     hideSessionBookingModal();
                 });
             }

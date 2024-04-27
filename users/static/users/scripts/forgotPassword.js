@@ -5,14 +5,6 @@ const requestResetButton = forgotPasswordForm.querySelector('.submit-btn');
 
 addOnPostAndOnResponseFuncAttr(requestResetButton, 'Processing request...');
 
-forgotPasswordForm.addEventListener('keyup', function(e) {
-    requestResetButton.disabled = false;
-});
-
-forgotPasswordForm.addEventListener('change', function(e) {
-    requestResetButton.disabled = false;
-});
-
 
 forgotPasswordForm.onsubmit = function(e) {
     e.stopImmediatePropagation();

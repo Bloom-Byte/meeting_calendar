@@ -11,10 +11,10 @@ class UserAccountModelAdmin(admin.ModelAdmin):
     form = UserForm
     readonly_fields = ["slug", "last_login"]
     list_display = [
-        "email", "firstname", "lastname", "timezone", 
-        "is_active", "is_staff", "is_admin", "registered", "updated"
+        "email", "name", "timezone", "is_active", 
+        "is_staff", "is_admin", "registered", "updated"
     ]
-    search_fields = ["email", "firstname", "lastname", "timezone"]
+    search_fields = ["email", "name", "timezone"]
 
     def save_model(self, request, obj, form, change):
         # If password is set, then set it using the set_password method

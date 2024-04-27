@@ -7,14 +7,6 @@ const passwordField2 = resetPasswordForm.querySelector('#new-password2');
 
 addOnPostAndOnResponseFuncAttr(resetPasswordButton, 'Attempting password reset...');
 
-resetPasswordForm.addEventListener('keyup', function(e) {
-    resetPasswordButton.disabled = false;
-});
-
-resetPasswordForm.addEventListener('change', function(e) {
-    resetPasswordButton.disabled = false;
-});
-
 
 resetPasswordForm.onsubmit = function(e) {
     e.stopImmediatePropagation();

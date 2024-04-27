@@ -2,6 +2,8 @@
 
 #session-cards{
     width: 100%;
+    max-width: 1200px;
+    margin: auto;
     min-height: 200px;
     padding: 20px;
     display: flex;
@@ -143,6 +145,8 @@
 /* NEWS SECTION */
 #news-section{
     width: 100%;
+    max-width: 1200px;
+    margin: auto;
     min-height: 400px;
     max-height: 650px;
     overflow-y: auto;

@@ -89,7 +89,7 @@ class UserLoginView(generic.TemplateView):
             return JsonResponse(
                 data={
                     "status": "success",
-                    "detail": f"Welcome {user.fullname}!",
+                    "detail": f"Welcome {user.name}!",
                     "redirect_url": next_url or reverse("dashboard:dashboard")
                 },
                 status=200
@@ -264,7 +264,7 @@ class UserAccountPasswordChangeView(LoginRequiredMixin, generic.DetailView):
 
     email_request_user_on_password_change = functools.partial(
         email_request_user_on_response, 
-        subject="Account Password Changed", 
+        subject="Account Password Changed",
         body=get_password_change_mail_body()
     )
 
@@ -340,7 +340,6 @@ class UserAccountUpdateView(LoginRequiredMixin, generic.UpdateView):
     form_class = UserUpdateForm
     slug_field = "slug"
     slug_url_kwarg = "slug"
-    context_object_name = "user"
     http_method_names = ["post"]
 
     def post(self, request: HttpRequest, *args: str, **kwargs: Any) -> JsonResponse:

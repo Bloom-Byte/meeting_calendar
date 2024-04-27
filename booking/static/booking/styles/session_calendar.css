@@ -17,8 +17,11 @@
 
 /* Session Calendar */
 #session-calendar{
-    margin: 10px auto;
+    margin: 20px auto 10px auto;
     width: 100%;
+    height: 100%;
+    max-width: 800px;
+    max-height: 550px;
     min-height: 75vh !important;
 }
 
@@ -33,9 +36,7 @@
 }
 
 
-
 /* Custom buttons */
-
 .fc-header-toolbar{
     align-items: center !important;
     gap: 4px !important;
@@ -68,33 +69,7 @@
     display: none !important;
 }
 
-.fc-viewBookings-button{
-    display: none !important;
-}
-
-.viewing-bookings{
-    opacity: 0.65 !important;
-}
-
-.fc-edit-button{
-    display: none !important;
-    background-color: var(--dark-gray) !important;
-}
-
-.editing{
-    opacity: 0.65 !important;
-}
-
 #session-calendar.in-time-view .fc-backToMonth-button{
-    display: block !important;
-}
-
-#session-calendar.in-time-view .fc-viewBookings-button{
-    display: block !important;
-}
-
-/* Edit button will only be visible when viewing bookings */
-#session-calendar.in-time-view:has(.fc-viewBookings-button.viewing-bookings) .fc-edit-button{
     display: block !important;
 }
 
@@ -127,6 +102,7 @@
     border: none !important;
     text-align: center;
     padding: 15px 10px !important;
+    cursor: pointer !important;
 }
 
 .session-cancelled{
@@ -175,7 +151,7 @@
 
 
 @media screen and (max-width: 360px){
-    .fc-backToMonth-button, .fc-viewBookings-button{
+    .fc-backToMonth-button{
         padding: 5px 6px !important;
     }
 }

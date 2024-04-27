@@ -14,7 +14,7 @@
 <div id="content-header">
     <div id="header-text">
         <h1>
-            {{ user.fullname | title }}
+            {{ user.name | title }}
 
             <svg 
                 xmlns="http://www.w3.org/2000/svg" 
@@ -47,26 +47,17 @@
 
                     <div class="form-fields">
                         <div class="form-field">
-                            <label for="firstname" hidden>First name</label>
-                            <input
-                                id="firstname" 
-                                name="firstname" 
-                                class="form-input"
-                                placeholder="First name"
-                                value="{{ user.firstname }}" 
-                                required
-                            >
-                            <small class="field-message"></small>
-                        </div>
-
-                        <div class="form-field">
-                            <label for="lastname" hidden>Last name</label>
-                            <input
-                                id="lastname" 
-                                name="lastname" 
-                                class="form-input"
-                                placeholder="Last name"
-                                value="{{ user.lastname }}"
+                            <label for="name" hidden>Name</label>
+                            <input 
+                                type="text" 
+                                id="name" 
+                                name="name" 
+                                class="form-input" 
+                                placeholder="Name" 
+                                value="{{ user.name }}"
+                                maxlength="100" 
+                                autofocus
+                                autocomplete="given-name"
                                 required
                             >
                             <small class="field-message"></small>

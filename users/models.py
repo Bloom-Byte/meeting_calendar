@@ -10,7 +10,7 @@ from timezone_field import TimeZoneField
 from django.core.mail import EmailMessage, get_connection as get_smtp_connection
 
 from .managers import UserAccountManager
-from .permissions import update_admin_only_perms_on_user
+# from .permissions import update_admin_only_perms_on_user
 
 
 @model
@@ -18,8 +18,7 @@ from .permissions import update_admin_only_perms_on_user
 class UserAccount(PermissionsMixin, AbstractBaseUser):
     """Custom user model"""
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    firstname = models.CharField(max_length=50)
-    lastname = models.CharField(max_length=50)
+    name = models.CharField(max_length=150)
     email = models.EmailField(_("email address"), unique=True)
     slug = models.SlugField(max_length=255, unique=True)
     timezone = TimeZoneField(_("timezone"), default="UTC", help_text=_("Choose your timezone."))
@@ -32,13 +31,13 @@ class UserAccount(PermissionsMixin, AbstractBaseUser):
 
     USERNAME_FIELD = 'email'
     EMAIL_FIELD = 'email'
-    REQUIRED_FIELDS = ("firstname", "lastname")
+    REQUIRED_FIELDS = ("name",)
 
     objects = UserAccountManager()
 
     class Meta:
-        verbose_name = _("user account")
-        verbose_name_plural = _("user accounts")
+        verbose_name = _("User Account")
+        verbose_name_plural = _("User Accounts")
     
     class UTZMeta:
         timezone_field = "timezone"
@@ -48,15 +47,6 @@ class UserAccount(PermissionsMixin, AbstractBaseUser):
 
     def __str__(self) -> str:
         return self.email
-    
-    @property
-    def fullname(self):
-        return f"{self.firstname} {self.lastname}"
-    
-    @property
-    def initials(self):
-        return f"{self.firstname[0]}{self.lastname[0]}"
-    
 
     def save(self, *args: Any, **kwargs: Any) -> None:
         try:
@@ -64,9 +54,9 @@ class UserAccount(PermissionsMixin, AbstractBaseUser):
         except UserAccount.DoesNotExist:
             old_instance = None
         
-        name_changed = old_instance and old_instance.fullname != self.fullname
+        name_changed = old_instance and old_instance.name != self.name
         if not self.slug or name_changed:
-            slug = slugify(self.fullname) + "-" + str(uuid.uuid4())[:8]
+            slug = slugify(self.name) + "-" + str(uuid.uuid4())[:8]
             self.slug = slug
 
         return super().save(*args, **kwargs)

@@ -8,7 +8,9 @@ const accountDeleteButton = document.getElementById("account-delete");
 var tzSS = $(timezoneField).selectize();
 var timezoneSelectize = tzSS[0].selectize;
 
+
 addOnPostAndOnResponseFuncAttr(accountUpdateButton, 'Saving changes...');
+
 
 timezoneSelectize.on("change", () => {
     // Dispatch on change event in parent form

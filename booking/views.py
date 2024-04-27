@@ -10,7 +10,10 @@ from links.models import Link
 from .models import Session
 from .forms import SessionForm
 from helpers.response import response_message
-from .utils import get_unavailable_times_for_date, get_periods_booked_by_user_on_date
+from .utils import (
+    get_unavailable_times_for_date, get_bookings_by_user_on_date,
+    remove_booked_time_periods_from_unavailable_times
+)
 
 
 
@@ -106,7 +109,8 @@ class SessionCalendarView(LoginRequiredMixin, generic.TemplateView):
             )
         try:
             unavailable_times = get_unavailable_times_for_date(date, tz=request.user.utz)
-            booked_times = get_periods_booked_by_user_on_date(date, user=request.user)
+            bookings = get_bookings_by_user_on_date(date, user=request.user)
+            remove_booked_time_periods_from_unavailable_times(bookings, unavailable_times)
         except Exception:
             return JsonResponse(
                 data={
@@ -121,7 +125,7 @@ class SessionCalendarView(LoginRequiredMixin, generic.TemplateView):
                 "detail": "Unavailable times for the given date fetched successfully.",
                 "data": {
                     "unavailable_times": unavailable_times,
-                    "booked_times": booked_times
+                    "bookings": bookings
                 }
             },
             status=200

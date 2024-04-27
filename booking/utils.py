@@ -8,6 +8,7 @@ from .managers import SessionQuerySet
 from users.models import UserAccount
 
 
+
 def session_to_simple_dict(session: Session, tz: Optional[timezone.tzinfo] = None) -> Dict[str, Any]:
     """Parse the session object to a simple dictionary with the necessary fields"""
     start_in_tz = session.start.astimezone(tz).strftime("%H:%M")
@@ -56,7 +57,7 @@ def get_sessions_on_date_booked_by_user(date: str, user: UserAccount):
     return Session.objects.filter(start__date=date, booked_by=user)
 
 
-def get_periods_booked_by_user_on_date(date: str, user: UserAccount) -> Dict[str, Dict[str, Any]]:
+def get_bookings_by_user_on_date(date: str, user: UserAccount) -> Dict[str, Dict[str, Any]]:
     todays_sessions: SessionQuerySet[Session] = get_sessions_on_date_booked_by_user(date, user)
     tz = user.utz
     pending_sessions = todays_sessions.pending()
@@ -85,6 +86,19 @@ def get_periods_booked_by_user_on_date(date: str, user: UserAccount) -> Dict[str
         "cancelled": cancelled,
         "held": held
     }
+
+
+def remove_booked_time_periods_from_unavailable_times(
+        bookings: Dict[str, Dict[str, Any]], 
+        unavailable_time_periods: List[List[str]]
+    ):
+    """Removes all time periods that are already part of the bookings data from the unavailable times list"""
+    for val in bookings.values():
+        for data in val.values():
+            time_period = data["time_period"]
+            if data["time_period"] in unavailable_time_periods:
+                unavailable_time_periods.remove(time_period)
+    return None
 
 
 def get_unavailable_periods_within_time_period(start: timezone.datetime, end: timezone.datetime):

@@ -7,14 +7,6 @@ const passwordField2 = passwordChangeForm.querySelector('#new-password2');
 
 addOnPostAndOnResponseFuncAttr(changePasswordButton, 'Updating password...');
 
-passwordChangeForm.addEventListener('keyup', function(e) {
-    changePasswordButton.disabled = false;
-});
-
-passwordChangeForm.addEventListener('change', function(e) {
-    changePasswordButton.disabled = false;
-});
-
 
 passwordChangeForm.onsubmit = function(e) {
     e.stopImmediatePropagation();

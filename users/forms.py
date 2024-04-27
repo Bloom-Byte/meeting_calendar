@@ -29,8 +29,7 @@ class UserCreationForm(UserCreationForm):
     class Meta(UserCreationForm.Meta):
         model = UserAccount
         fields = (
-            "firstname", "lastname", "email", 
-            "timezone", "password1", "password2",
+            "name", "email", "timezone", "password1", "password2"
         )
 
 
@@ -40,6 +39,5 @@ class UserUpdateForm(UserChangeForm):
     class Meta(UserChangeForm.Meta):
         model = UserAccount
         fields = (
-            "firstname", "lastname", "email", 
-            "timezone",
+            "name", "email", "timezone"
         )

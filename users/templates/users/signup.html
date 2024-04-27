@@ -4,7 +4,7 @@
 
 {% block mainstylesheets %}
 <link rel="stylesheet" href="{% static 'core//styles//form_card.css' %}">
-<link rel="stylesheet" href="{% static 'users//styles//signup.css' %}">
+<link rel="stylesheet" href="{% static 'users//styles//auth_page.css' %}">
 {% endblock mainstylesheets %}
 
 
@@ -34,37 +34,20 @@
                         {% csrf_token %}
 
                         <div class="form-fields">
-                            <div id="users-names">
-                                <div class="form-field">
-                                    <label for="firstname" hidden>First Name</label>
-                                    <input 
-                                        type="text" 
-                                        id="firstname" 
-                                        name="firstname" 
-                                        class="form-input" 
-                                        placeholder="First name" 
-                                        maxlength="50" 
-                                        autofocus
-                                        autocomplete="given-name"
-                                        required
-                                    >
-                                    <small class="field-message"></small>
-                                </div>
-
-                                <div class="form-field">
-                                    <label for="lastname" hidden>Last Name</label>
-                                    <input 
-                                        type="text" 
-                                        id="lastname" 
-                                        name="lastname" 
-                                        class="form-input"
-                                        placeholder="Last name" 
-                                        maxlength="50" 
-                                        autocomplete="family-name"
-                                        required
-                                    >
-                                    <small class="field-message"></small>
-                                </div>
+                            <div class="form-field">
+                                <label for="name" hidden>Name</label>
+                                <input 
+                                    type="text" 
+                                    id="name" 
+                                    name="name" 
+                                    class="form-input" 
+                                    placeholder="Name" 
+                                    maxlength="100" 
+                                    autofocus
+                                    autocomplete="given-name"
+                                    required
+                                >
+                                <small class="field-message"></small>
                             </div>
                             
                             <div class="form-field">
