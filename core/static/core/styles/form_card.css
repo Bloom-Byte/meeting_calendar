@@ -92,10 +92,10 @@ form > .form-fields{
     flex-direction: column;
     align-items: flex-start;
     gap: 6px 0;
-}
+} 
 
 .form-field .field-message{
-    color: var(--jasper);
+    color: var(--text-dark);
     font-size: 12px;
     font-weight: 500;
     line-height: 1.6;
@@ -155,3 +155,20 @@ form > .submit-btn-wrapper{
     width: 100%;
 }
 
+.form-card .form-footer{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 6px 0;
+}
+
+.form-footer > .footer-item{
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1.6;
+    color: var(--text-dark);
+}
+
+.form-footer > .footer-item > a{
+    color: var(--text-dark);
+}

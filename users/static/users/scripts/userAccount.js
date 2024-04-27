@@ -3,25 +3,23 @@ const accountUpdateFormCard = accountUpdateForm.parentElement;
 const accountUpdateButton = accountUpdateForm.querySelector('.submit-btn');
 const emailField = accountUpdateForm.querySelector('#email');
 const autoSelectTimezoneButton = accountUpdateForm.querySelector('#auto-timezone');
+const timezoneField = accountUpdateForm.querySelector('select#timezone');
 const accountDeleteButton = document.getElementById("account-delete");
+var tzSS = $(timezoneField).selectize();
+var timezoneSelectize = tzSS[0].selectize;
 
 addOnPostAndOnResponseFuncAttr(accountUpdateButton, 'Saving changes...');
 
-accountUpdateForm.addEventListener('keyup', function(e) {
-    accountUpdateButton.disabled = false;
+timezoneSelectize.on("change", () => {
+    // Dispatch on change event in parent form
+    accountUpdateForm.dispatchEvent(new Event("change"));
+    // Dispatch on keyup event in parent form
+    accountUpdateForm.dispatchEvent(new Event("keyup"));
 });
-
-accountUpdateForm.addEventListener('change', function(e) {
-    accountUpdateButton.disabled = false;
-});
-
 
 autoSelectTimezoneButton.onclick = function() {
-    const timezoneField = accountUpdateForm.querySelector('select#timezone');
-    const timezone = getClientTimezone();
-    var ss = $(timezoneField).selectize();
-    var selectize = ss[0].selectize;
-    selectize.setValue(selectize.search(timezone).items[0].id);
+    const timezone = getClientTimezone(); 
+    timezoneSelectize.setValue(timezoneSelectize.search(timezone).items[0].id);
 };
 
 

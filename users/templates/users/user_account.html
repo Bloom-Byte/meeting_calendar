@@ -118,7 +118,7 @@
                     </div>
         
                     <div class="submit-btn-wrapper">
-                        <button class="btn-primary submit-btn" type="submit" disabled>
+                        <button class="btn-primary submit-btn" type="submit">
                             Save changes
                         </button>
                     </div>
@@ -181,7 +181,7 @@
                     </div>
         
                     <div class="submit-btn-wrapper">
-                        <button class="btn-primary submit-btn" type="submit" disabled>
+                        <button class="btn-primary submit-btn" type="submit">
                             Update password
                         </button>
                     </div>
@@ -203,6 +203,7 @@
 {% endblock content %}
 
 {% block scripts %}
+<script src="{% static 'core//scripts//formCard.js' %}"></script>
 <script src="{% static 'users//scripts//userAccount.js' %}"></script>
 <script src="{% static 'users//scripts//passwordChange.js' %}"></script>
 {% endblock scripts %}

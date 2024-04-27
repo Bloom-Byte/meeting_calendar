@@ -2,6 +2,7 @@
 {% load static %}
 
 {% block mainstylesheets %}
+<link rel="stylesheet" href="{% static 'core//styles//form_card.css' %}">
 <link rel="stylesheet" href="{% static 'users//styles//signin.css' %}">
 {% endblock mainstylesheets %}
 
@@ -21,8 +22,8 @@
             </section>
 
             <section id="form-wrapper">
-                <div id="form-card">
-                    <div id="form-header">
+                <div class="form-card">
+                    <div class="form-header">
                         <h2>Log In</h2>
                         <p>
                             Sign into your account.
@@ -32,8 +33,8 @@
                     <!-- Sign In Form Section -->
                     <form action="{% url 'users:signin' %}" id="signin-form">
                         {% csrf_token %}
-                        <div id="form-fields">
-                            <div class="form-field">
+                        <div class="form-fields">
+                            <div class="form-field"> 
                                 <label for="email" hidden>Email Address</label>
                                 <input 
                                     type="email" 
@@ -62,19 +63,19 @@
                             </div>
                         </div>
 
-                        <div id="submit-btn-wrapper">
-                            <button class="btn-primary" id="submit-btn" type="submit">
+                        <div class="submit-btn-wrapper">
+                            <button class="btn-primary submit-btn" type="submit">
                                 Sign In
                             </button>
                         </div>
 
-                        <div id="form-footer">
-                            <small>
+                        <div class="form-footer">
+                            <small class="footer-item">
                                 Don't have an account?
                                 <a href="{% url 'users:signup' %}">Sign up</a>
                             </small>
     
-                            <small>
+                            <small class="footer-item">
                                 Can't remember password?
                                 <a href="{% url 'users:forgot_password' %}">Reset password</a>
                             </small>
@@ -90,6 +91,7 @@
 
 
 {% block mainscripts %}
+<script src="{% static 'core//scripts//formCard.js' %}"></script>
 <script src="{% static 'users//scripts//signin.js' %}"></script>
 {% endblock mainscripts %}
 

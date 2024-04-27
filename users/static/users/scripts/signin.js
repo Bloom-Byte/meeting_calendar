@@ -1,6 +1,6 @@
 
 const signInForm = document.querySelector('#signin-form');
-const signInButton = document.querySelector('#signin-form #submit-btn');
+const signInButton = document.querySelector('#signin-form .submit-btn');
 const emailField = document.querySelector('#signin-form #email');
 const passwordField = document.querySelector('#signin-form #password');
 

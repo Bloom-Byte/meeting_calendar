@@ -3,6 +3,7 @@
 
 
 {% block mainstylesheets %}
+<link rel="stylesheet" href="{% static 'core//styles//form_card.css' %}">
 <link rel="stylesheet" href="{% static 'users//styles//signup.css' %}">
 {% endblock mainstylesheets %}
 
@@ -21,8 +22,8 @@
             </section>
 
             <section id="form-wrapper">
-                <div id="form-card">
-                    <div id="form-header">
+                <div class="form-card">
+                    <div class="form-header">
                         <h2>Sign Up</h2>
                         <p>
                             Let's set up your account.
@@ -31,7 +32,8 @@
                     <!-- Account Creation Form Section -->
                     <form action="{% url 'users:signup' %}" id="signup-form">
                         {% csrf_token %}
-                        <div id="form-fields">
+
+                        <div class="form-fields">
                             <div id="users-names">
                                 <div class="form-field">
                                     <label for="firstname" hidden>First Name</label>
@@ -108,16 +110,18 @@
                             </div>
                         </div>
 
-                        <div id="submit-btn-wrapper">
-                            <button class="btn-primary" id="submit-btn" type="submit">
+                        <div class="submit-btn-wrapper">
+                            <button class="btn-primary submit-btn" type="submit">
                                 Sign Up
                             </button>
                         </div>
 
-                        <small>
-                            Already have an account?
-                            <a href="{% url 'users:signin' %}">Sign in</a>
-                        </small>
+                        <div class="form-footer">
+                            <small class="footer-item">
+                                Already have an account?
+                                <a href="{% url 'users:signin' %}">Sign in</a>
+                            </small>
+                        </div>
                     </form>
                 </div>
             </section>
@@ -129,6 +133,7 @@
 
 
 {% block mainscripts %}
+<script src="{% static 'core//scripts//formCard.js' %}"></script>
 <script src="{% static 'users//scripts//signup.js' %}"></script>
 {% endblock mainscripts %}
 

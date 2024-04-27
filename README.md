@@ -18,6 +18,8 @@
 
 - Run the server using `python manage.py runserver`
 
+> This project uses sqlite as the database.
+
 ## How things work
 
 The project is an app where you can book a session and view the meetings you have booked. The admin can view all the booked sessions and add links for you to join the meeting when the time comes.
