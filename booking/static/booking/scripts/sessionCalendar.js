@@ -181,9 +181,26 @@ function removeNonBusinessHoursTimeSlot(businessHours){
     for (const slot of slots){
         const slotTime = slot.getAttribute('data-time');
         if (!isInTimeRange(businessHours.startTime, businessHours.endTime, slotTime)){
+            slot.parentElement.style.display = "none";
             slot.parentElement.remove();
         };
     };
+};
+
+
+function executeOnPressAndHold(element, execAfterHoldTime, holdTime=2000){
+    var mouseTimer;
+    function onMouseUp() { 
+        if (mouseTimer) clearTimeout(mouseTimer);  //cancel timer when mouse button is released
+    };
+
+    function onMouseDown() { 
+        onMouseUp();
+        mouseTimer = setTimeout((() => execAfterHoldTime(element)), holdTime); //set timeout to fire in 2 seconds when the user presses mouse button down
+    };
+    
+    element.addEventListener("mousedown", onMouseDown);
+    document.body.addEventListener("mouseup", onMouseUp);  //listen for mouse up event on body, not just the element you originally clicked on
 };
 
 
@@ -289,7 +306,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // User cannot select slots occupied by event(sessions)
         dragScroll: true,
         // By default, user cannot edit events
-        editable: false
+        editable: false,
     });
     sessionCalendar.render();
 
@@ -431,22 +448,6 @@ document.addEventListener('DOMContentLoaded', function() {
     };
 
 
-    function onEditClick(e){
-        const editButton = e.target;
-        const editable = sessionCalendar.getOption("editable");
-
-        if (editable){
-            // If user is editing a session, exit edit mode
-            sessionCalendar.setOption("editable", false);
-            editButton.classList.remove("editing");
-        }else{
-            // If user is not editing a session, enter edit mode
-            sessionCalendar.setOption("editable", true);
-            editButton.classList.add("editing");
-        };
-    };
-
-
     // HELPER FUNCTIONS
     /**
      * Navigates to bookings for the date provided in the URL
@@ -456,15 +457,6 @@ document.addEventListener('DOMContentLoaded', function() {
         dateStr = formatDate(new Date(dateStr), "-");
         // Simulate a date click event by calling the onDateClick function
         onDateClick({dateStr: dateStr});
-            
-        // Wait for the unavailable time slots to be displayed
-        waitForElement('.unavailable-time-slot').then(() => {
-            // Get the viewBookings button and click it to view bookings
-            const viewBookingsButton = sessionCalendarEl.querySelector('.fc-viewBookings-button');
-            if (viewBookingsButton){
-                viewBookingsButton.click();
-            }
-        });
     };
 
 
@@ -514,7 +506,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (event.classNames.includes('unavailable-time-slot')){
                 event.remove();
             }
-        }
+        };
     };
 
 
@@ -537,7 +529,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     `session-${sessionCategory}`, 
                     // Unique identifier (class) for each event
                     `event-${id}`,
-                    "booked-session"
+                    "booking"
                 ];
                 if (sessionLink){
                     classNames.push("session-has-url");
@@ -560,6 +552,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (sessionLink){
                     event.setProp('url', sessionLink);
                 }
+
+                waitForElement(`.event-${id}`).then(() => {
+                    const eventEl = document.querySelector(`.event-${id}`);
+                    if (eventEl){
+                        executeOnPressAndHold(eventEl, enableEdit, 2000)
+                    };
+                });
             }
         }
     };
@@ -571,9 +570,36 @@ document.addEventListener('DOMContentLoaded', function() {
     function hideBookings(){
         const events = sessionCalendar.getEvents();
         for (const event of events){
-            if (event.classNames.includes('booked-session')){
+            if (event.classNames.includes('booking')){
                 event.remove();
             }
         };
     };
+
+
+    function enableEdit(element){
+        const editable = sessionCalendar.getOption("editable");
+        console.log("Editing session");
+        if (!editable){
+            // If user is not editing a session, enter edit mode
+            sessionCalendar.setOption("editable", true);
+
+            // // Disable edit on click outside the element
+            document.body.addEventListener("click", (e) => {
+                if (!element.contains(e.target)){
+                    disableEdit();
+                };
+            });
+        };
+    };
+
+
+    function disableEdit(){
+        const editable = sessionCalendar.getOption("editable");
+        if (editable){
+            // If user is editing a session, exit edit mode
+            sessionCalendar.setOption("editable", false);
+        };
+    };
+
 });

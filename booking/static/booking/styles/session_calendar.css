@@ -38,7 +38,9 @@
 
 /* Custom buttons */
 .fc-header-toolbar{
+    display: flex !important;
     align-items: center !important;
+    justify-content: space-between !important;
     gap: 4px !important;
 }
 
@@ -59,10 +61,6 @@
 
 .fc-button-group > .fc-button:hover{
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2) !important;
-}
-
-.fc-header-toolbar #fc-dom-1.fc-toolbar-title{
-    text-align: center !important;
 }
 
 .fc-backToMonth-button{
@@ -95,7 +93,7 @@
     padding: 20px 10px !important;
 }
 
-.booked-session{
+.booking{
     background-color: var(--theme-color-trans) !important;
     color: var(--white) !important;
     border-radius: 8px !important;
