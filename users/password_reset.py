@@ -99,7 +99,7 @@ def construct_password_reset_mail(
     """
     reset_link = f"{password_reset_url}?{token_name}={token}"
     context = {
-        "webapp_name": settings.SITE_NAME,
+        "site_name": settings.SITE_NAME,
         "email": user.email,
         "reset_link": reset_link,
         "validity_period": token_validity_period,

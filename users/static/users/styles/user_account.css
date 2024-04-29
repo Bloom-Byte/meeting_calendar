@@ -32,13 +32,22 @@
 #more-account-options{
     display: flex;
     flex-direction: column;
+    gap: 16px 0;
     justify-content: flex-start;
     align-items: flex-start;
     padding-block: 5px;
 }
 
+#more-account-options > a{
+    font-size: 12px;
+    font-weight: 500;
+}
+
+#more-account-options > #resend-verification-email{
+    font-weight: 600;
+}
+
 #more-account-options > #account-delete{
     font-size: 11px;
     color: red;
-    font-weight: 500;
 }

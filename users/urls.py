@@ -10,6 +10,8 @@ urlpatterns = [
     path("signup/", views.user_create_view, name="signup"),
     path("signin/", views.user_login_view, name="signin"),
     path("signout/", views.user_logout_view, name="signout"),
+    path("email-verification/<str:token>/", views.email_verification_view, name="email_verification"),
+    path("resend-verification-mail/", views.resend_verification_email_view, name="resend_verification_mail"),
     path("forgot-password/", views.forgot_password_view, name="forgot_password"),
     path("reset-password/", views.user_password_reset_view, name="reset_password"),
 

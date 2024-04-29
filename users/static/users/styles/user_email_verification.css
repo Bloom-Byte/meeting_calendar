@@ -1,0 +1,54 @@
+
+body{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(180deg, #FFFFFF 0%, var(--theme-color-light) 100%);
+    background-position: center;
+    background-size: cover;
+}
+
+main{
+    width: 100%;
+    max-width: 960px;
+    display: flex;
+    gap: 40px 0;
+    padding: 80px 40px;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(3px);
+}
+
+main > #message{
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 24px 0;
+}
+
+#message > h2{
+    font-family: "Raleway";
+    font-size: clamp(36px, 2vw, 60px);
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+#message > h2.success{
+    color: var(--theme-color-bright);
+}
+
+#message > h2.error{
+    color: var(--bg-dark);
+}
+
+#message > p{
+    font-size: clamp(16px, 2vw, 20px);
+    font-weight: 600;
+    line-height: 1.8;
+    color: var(--light-gray);
+}
+
+#message > p > a{
+    color: var(--text-dark);
+    font-weight: 700;
+    text-decoration: underline;
+}

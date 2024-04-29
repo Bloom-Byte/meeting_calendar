@@ -7,6 +7,27 @@ from django.conf import settings
 from .models import UserAccount
 
 
+def to_JsonResponse(func: Callable[..., HttpResponse]) -> Callable[..., JsonResponse]:
+    """Ensures that the decorated view returns a JsonResponse."""
+    @functools.wraps(func)
+    def wrapper(request: HttpRequest, *args, **kwargs) -> JsonResponse:
+        response = func(request, *args, **kwargs)
+
+        if isinstance(response, JsonResponse):
+            return response
+        
+        return JsonResponse(
+            data={
+                "status": "error" if response.status_code >= 400 else "success",
+                "detail": response.content.decode(),
+            }, 
+            status=response.status_code
+        )
+    
+    return wrapper
+
+
+
 def redirect_authenticated(redirect_view: Callable | str):
     """
     Create a decorator that redirects authenticated users to a view.
@@ -27,6 +48,35 @@ def redirect_authenticated(redirect_view: Callable | str):
         return wrapper
     
     return decorator
+
+
+
+def requires_account_verification(
+        view_func: Callable[..., HttpResponse | JsonResponse] = None,
+        error_msg: str = "Email verification required! Please verify your account email and try again."
+    ):
+    """
+    Ensures a user verifies account email before accessing the view.
+
+    :param view_func: The view function to decorate.
+    :param error_msg: The error message to return if the user is not verified.
+    """
+    def decorator(view_func: Callable[..., HttpResponse | JsonResponse]):
+        """
+        Ensures a user verifies account email before accessing decorated view.
+        """
+        @functools.wraps(view_func)
+        def wrapper(view, request: HttpRequest, *args: str, **kwargs: Any):
+            if request.user.is_verified:
+                return view_func(view, request, *args, **kwargs)
+
+            return HttpResponse(content=error_msg, status=403)
+        return wrapper
+    
+    if view_func:
+        return decorator(view_func)
+    return decorator
+
 
 
 def email_request_user_on_response(

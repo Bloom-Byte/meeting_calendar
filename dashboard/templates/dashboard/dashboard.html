@@ -16,7 +16,7 @@ Dashboard
 <div id="content-header">
     <div id="header-text">
         <h1>
-            Welcome back, {{ request.user.firstname | title }}
+            Welcome back, {{ request.user.name | title }}
         </h1>
         {% if todays_sessions %}
             <p>Here are today's pending sessions updated for you!</p>

@@ -14,8 +14,11 @@ import pytz
 
 from .forms import UserCreationForm, UserUpdateForm
 from .models import UserAccount
-from .decorators import redirect_authenticated, email_request_user_on_response
-from .utils import parse_query_params_from_request, get_password_change_mail_body
+from .decorators import (
+    redirect_authenticated, email_request_user_on_response,
+    requires_account_verification, to_JsonResponse
+)
+from .utils import parse_query_params_from_request, get_password_change_mail_body, send_verification_email
 from .password_reset import (
     check_if_password_reset_token_exists, create_password_reset_token,
     delete_password_reset_token, construct_password_reset_mail,
@@ -30,6 +33,11 @@ class UserCreateView(generic.CreateView):
     form_class = UserCreationForm
     template_name = "users/signup.html"
 
+    @redirect_authenticated("dashboard:dashboard")
+    def get(self, request: HttpRequest, *args: str, **kwargs: Any) -> HttpResponse:
+        return super().get(request, *args, **kwargs)
+
+
     def post(self, request: HttpRequest, *args: str, **kwargs: Any) -> JsonResponse:
         """Handles user creation AJAX/Fetch POST request"""
         data: Dict = json.loads(request.body)
@@ -37,11 +45,22 @@ class UserCreateView(generic.CreateView):
 
         if form.is_valid():
             user: UserAccount = form.save(commit=False)
+            try:
+                send_verification_email(user)
+            except Exception:
+                return JsonResponse(
+                    data={
+                        "status": "error",
+                        "detail": "Failed to send verification email! Please try again!"
+                    },
+                    status=500
+                )
+            
             user.save()
             return JsonResponse(
                 data={
                     "status": "success",
-                    "detail": "Account created successfully!",
+                    "detail": "Account created successfully! Check your email for a verification link.",
                     "redirect_url": reverse("users:signin")
                 },
                 status=201
@@ -115,11 +134,66 @@ class UserLogoutView(generic.RedirectView):
 
 
 
+class UserEmailVerificationView(LoginRequiredMixin, generic.TemplateView):
+    """View for verifying a user's account email."""
+    template_name = "users/user_email_verification.html"
+
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+        token = self.kwargs.get("token", None)
+
+        if token != self.request.user.id.hex:
+            context["verification_status"] = "error"
+            context["verification_detail"] = "Invalid verification link!"
+        else:
+            self.request.user.is_verified = True
+            self.request.user.save()
+            context["verification_status"] = "success"
+            context["verification_detail"] = "Your account has been verified successfully!"
+        return context
+    
+
+    def get(self, request: HttpRequest, *args: str, **kwargs: Any) -> HttpResponse:
+        if request.user.is_verified:
+            return redirect("dashboard:dashboard")
+        return super().get(request, *args, **kwargs)
+
+
+
+class ResendVerificationEmailView(LoginRequiredMixin, generic.View):
+    """View for resending a user's account verification email."""
+    http_method_names = ["post"]
+
+    def post(self, request: HttpRequest, *args: str, **kwargs: Any) -> JsonResponse:
+        user = request.user
+        try:
+            send_verification_email(user)
+        except Exception:
+            return JsonResponse(
+                data={
+                    "status": "error",
+                    "detail": "Failed to send verification email! Please try again!"
+                },
+                status=500
+            )
+        
+        return JsonResponse(
+            data={
+                "status": "success",
+                "detail": "Verification email sent successfully! Check your email for a verification link."
+            },
+            status=200
+        )
+
+
+
 class ForgotPasswordView(generic.TemplateView):
     """View for handling forgot password requests."""
     template_name = "users/forgot_password.html"
     http_method_names = ["get", "post"]
 
+    @to_JsonResponse
+    @requires_account_verification
     def post(self, request: HttpRequest, *args: str, **kwargs: Any) -> JsonResponse:
         data: Dict = json.loads(request.body)
         email: str = data.get("email", None)
@@ -268,7 +342,9 @@ class UserAccountPasswordChangeView(LoginRequiredMixin, generic.DetailView):
         body=get_password_change_mail_body()
     )
 
-    @email_request_user_on_password_change
+    @email_request_user_on_password_change(status_code=200)
+    @to_JsonResponse
+    @requires_account_verification
     def post(self, request: HttpRequest, *args: str, **kwargs: Any) -> JsonResponse:
         """Handles user password change AJAX/Fetch POST request"""
         data: Dict = json.loads(request.body)
@@ -342,6 +418,8 @@ class UserAccountUpdateView(LoginRequiredMixin, generic.UpdateView):
     slug_url_kwarg = "slug"
     http_method_names = ["post"]
 
+    @to_JsonResponse
+    @requires_account_verification
     def post(self, request: HttpRequest, *args: str, **kwargs: Any) -> JsonResponse:
         """Handles user detail update AJAX/Fetch POST request"""
         data: Dict = json.loads(request.body)
@@ -350,11 +428,27 @@ class UserAccountUpdateView(LoginRequiredMixin, generic.UpdateView):
 
         if form.is_valid():
             user: UserAccount = form.save(commit=False)
+            extra_msg = ""
+            if "email" in form.changed_data:
+                user.is_verified = False
+                try:
+                    send_verification_email(user)
+                except Exception:
+                    return JsonResponse(
+                        data={
+                            "status": "error",
+                            "detail": "Failed to send verification email on email update! Please try again!"
+                        },
+                        status=400
+                    )
+                else:
+                    extra_msg = "You'll need to verify your new email. Please check your email inbox for a verification link."
+            
             user.save()
             return JsonResponse(
                 data={
                     "status": "success",
-                    "detail": "Account update successfully!",
+                    "detail": f"Account update successfully! {extra_msg}",
                     "redirect_url": reverse("users:account_detail", kwargs={"slug": user.slug}),
                 },
                 status=200
@@ -368,6 +462,7 @@ class UserAccountUpdateView(LoginRequiredMixin, generic.UpdateView):
             },
             status=400
         )
+
 
 
 class UserAccountDeleteView(LoginRequiredMixin, generic.DetailView):
@@ -389,6 +484,8 @@ class UserAccountDeleteView(LoginRequiredMixin, generic.DetailView):
 user_create_view = UserCreateView.as_view()
 user_login_view = UserLoginView.as_view()
 user_logout_view = UserLogoutView.as_view()
+email_verification_view = UserEmailVerificationView.as_view()
+resend_verification_email_view = ResendVerificationEmailView.as_view()
 forgot_password_view = ForgotPasswordView.as_view()
 user_password_reset_view = UserAccountPasswordResetView.as_view()
 

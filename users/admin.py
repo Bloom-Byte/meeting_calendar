@@ -9,7 +9,7 @@ from .forms import UserForm
 class UserAccountModelAdmin(admin.ModelAdmin):
     """Custom UserAccount model admin."""
     form = UserForm
-    readonly_fields = ["slug", "last_login"]
+    readonly_fields = ["slug", "last_login", "is_verified"]
     list_display = [
         "email", "name", "timezone", "is_active", 
         "is_staff", "is_admin", "registered", "updated"

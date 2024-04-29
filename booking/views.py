@@ -14,6 +14,7 @@ from .utils import (
     get_unavailable_times_for_date, get_bookings_by_user_on_date,
     remove_booked_time_periods_from_unavailable_times
 )
+from users.decorators import requires_account_verification, to_JsonResponse
 
 
 
@@ -138,6 +139,8 @@ class SessionBookingView(generic.View):
     form_class = SessionForm
     http_method_names = ["post"]
 
+    @to_JsonResponse
+    @requires_account_verification
     def post(self, request: HttpRequest, *args: Any, **kwargs: Any) -> JsonResponse:
         data: Dict = json.loads(request.body)
         data["booked_by"] = request.user
@@ -173,6 +176,8 @@ class SessionUpdateView(generic.UpdateView):
     form_class = SessionForm
     http_method_names = ["post"]
 
+    @to_JsonResponse
+    @requires_account_verification
     def post(self, request: HttpRequest, *args: Any, **kwargs: Any) -> JsonResponse:
         data: Dict = json.loads(request.body)
         session_id = data.pop('session-id', None)

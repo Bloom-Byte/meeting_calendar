@@ -187,6 +187,15 @@
         </div>
 
         <div id="more-account-options">
+            {% if not user.is_verified %}
+                <a 
+                    id="resend-verification-email"
+                    href="{% url 'users:resend_verification_mail' %}" 
+                    title="Receive a new email verification mail"
+                >
+                    Resend verification email
+                </a>
+            {% endif %}
             <a 
                 id="account-delete" 
                 href="{% url 'users:account_delete' user.slug %}" 

@@ -5,6 +5,7 @@ const emailField = accountUpdateForm.querySelector('#email');
 const autoSelectTimezoneButton = accountUpdateForm.querySelector('#auto-timezone');
 const timezoneField = accountUpdateForm.querySelector('select#timezone');
 const accountDeleteButton = document.getElementById("account-delete");
+const resendVerificationEmailButton = document.getElementById("resend-verification-email");
 var tzSS = $(timezoneField).selectize();
 var timezoneSelectize = tzSS[0].selectize;
 
@@ -94,3 +95,31 @@ accountDeleteButton.addEventListener("click", (e) => {
     if (!response) return;
     window.location.href = e.target.href;
 })
+
+
+resendVerificationEmailButton.addEventListener("click", (e) => {
+    e.preventDefault();
+    resendVerificationEmailButton.disabled = true;
+
+    const options = {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken'),
+        },
+        mode: 'same-origin',
+    }
+    fetch(e.target.href, options).then((response) => {
+        resendVerificationEmailButton.disabled = false;
+        
+        if (!response.ok) {
+            response.json().then((data) => {
+                pushNotification("error", data.detail ?? 'An error occurred!');
+            });
+        }else{
+            response.json().then((data) => {
+                pushNotification("success", data.detail ?? 'Verification email sent successfully!');
+            });
+        }
+    });
+});

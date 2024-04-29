@@ -1,0 +1,29 @@
+{% extends "core/main.html" %}
+{% load static %}
+
+{% block page_title %}Account Verification{% endblock page_title %}
+
+{% block mainstylesheets %}
+<link rel="stylesheet" href="{% static 'users//styles//user_email_verification.css' %}">
+{% endblock mainstylesheets %}
+
+{% block html_body %}
+<body style="background-image: url({% static 'users/images/origami.jpg' %});">
+    <main class="container">
+        <div id="message">
+            {% if verification_status == "success" %}
+                <h2 class="success">{{ verification_detail }}</h2>
+                <p>Your email has been successfully verified!</p>
+                <p>Click <a href="{% url 'dashboard:dashboard' %}">here</a> to visit your dashboard.</p>
+            {% elif verification_status == "error" %}
+                <h2 class="error">{{ verification_detail }}</h2>
+                <p>
+                    Sorry, we were unable to verify your account. 
+                    Please visit your account settings page and resend the verification email.
+                </p>
+            {% endif %}
+        </div>
+    </main>
+</body>
+{% endblock html_body %}
+
