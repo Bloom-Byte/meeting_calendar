@@ -198,16 +198,25 @@ function removeNonBusinessHoursTimeSlot(businessHours){
 function executeOnPressAndHold(element, execAfterHoldTime, holdTime=2000){
     var mouseTimer;
     function onMouseUp() { 
-        if (mouseTimer) clearTimeout(mouseTimer);  //cancel timer when mouse button is released
+        //cancel timer when mouse button is released
+        if (mouseTimer) clearTimeout(mouseTimer);
     };
 
     function onMouseDown() { 
         onMouseUp();
-        mouseTimer = setTimeout(execAfterHoldTime, holdTime); //set timeout to fire in 2 seconds (by default) when the user presses mouse button down
+        //set timeout to fire the hold time when the user presses mouse button down
+        mouseTimer = setTimeout(execAfterHoldTime, holdTime);
     };
-    
-    element.addEventListener("mousedown", onMouseDown);
-    document.body.addEventListener("mouseup", onMouseUp);  //listen for mouse up event on body, not just the element you originally clicked on
+
+    const isTouchDevice = 'ontouchstart' in document.documentElement;
+    if (isTouchDevice){
+        element.addEventListener("touchstart", onMouseDown);
+        element.addEventListener("touchend", onMouseUp);
+    }else{
+        //listen for mouse up event on body, not just the element you originally clicked on
+        element.addEventListener("mousedown", onMouseDown);
+        document.body.addEventListener("mouseup", onMouseUp);
+    }
 };
 
 
