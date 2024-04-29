@@ -45,7 +45,7 @@ Dashboard
 
                     <div class="card-head-text">
                         <h3>{{ session.title | title }}</h3>
-                        <a href="{% url 'booking:calendar' %}?date={{ session.date }}&event={{ session.id }}&edit=true">Reschedule</a>
+                        <a href="{% url 'booking:calendar' %}?date={{ session.date }}&event={{ session.id }}">Reschedule</a>
                     </div>
                 </div>
 
@@ -53,11 +53,11 @@ Dashboard
                     <h2>{{ session.start | date:"jS N" }} - {{ session.start | time }}</h2>
                     {% if not session.missed %}
                         {% if session.link %}
-                            <a href="{{ session.link.path }}">
+                            <a href="{{ session.link.path }}" title="Join the session via this link">
                                 Join the meeting
                             </a>
                         {% else %}
-                            <p class="no-link">Session link unavailable</p>
+                            <p class="no-link" title="No link has been added to this session">Session link unavailable</p>
                         {% endif %}
                     {% else %}
                         <p class="missed">You missed this session</p>
@@ -68,7 +68,7 @@ Dashboard
             <div id="no-sessions">
                 <p>No pending sessions today</p>
                 <a href="{% url 'booking:calendar' %}">
-                    <button class="btn-secondary">Book a session</button>
+                    <button class="btn-secondary" title="Book a new session">Book a session</button>
                 </a>
             </div>
         {% endfor %}

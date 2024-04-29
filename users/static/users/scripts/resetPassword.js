@@ -56,11 +56,14 @@ resetPasswordForm.onsubmit = function(e) {
 
             response.json().then((data) => {
                 pushNotification("success", data.detail ?? 'Password reset successful!');
-            });
 
-            const redirectURL  = data.redirect_url ?? null
-            if(!redirectURL) return;
-            window.location.href = redirectURL;
+                const redirectURL  = data.redirect_url ?? null
+                if(!redirectURL) return;
+
+                setTimeout(() => {
+                    window.location.href = redirectURL;
+                }, 2000);
+            });
         }
     });
 };

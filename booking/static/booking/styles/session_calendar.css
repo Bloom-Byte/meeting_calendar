@@ -67,7 +67,15 @@
     display: none !important;
 }
 
+.fc-exitEditMode-button{
+    display: none !important;
+}
+
 #session-calendar.in-time-view .fc-backToMonth-button{
+    display: block !important;
+}
+
+#session-calendar.edit-mode .fc-exitEditMode-button{
     display: block !important;
 }
 
@@ -101,6 +109,10 @@
     text-align: center;
     padding: 15px 10px !important;
     cursor: pointer !important;
+}
+
+#session-calendar.edit-mode .booking{
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15) !important;
 }
 
 .session-cancelled{

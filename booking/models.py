@@ -48,7 +48,7 @@ class Session(models.Model):
         attribute_suffix = "user_tz"
 
     def __str__(self) -> str:
-        return f"'{self.title}' with {self.booked_by.fullname} ({self.booked_by.email})"
+        return f"'{self.title}' with {self.booked_by.name} ({self.booked_by.email})"
     
     @property
     def duration(self) -> int:

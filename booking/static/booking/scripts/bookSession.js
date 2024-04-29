@@ -11,7 +11,7 @@ sessionBookingForm.onsubmit = (e) => {
     const data = {};
     for (const [key, value] of formData.entries()) {
         data[key] = value;
-    }
+    };
 
     function bookSession(){
         const options = {
@@ -53,6 +53,8 @@ sessionBookingForm.onsubmit = (e) => {
                 response.json().then((data) => {
                     pushNotification("success", data.detail ?? 'Session booked successfully!');
                     hideSessionBookingModal();
+                    // Fetch and display new bookings
+                    sessionCalendar.fetchEvents();
                 });
             }
         });

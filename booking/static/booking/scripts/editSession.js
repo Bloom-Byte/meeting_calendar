@@ -1,6 +1,7 @@
 // Depends on "sessionCalendar.js". So make sure to include it before this script
 
 const editSessionButton = sessionEditForm.querySelector('.submit-btn');
+editSessionButton.disabled = false;
 
 
 addOnPostAndOnResponseFuncAttr(editSessionButton, 'Updating info...')
@@ -54,7 +55,9 @@ sessionEditForm.onsubmit = (e) => {
         }else{
             response.json().then((data) => {
                 pushNotification("success", data.detail ?? 'Session Info updated successfully!');
+                // Hide modal and disable edit
                 hideSessionEditModal();
+                disableEdit();
             });
         }
     });

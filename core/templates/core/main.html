@@ -52,8 +52,11 @@
     });
 </script>
 
-<script src="{% static 'core//scripts//utils.js' %}"></script>
+<!-- Popper.js and Tippy.js -->
+<script src="https://unpkg.com/@popperjs/core@2"></script>
+<script src="https://unpkg.com/tippy.js@6"></script>
 
+<script src="{% static 'core//scripts//utils.js' %}"></script>
 {% block mainscripts %}
 {% endblock mainscripts %}
 </html>

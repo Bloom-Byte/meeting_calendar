@@ -52,11 +52,14 @@ forgotPasswordForm.onsubmit = function(e) {
 
             response.json().then((data) => {
                 pushNotification("success", data.detail ?? 'Request successful!');
+
+                const redirectURL  = data.redirect_url ?? null
+                if(!redirectURL) return;
+
+                setTimeout(() => {
+                    window.location.href = redirectURL;
+                }, 2000);
             });
-            
-            const redirectURL  = data.redirect_url ?? null
-            if(!redirectURL) return;
-            window.location.href = redirectURL;
         }
     });
 };
