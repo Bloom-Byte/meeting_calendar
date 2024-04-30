@@ -467,6 +467,8 @@ function onBackToMonthClick() {
     sessionCalendar.changeView('dayGridMonth');
     // remove time view class
     sessionCalendarEl.classList.remove("in-time-view");
+    // Exit edit mode
+    disableEdit()
     // Hide booked timeslots
     hideBookings();
     // Hide unavailable timeslots
