@@ -161,14 +161,12 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 if DEBUG is False:
     ALLOWED_HOSTS = ["*"] # Set to your domain
 
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
-        }
-    }
-else:
-    ALLOWED_HOSTS = ["*"]
+    # DATABASES = {
+    #     'default': {
+    #         'ENGINE': 'django.db.backends.sqlite3',
+    #         'NAME': BASE_DIR / 'db.sqlite3',
+    #     }
+    # }
 
     DATABASES = {
         'default': {
@@ -176,6 +174,15 @@ else:
             'NAME': os.getenv("DB_PATH") or BASE_DIR / 'db.sqlite3',
         }
     }
+else:
+    ALLOWED_HOSTS = ["*"]
+
+    # DATABASES = {
+    #     'default': {
+    #         'ENGINE': 'django.db.backends.sqlite3',
+    #         'NAME': os.getenv("DB_PATH") or BASE_DIR / 'db.sqlite3',
+    #     }
+    # }
 
 
 # For Admin logs
