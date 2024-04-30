@@ -73,14 +73,14 @@ jobs:
           echo "SECRET_KEY=${{ secrets.SECRET_KEY }}" >> .env
           echo "DEFAULT_FROM_EMAIL=${{ secrets.DEFAULT_FROM_EMAIL }}" >> .env
           echo "EMAIL_HOST=${{ secrets.EMAIL_HOST }}" >> .env
-          echo "EMAIL_PORT=${{ secrets.PORT }}" >> .env
+          echo "EMAIL_PORT=${{ secrets.EMAIL_PORT }}" >> .env
           echo "EMAIL_HOST_USER=${{ secrets.EMAIL_HOST_USER }}" >> .env
           echo "EMAIL_HOST_PASSWORD=${{ secrets.EMAIL_HOST_PASSWORD }}" >> .env
           echo "EMAIL_USE_TLS=${{ secrets.EMAIL_USE_TLS }}" >> .env
           echo "EMAIL_USE_SSL=${{ secrets.EMAIL_USE_SSL }}" >> .env
           echo "SITE_NAME=${{ secrets.SITE_NAME }}" >> .env
           echo "SITE_URL=${{ secrets.SITE_URL }}" >> .env
-          echo "PASSWORD_RESET_TOKEN_VALIDITY_PERIOD=${{ secrets.PASSWORD_RESET_TOKEN_VALIDITY_PERIO }}" >> .env || true
+          echo "PASSWORD_RESET_TOKEN_VALIDITY_PERIOD=${{ secrets.PASSWORD_RESET_TOKEN_VALIDITY_PERIOD }}" >> .env || true
 
    
 
