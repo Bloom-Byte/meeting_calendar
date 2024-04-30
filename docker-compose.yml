@@ -4,6 +4,7 @@ services:
   app:
     build: .
     volumes:
+      - ${HOME}/db.sqlite3:/django/db.sqlite3
       - .:/django
     env_file:
       - path: .env
