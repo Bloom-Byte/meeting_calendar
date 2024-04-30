@@ -141,13 +141,14 @@ class UserEmailVerificationView(LoginRequiredMixin, generic.TemplateView):
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
         token = self.kwargs.get("token", None)
+        user = self.request.user
 
-        if token != self.request.user.id.hex:
+        if token != user.id.hex:
             context["verification_status"] = "error"
             context["verification_detail"] = "Invalid verification link!"
         else:
-            self.request.user.is_verified = True
-            self.request.user.save()
+            user.is_verified = True
+            user.save()
             context["verification_status"] = "success"
             context["verification_detail"] = "Your account has been verified successfully!"
         return context
@@ -192,8 +193,6 @@ class ForgotPasswordView(generic.TemplateView):
     template_name = "users/forgot_password.html"
     http_method_names = ["get", "post"]
 
-    @to_JsonResponse
-    @requires_account_verification
     def post(self, request: HttpRequest, *args: str, **kwargs: Any) -> JsonResponse:
         data: Dict = json.loads(request.body)
         email: str = data.get("email", None)

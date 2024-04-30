@@ -212,7 +212,8 @@ function executeOnPressAndHold(element, execAfterHoldTime, holdTime=2000){
     if (isTouchDevice){
         element.addEventListener("touchstart", onMouseDown);
         element.addEventListener("touchend", onMouseUp);
-    }else{
+    }
+    else{
         //listen for mouse up event on body, not just the element you originally clicked on
         element.addEventListener("mousedown", onMouseDown);
         document.body.addEventListener("mouseup", onMouseUp);

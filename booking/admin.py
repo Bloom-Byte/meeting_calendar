@@ -24,7 +24,8 @@ class SessionModelAdmin(admin.ModelAdmin):
 
     def save_model(self, request: Any, obj: Any, form: Any, change: Any) -> None:
         # Set the booked_by field to the request user
-        form.instance.booked_by = request.user
+        if not obj.pk:
+            form.instance.booked_by = request.user
         return super().save_model(request, obj, form, change)
 
     def has_add_permission(self, request: HttpRequest) -> bool:

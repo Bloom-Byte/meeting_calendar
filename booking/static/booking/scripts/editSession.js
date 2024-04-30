@@ -58,6 +58,7 @@ sessionEditForm.onsubmit = (e) => {
                 // Hide modal and disable edit
                 hideSessionEditModal();
                 disableEdit();
+                sessionCalendar.fetchEvents();
             });
         }
     });
