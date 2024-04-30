@@ -583,7 +583,7 @@ function showBookings(bookedTimes){
             waitForElement(`.event-${id}`).then(() => {
                 const eventEl = document.querySelector(`.event-${id}`);
                 if (eventEl){
-                    executeOnPressAndHold(eventEl, enableEdit, 1500);
+                    executeOnPressAndHold(eventEl, enableEdit, 1200);
                     // Add tippy tool tip
                     tippy(eventEl, {
                         content: `Click and hold to edit`,

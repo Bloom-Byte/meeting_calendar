@@ -29,6 +29,7 @@ The project is an app where you can book a session and view the meetings you hav
 ### User Registration and Authentication
 
 - You can sign up by providing your email, first name, last name, and password. Your email is used as the username. Also, your timezone info is automatically detected and stored alongside your profile on sign up.
+- Make sure to verify your email as a verification mail will be sent on completing sign up.
 - You can log in using your email and password.
 - You can reset your password by navigating to the forgot password page from the sign up page, and providing your account email.
 
@@ -45,7 +46,7 @@ The project is an app where you can book a session and view the meetings you hav
 
 - To book a session on the calendar page, you should click on the date you want to book a session for. On clicking the date, the calendar switches to the view where you can select the time slot(s) you want to book.
 
-- In the time slot view, you can see the unavailable time slots for that day. They are highlighted in red. you can only book a session for a time slot that is available.
+- In the time slot view, you can see the unavailable time slots for that day. They are highlighted in red. you can only book a session for a time slot that is available. You can also see the time slots that are already booked by you.
 
 - The time slots are in durations of 5 minutes.
 
@@ -75,10 +76,6 @@ To change your timezone, you can navigate to the settings page and update your t
 
 - Once a session has been booked, you cannot delete it. You can only edit or reschedule the session.
 
-### Viewing Booked Sessions
-
-You can view your booked sessions by navigating to the calendar page and clicking on the day you booked the session for. Say 24th May, 2023. At the top-left corner of the calendar page, there is a "View bookings" button. Clicking on this button will display all the sessions that you have booked on that day as events on the calendar. Clicking this button again will hide them (switching you back to the view where you can book a session).
-
 #### Identifying Booked Sessions by Color
 
 The sessions displayed as events on the calendar are color-coded to help you identify them easily. below are the colors and what they represent:
@@ -94,9 +91,7 @@ The sessions displayed as events on the calendar are color-coded to help you ide
 
 ### Editing or Rescheduling a Session
 
-Navigate to the view where you can see the sessions you have booked as events (as described in the last section). Click on the edit button at the top-right corner of the calendar. This will switch the calendar to the edit mode where you can edit or reschedule any session event displayed on the calendar.
-
-To edit a session on mobile, tap and hold on the session for about 2 seconds until the session is highlighted. On PC, a left-click and hold is required. You can then drag the session to the new time slot(s) you want, or change the duration by resizing the event.
+Navigate to the date you booked the session and scroll till you find the session. Click/tap and hold on the session for about 2 seconds until the session is highlighted/lifted. You can then drag the session to the new time slot(s) you want, or change the duration by resizing the event. To exit the edit mode, click on the "Exit edit mode" button that appears at the top of the calendar.
 
 #### Constraints on Editing a Session
 
