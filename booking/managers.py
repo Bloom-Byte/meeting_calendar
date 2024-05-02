@@ -2,6 +2,7 @@ from typing import Optional
 from django.db import models
 from django.db.models.manager import BaseManager
 from django.utils import timezone
+import datetime
 
 
 class SessionQuerySet(models.QuerySet):
@@ -45,12 +46,22 @@ class SessionQuerySet(models.QuerySet):
 
     def today(self, tz: Optional[timezone.tzinfo] = None):
         """
-        Filter sessions that are scheduled for today
+        Returns sessions that are scheduled for today
 
         :param tz: Timezone to use for filtering
         """
         today = timezone.now().astimezone(tz)
         return self.filter(start__date=today.date())
+    
+
+    def start_date_gte(self, date: datetime.date):
+        """
+        Return all sessions whose start date is greater than or equal to the given date
+
+        :param date: Date to filter from
+        :param tz: Timezone to use for filtering
+        """
+        return self.filter(start__date__gte=date)
 
 
 
@@ -81,7 +92,7 @@ class SessionManager(BaseManager.from_queryset(SessionQuerySet)):
         return self.get_queryset().unapproved()
     
 
-    def missed(self, tz: Optional[timezone.tzinfo] = None):
+    def missed(self, tz: Optional[timezone.tzinfo] = None) -> SessionQuerySet:
         """
         Returns sessions that were missed. That is, sessions that are still
         pending even after their end datetime.
@@ -89,16 +100,25 @@ class SessionManager(BaseManager.from_queryset(SessionQuerySet)):
         return self.get_queryset().missed(tz=tz)
     
 
-    def cancelled(self):
+    def cancelled(self) -> SessionQuerySet:
         """Returns sessions that have been cancelled"""
         return self.get_queryset().cancelled()
     
     
     def today(self, tz: Optional[timezone.tzinfo] = None) -> SessionQuerySet:
         """
-        Filter sessions that are scheduled for today
+        Returns sessions that are scheduled for today
 
         :param tz: Timezone to use for filtering
         """
         return self.get_queryset().today(tz=tz)
 
+
+    def start_date_gte(self, date: datetime.date) -> SessionQuerySet:
+        """
+        Return all sessions whose start date is greater than or equal to the given date
+
+        :param date: Date to filter from
+        :param tz: Timezone to use for filtering
+        """
+        return self.get_queryset().start_date_gte(date=date)

@@ -53,7 +53,7 @@ def get_sessions_on_date_booked_by_user(date: str, user: UserAccount):
     """
     Return a list of booked sessions for the given date and user
     """
-    date = timezone.datetime.strptime(date, "%Y-%m-%d").astimezone(user.utz).strftime("%Y-%m-%d")
+    date = timezone.datetime.strptime(date, "%Y-%m-%d").date()
     return Session.objects.filter(start__date=date, booked_by=user)
 
 
@@ -61,7 +61,7 @@ def get_bookings_by_user_on_date(date: str, user: UserAccount) -> Dict[str, Dict
     todays_sessions: SessionQuerySet[Session] = get_sessions_on_date_booked_by_user(date, user)
     tz = user.utz
     pending_sessions = todays_sessions.pending()
-    missed_sessions = todays_sessions.missed(tz=user.utz)
+    missed_sessions = todays_sessions.missed(tz=tz)
     cancelled_sessions = todays_sessions.cancelled()
     held_sessions = todays_sessions.filter(has_held=True)
     pending = {}

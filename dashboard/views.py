@@ -4,9 +4,9 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 
 from booking.models import Session
 from news.models import News
-from .utils import get_todays_sessions_for_user, get_todays_news_for_user
+from .utils import get_future_sessions_for_user, get_todays_news_for_user
 
-session_qs = Session.objects.select_related('booked_by').all()
+session_qs = Session.objects.select_related('booked_by').all().order_by("start__date")
 news_qs = News.objects.all()
 
 
@@ -18,7 +18,7 @@ class DashboardView(LoginRequiredMixin, generic.TemplateView):
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
         user = self.request.user
-        context["todays_sessions"] = get_todays_sessions_for_user(session_qs, user)
+        context["future_sessions"] = get_future_sessions_for_user(session_qs, user)
         context["todays_news"] = get_todays_news_for_user(news_qs, user)
         return context
 

@@ -22,6 +22,7 @@ const businessHours = {
     endTime: '20:00'
 };
 
+
 // Always call this when ever a request is made on behalf of the calendar
 sessionCalendarEl.onPost = function(){
     this.classList.add('loading');
@@ -306,8 +307,8 @@ var sessionCalendar = new FullCalendar.Calendar(sessionCalendarEl, {
             select: onTimeSelect,
             unselect: onTimeUnselect,
             allDaySlot: false,
-            slotDuration: '00:05:00',
-            slotLabelInterval: '00:05',
+            slotDuration: '01:00:00',
+            slotLabelInterval: '01:00:00',
             eventResizableFromStart: true,
             eventDurationEditable: true,
             eventDrop: onEventDropOrResize,
@@ -564,7 +565,7 @@ function showBookings(bookedTimes){
             }
 
             const event = sessionCalendar.addEvent({
-                title: `${sessionTitle} (${sessionCategory})`,
+                title: `${sessionTitle} (${sessionCategory.toUpperCase()})`,
                 start: startDate,
                 end: endDate,
                 display: 'block',

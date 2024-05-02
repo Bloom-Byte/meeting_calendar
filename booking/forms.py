@@ -21,7 +21,7 @@ class BaseBookingModelForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         request_user = get_request_user()
         # Always set the initial timezone in the form to the request user's timezone
-        self.initial["timezone"] = request_user.timezone
+        self.initial["timezone"] = request_user.utz
         # When the form is displaying the data of the model instance
         # to the user, display the fields below in the request user's timezone
         if self.instance.pk:
@@ -47,8 +47,13 @@ class BaseBookingModelForm(forms.ModelForm):
                 self.add_error("start_time", "Start time must be less than end time")
 
         if date and start_time and end_time:
+            print(date, start_time, end_time, tz)
             start = datetime.datetime.combine(date=date, time=start_time, tzinfo=tz).astimezone()
+            # The actual start time should be one minute after the booked start time
+            # To avoid overlapping with other sessions
+            start = start + datetime.timedelta(minutes=1)
             end = datetime.datetime.combine(date=date, time=end_time, tzinfo=tz).astimezone()
+            print(start, end)
             # If the object is just being created, check if the start time is in the past
             # If so, raise an error
             if not self.instance.pk:
@@ -143,7 +148,7 @@ class SessionForm(BaseBookingModelForm):
         super().__init__(*args, **kwargs)
         if self.instance.pk:
             try:
-                link = self.instance.link
+                link: Link = self.instance.link
                 self.initial["link"] = link.url if link else None
                 self.initial["rescheduled_at"] = self.instance.rescheduled_at_user_tz
             except (AttributeError, TypeError):

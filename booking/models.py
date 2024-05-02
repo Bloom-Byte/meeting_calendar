@@ -39,6 +39,8 @@ class Session(models.Model):
     objects = SessionManager()
 
     class Meta:
+        # Order by start date from the most recent to the oldest, 
+        # and then by start time, from the earliest to the latest
         ordering = ["-start__date", "start__time"]
         verbose_name = _("Session")
         verbose_name_plural = _("Sessions")

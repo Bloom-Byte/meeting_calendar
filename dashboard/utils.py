@@ -1,3 +1,4 @@
+from os import name
 from django.utils import timezone
 from django.db import models
 
@@ -7,9 +8,9 @@ from news.models import News
 
 
 
-def get_todays_sessions_for_user(session_qs: SessionQuerySet, user: UserAccount) -> SessionQuerySet:
+def get_future_sessions_for_user(session_qs: SessionQuerySet, user: UserAccount) -> SessionQuerySet:
     """
-    Return today's pending sessions for the user (in the user's timezone).
+    Return all future pending sessions for the user (in the user's timezone).
 
     The sessions are marked as missed if they are missed.
 
@@ -18,14 +19,15 @@ def get_todays_sessions_for_user(session_qs: SessionQuerySet, user: UserAccount)
     """
     user_qs = session_qs.filter(booked_by=user)
     pending_sessions = user_qs.pending()
-    todays_sessions = pending_sessions.today(tz=user.utz)
-    missed_sessions = todays_sessions.missed(tz=user.utz)
-    for session in todays_sessions:
+    date_now = timezone.now().astimezone(user.utz).date()
+    future_sessions = pending_sessions.start_date_gte(date_now)
+    missed_sessions = future_sessions.missed(tz=user.utz)
+    for session in future_sessions:
         if session in missed_sessions:
             session.missed = True
         else:
             session.missed = False
-    return todays_sessions
+    return future_sessions
 
 
 def get_todays_news_for_user(news_qs: models.QuerySet[News], user: UserAccount) -> models.QuerySet[News]:
