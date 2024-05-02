@@ -16,7 +16,7 @@ class SessionModelAdmin(admin.ModelAdmin):
         "link", "has_held", "cancelled", "booked_at",
         "rescheduled"
     ]
-    search_fields = ["title", "booked_by__email", "booked_by__firstname", "booked_by__lastname"]
+    search_fields = ["title", "booked_by__email", "booked_by__name"]
     readonly_fields = ["booked_by", "rescheduled_at"]
     date_hierarchy = "start"
     ordering = ["-start__date", "start__time"]

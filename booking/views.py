@@ -11,10 +11,11 @@ from .models import Session
 from .forms import SessionForm
 from helpers.response import response_message
 from .utils import (
-    get_unavailable_times_for_date, get_bookings_by_user_on_date,
+    get_unavailable_times_on_date_for_user, get_bookings_by_user_on_date,
     remove_booked_time_periods_from_unavailable_times
 )
 from users.decorators import requires_account_verification, to_JsonResponse
+from helpers.logging import log_exception
 
 
 
@@ -109,10 +110,11 @@ class SessionCalendarView(LoginRequiredMixin, generic.TemplateView):
                 status=400
             )
         try:
-            unavailable_times = get_unavailable_times_for_date(date, tz=request.user.utz)
+            unavailable_times = get_unavailable_times_on_date_for_user(date, request.user)
             bookings = get_bookings_by_user_on_date(date, user=request.user)
             remove_booked_time_periods_from_unavailable_times(bookings, unavailable_times)
-        except Exception:
+        except Exception as exc:
+            log_exception(exc)
             return JsonResponse(
                 data={
                     "status": "error",

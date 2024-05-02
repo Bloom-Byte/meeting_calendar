@@ -347,8 +347,8 @@ sessionCalendar.fetchEvents = function(){
         hideUnavailableTimeslots();
 
         // Show new bookings and unavailable timeslots
-        showBookings(bookings);
         showUnavailableTimeslots(unavailableTimeRanges);
+        showBookings(bookings);
     };
     fetchBookingDataForDate(viewDateStr, displayBookingsAndUnavailableTimeSlots);
 };

@@ -92,11 +92,6 @@ class Session(models.Model):
     
 
     def save(self, *args, **kwargs):
-        if self.start >= self.end:
-            raise ValueError("End datetime must be greater than start datetime")
-        if self.start.date() != self.end.date():
-            raise ValueError("Start and end datetime must be on the same day")
-        
         # Check if the session has been rescheduled
         old_instance = Session.objects.filter(pk=self.pk).first()
         if old_instance:
@@ -138,11 +133,3 @@ class UnavailablePeriod(models.Model):
         """Returns the start and end time of the unavailable period"""
         return self.start.strftime("%H:%M"), self.end.strftime("%H:%M")
     
-    
-    def save(self, *args, **kwargs):
-        if self.start >= self.end:
-            raise ValueError("End datetime must be greater than start datetime")
-        if self.start.date() != self.end.date():
-            raise ValueError("Start and end datetime must be on the same day")
-        super().save(*args, **kwargs)
-

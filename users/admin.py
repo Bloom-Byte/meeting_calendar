@@ -15,7 +15,7 @@ class UserAccountModelAdmin(admin.ModelAdmin):
         "is_staff", "is_admin", "registered", "updated"
     ]
     search_fields = ["email", "name", "timezone"]
-
+    
     def save_model(self, request, obj, form, change):
         # If password is set, then set it using the set_password method
         if "password" in form.changed_data:

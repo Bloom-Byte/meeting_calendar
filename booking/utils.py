@@ -9,7 +9,7 @@ from users.models import UserAccount
 
 
 
-def session_to_simple_dict(session: Session, tz: Optional[timezone.tzinfo] = None) -> Dict[str, Any]:
+def session_to_simple_dict(session: Session, tz: Optional[datetime.tzinfo] = None) -> Dict[str, Any]:
     """Parse the session object to a simple dictionary with the necessary fields"""
     start_in_tz = session.start.astimezone(tz).strftime("%H:%M")
     end_in_tz = session.end.astimezone(tz).strftime("%H:%M")
@@ -22,44 +22,66 @@ def session_to_simple_dict(session: Session, tz: Optional[timezone.tzinfo] = Non
     }
 
 
-def get_unavailable_times_for_date(date: str, tz: Optional[timezone.tzinfo] = None) -> List[str]:
+def _get_objects_where_start_date_equals_given_date_in_users_tz(qs: models.QuerySet, user: UserAccount, date: datetime.date):
+    todays_objs_pks = []
+    for obj in qs:
+        start_in_user_tz = user.to_local_timezone(obj.start)
+        if start_in_user_tz.date() == date:
+            todays_objs_pks.append(obj.pk)
+    return qs.filter(pk__in=todays_objs_pks)
+
+
+def get_unavailable_times_on_date_for_user(date: str, user: UserAccount) -> List[str]:
     """
-    Return a list of unavailable times for the given date and timezone
+    Return a list of unavailable times for the given date in the give user's timezone
 
     :param date: Date in the format "YYYY-MM-DD"
-    :param tz: timezone of the date
     """
-    if tz:
-        date = timezone.datetime.strptime(date, "%Y-%m-%d").astimezone(tz).strftime("%Y-%m-%d")
-    # Get unavailable times
+    date = datetime.datetime.strptime(date, "%Y-%m-%d").date()
+    # Get unavailable times on given date
     unavailable_times = []
-    unavailable_periods = UnavailablePeriod.objects.filter(start__date=date)
-    for unavailable_period in unavailable_periods:
-        start_in_tz = unavailable_period.start.astimezone(tz).strftime("%H:%M")
-        end_in_tz = unavailable_period.end.astimezone(tz).strftime("%H:%M")
+    unavailable_periods_on_date_in_user_tz = _get_objects_where_start_date_equals_given_date_in_users_tz(
+        qs=UnavailablePeriod.objects.all(),
+        user=user, date=date
+    )
+    for unavailable_period in unavailable_periods_on_date_in_user_tz:
+        start_in_tz = unavailable_period.start.astimezone(user.utz).strftime("%H:%M")
+        end_in_tz = unavailable_period.end.astimezone(user.utz).strftime("%H:%M")
         unavailable_times.append([start_in_tz, end_in_tz])
 
-    # Get booked times
+    # Get booked times  on given date
     booked_times = []
-    booked_sessions = Session.objects.exclude(cancelled=True).filter(start__date=date)
-    for session in booked_sessions:
-        session_dict = session_to_simple_dict(session, tz)
+    valid_sessions = Session.objects.exclude(cancelled=True)
+    sessions_booked_on_date_in_user_tz = _get_objects_where_start_date_equals_given_date_in_users_tz(
+        qs=valid_sessions,
+        user=user, date=date
+    )
+    for session in sessions_booked_on_date_in_user_tz:
+        session_dict = session_to_simple_dict(session, user.utz)
         booked_times.append(session_dict["time_period"])
     return [*unavailable_times, *booked_times]
 
 
-
-def get_sessions_on_date_booked_by_user(date: str, user: UserAccount):
+def get_sessions_booked_on_date_by_user(date: str, user: UserAccount):
     """
-    Return a list of booked sessions for the given date and user
+    Return a list of booked sessions for the given date in the given user's timezone
     """
     date = timezone.datetime.strptime(date, "%Y-%m-%d").date()
-    return Session.objects.filter(start__date=date, booked_by=user)
+    sessions_booked_by_user = Session.objects.filter(booked_by=user)
+
+    return _get_objects_where_start_date_equals_given_date_in_users_tz(
+        qs=sessions_booked_by_user,
+        user=user, date=date
+    )
 
 
 def get_bookings_by_user_on_date(date: str, user: UserAccount) -> Dict[str, Dict[str, Any]]:
-    todays_sessions: SessionQuerySet[Session] = get_sessions_on_date_booked_by_user(date, user)
+    """
+    Returns a dictionary containing sessions booked by users on the given date
+    sorted into categories
+    """
     tz = user.utz
+    todays_sessions: SessionQuerySet[Session] = get_sessions_booked_on_date_by_user(date, user)
     pending_sessions = todays_sessions.pending()
     missed_sessions = todays_sessions.missed(tz=tz)
     cancelled_sessions = todays_sessions.cancelled()
@@ -101,14 +123,14 @@ def remove_booked_time_periods_from_unavailable_times(
     return None
 
 
-def get_unavailable_periods_within_time_period(start: timezone.datetime, end: timezone.datetime):
+def get_unavailable_periods_within_time_period(start: datetime.datetime, end: datetime.datetime):
     """
     Returns all unavailable periods that fall within the given (time period) start and end datetime
 
     :param start: Start datetime of the time period
     :param end: End datetime of the time period
     """
-    q = models.Q(start__range=(start, end)) | models.Q(end__range=(start, end))
+    q = models.Q(start__gt=start, start__lt=end) | models.Q(end__gt=start, end__lt=end)
     return UnavailablePeriod.objects.filter(q)
 
 
@@ -119,7 +141,7 @@ def get_sessions_booked_within_time_period(start: datetime.datetime, end: dateti
     :param start: Start datetime of the time period
     :param end: End datetime of the time period
     """
-    q = models.Q(start__range=(start, end)) | models.Q(end__range=(start, end))
+    q = models.Q(start__gt=start, start__lt=end) | models.Q(end__gt=start, end__lt=end)
     return Session.objects.filter(q)
 
 
