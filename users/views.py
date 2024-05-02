@@ -156,7 +156,7 @@ class UserEmailVerificationView(LoginRequiredMixin, generic.TemplateView):
 
     def get(self, request: HttpRequest, *args: str, **kwargs: Any) -> HttpResponse:
         token = self.kwargs.get("token", "")
-        token_user = UserAccount.objects.filter(id__hex=token).first()
+        token_user = UserAccount.objects.filter(id__icontains=token).first()
         if token_user:
             if token_user == request.user:
                 # If the token user (the request user) is already verified, redirect to dashboard
