@@ -155,8 +155,20 @@ class UserEmailVerificationView(LoginRequiredMixin, generic.TemplateView):
     
 
     def get(self, request: HttpRequest, *args: str, **kwargs: Any) -> HttpResponse:
-        if request.user.is_verified:
-            return redirect("dashboard:dashboard")
+        token = self.kwargs.get("token", "")
+        token_user = UserAccount.objects.filter(id__hex=token).first()
+        if token_user:
+            if token_user == request.user:
+                # If the token user (the request user) is already verified, redirect to dashboard
+                if request.user.is_verified:
+                    return redirect("dashboard:dashboard")
+            else:
+                # If the token user is not the request user, log out the request user
+                logout(request)
+                login_route = reverse("users:signin")
+                this_route = reverse("users:email_verification", kwargs={"token": token})
+                # Redirect to login page with next parameter set to this route
+                return redirect(f"{login_route}?next={this_route}")
         return super().get(request, *args, **kwargs)
 
 

@@ -141,9 +141,13 @@ class SessionForm(BaseBookingModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        link: Link = self.instance.link
-        if link:
-            self.initial["link"] = link.url
+        if self.instance.pk:
+            try:
+                link = self.instance.link
+                self.initial["link"] = link.url if link else None
+                self.initial["rescheduled_at"] = self.instance.rescheduled_at_user_tz
+            except (AttributeError, TypeError):
+                pass
 
 
     def clean(self) -> None:
