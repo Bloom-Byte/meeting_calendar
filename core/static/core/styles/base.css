@@ -140,7 +140,7 @@ body::-webkit-scrollbar{
     position: absolute;
     bottom: 50px;
     left: 5px;
-    z-index: 99999999999;
+    z-index: 999;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -195,7 +195,7 @@ body:has(#sidebar.hide-sidebar) #sidebar-collapse{
 #main > header{
     position: sticky;
     inset: 0;
-    z-index: 100;
+    z-index: 999;
     width: 100%;
     background: var(--white);
     gap: 0 20px;
