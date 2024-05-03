@@ -31,6 +31,8 @@
     color: var(--text-light);
     flex-shrink: 0;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    width: 100%;
+    max-width: 200px;
 }
 
 .session-card > .session-card-head{
