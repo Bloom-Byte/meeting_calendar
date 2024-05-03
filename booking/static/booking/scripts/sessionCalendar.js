@@ -19,7 +19,7 @@ const unavailableEventTitle = 'Booked/Unavailable';
 // Hours of operation for the calendar
 const businessHours = {
     startTime: '08:00',
-    endTime: '19:00'
+    endTime: '20:00'
 };
 
 
@@ -308,7 +308,7 @@ var sessionCalendar = new FullCalendar.Calendar(sessionCalendarEl, {
             unselect: onTimeUnselect,
             allDaySlot: false,
             slotDuration: '01:00:00',
-            slotLabelInterval: '01:00:00',
+            // slotLabelInterval: '01:00:00',
             eventResizableFromStart: true,
             eventDurationEditable: true,
             eventDrop: onEventDropOrResize,
