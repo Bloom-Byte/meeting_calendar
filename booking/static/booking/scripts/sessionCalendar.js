@@ -19,7 +19,7 @@ const unavailableEventTitle = 'Booked/Unavailable';
 // Hours of operation for the calendar
 const businessHours = {
     startTime: '08:00',
-    endTime: '20:00'
+    endTime: '19:00'
 };
 
 
