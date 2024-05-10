@@ -41,6 +41,7 @@ signInForm.onsubmit = (e) => {
             response.json().then((data) => {
                 const errorDetail = data.detail ?? null
                 pushNotification("error", errorDetail ?? 'An error occurred!');
+                passwordField.value = "";
             });
             
         }else{

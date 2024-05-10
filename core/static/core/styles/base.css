@@ -40,7 +40,7 @@ body::-webkit-scrollbar{
     justify-content: flex-start;
     align-items: flex-start;
     gap: 20px;
-    background: var(--bg-dark);
+    background: var(--dark-gray);
 }
 
 #sidebar #logo{
