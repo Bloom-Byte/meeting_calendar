@@ -347,8 +347,8 @@ sessionCalendar.fetchEvents = function(){
         hideUnavailableTimeslots();
 
         // Show new bookings and unavailable timeslots
-        showUnavailableTimeslots(unavailableTimeRanges);
         showBookings(bookings);
+        showUnavailableTimeslots(unavailableTimeRanges);
     };
     fetchBookingDataForDate(viewDateStr, displayBookingsAndUnavailableTimeSlots);
 };
@@ -545,10 +545,10 @@ function hideUnavailableTimeslots(){
  */
 function showBookings(bookedTimes){
     for (const [sessionCategory, categoryData] of Object.entries(bookedTimes)) {
-        for (const [sessionTitle, sessionData] of Object.entries(categoryData)){
+        for (const [sessionId, sessionData] of Object.entries(categoryData)){
             const timeRange = sessionData.time_period
             const date = sessionData.date
-            const id = sessionData.id
+            const sessionTitle = sessionData.title
             const sessionLink = sessionData.link
             const startTime = timeRange[0];
             const endTime = timeRange[1];
@@ -557,7 +557,7 @@ function showBookings(bookedTimes){
             const classNames = [
                 `session-${sessionCategory}`, 
                 // Unique identifier (class) for each event
-                `event-${id}`,
+                `event-${sessionId}`,
                 "booking"
             ];
             if (sessionLink){
@@ -572,7 +572,7 @@ function showBookings(bookedTimes){
                 selectable: false,
                 overlap: false,
                 classNames: classNames,
-                id: id,
+                id: sessionId,
                 extendedProps: {
                     sessionTitle: sessionTitle,
                     type: sessionCategory
@@ -583,13 +583,14 @@ function showBookings(bookedTimes){
             }
 
             // Wait for the event to be rendered before getting it and adding the press and hold event listener
-            waitForElement(`.event-${id}`).then(() => {
-                const eventEl = document.querySelector(`.event-${id}`);
+            waitForElement(`.event-${sessionId}`).then(() => {
+                const eventEl = document.querySelector(`.event-${sessionId}`);
                 if (eventEl){
                     executeOnPressAndHold(eventEl, enableEdit, 1200);
                     // Add tippy tool tip
+                    const toolTipContent = `${sessionTitle}@${startTime}-${endTime} (${sessionCategory.toUpperCase()})`;
                     tippy(eventEl, {
-                        content: `Click and hold to edit`,
+                        content: toolTipContent,
                         placement: 'top',
                         theme: 'light',
                         duration: 200,

@@ -14,7 +14,7 @@ def session_to_simple_dict(session: Session, tz: Optional[datetime.tzinfo] = Non
     start_in_tz = session.start.astimezone(tz).strftime("%H:%M")
     end_in_tz = session.end.astimezone(tz).strftime("%H:%M")
     return {
-        "id": session.pk,
+        "title": session.title,
         "date": session.start.strftime("%Y-%m-%d"),
         "time_period": [start_in_tz, end_in_tz],
         "link": session.link.path if session.link else None,
@@ -27,7 +27,7 @@ def _get_objects_where_start_date_equals_given_date_in_users_tz(qs: models.Query
     for obj in qs:
         start_in_user_tz = user.to_local_timezone(obj.start)
         if start_in_user_tz.date() == date:
-            todays_objs_pks.append(obj.pk)
+            todays_objs_pks.append(obj.id)
     return qs.filter(pk__in=todays_objs_pks)
 
 
@@ -92,16 +92,16 @@ def get_bookings_by_user_on_date(date: str, user: UserAccount) -> Dict[str, Dict
     held = {}
     for session in pending_sessions:
         if session not in missed_sessions:
-            pending[session.title] = session_to_simple_dict(session, tz)
+            pending[session.pk.hex] = session_to_simple_dict(session, tz)
 
     for session in missed_sessions:
-        missed[session.title] = session_to_simple_dict(session, tz)
+        missed[session.pk.hex] = session_to_simple_dict(session, tz)
     
     for session in cancelled_sessions:
-        cancelled[session.title] = session_to_simple_dict(session, tz)
+        cancelled[session.pk.hex] = session_to_simple_dict(session, tz)
 
     for session in held_sessions:
-        held[session.title] = session_to_simple_dict(session, tz)
+        held[session.pk.hex] = session_to_simple_dict(session, tz)
     return {
         "pending": pending,
         "missed": missed,

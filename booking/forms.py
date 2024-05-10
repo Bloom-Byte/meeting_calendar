@@ -47,8 +47,8 @@ class BaseBookingModelForm(forms.ModelForm):
                 self.add_error("start_time", "Start time must be less than end time")
 
         if date and start_time and end_time:
-            start = datetime.datetime.combine(date=date, time=start_time, tzinfo=tz).astimezone()
-            end = datetime.datetime.combine(date=date, time=end_time, tzinfo=tz).astimezone()
+            start = datetime.datetime.combine(date=date, time=start_time, tzinfo=tz)
+            end = datetime.datetime.combine(date=date, time=end_time, tzinfo=tz)
             # If the object is just being created, check if the start time is in the past
             # If so, raise an error
             if not self.instance.pk:
