@@ -1,16 +1,23 @@
 version: '3.12.1'
 
+networks:
+  meeting_net:
+    driver: bridge
+
 services:
-  app:
+  meeting_calendar:
     build: .
     volumes:
-      - ${HOME}/db.sqlite3:/django/db.sqlite3
+      - ${HOME}/meeting-calender/db.sqlite3:/django/db.sqlite3
       - .:/django
     env_file:
       - path: .env
         required: true
     ports:
-      - 8000:8000
-    image: app:django
-    container_name: my_django_container
+      - 8004:8000
+    image: meeting_calendar:django
+    container_name: meeting_calendar
     command: bash -c "python manage.py migrate && python manage.py collectstatic --noinput && python manage.py runserver 0.0.0.0:8000"
+
+    networks:
+      - meeting_net
