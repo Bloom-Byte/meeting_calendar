@@ -181,7 +181,8 @@ class ResendVerificationEmailView(LoginRequiredMixin, generic.View):
         user = request.user
         try:
             send_verification_email(user)
-        except Exception:
+        except Exception as exc:
+            log_exception(exc)
             return JsonResponse(
                 data={
                     "status": "error",

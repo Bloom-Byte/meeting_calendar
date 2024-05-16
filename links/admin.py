@@ -1,5 +1,5 @@
 from django.contrib import admin
-from typing import Any
+import datetime
 from django.http import HttpRequest
 
 from .models import Link
@@ -18,10 +18,10 @@ class LinkModelAdmin(admin.ModelAdmin):
     def has_add_permission(self, request: HttpRequest) -> bool:
         return False
 
-    def created(self, obj: Link) -> Any:
+    def created(self, obj: Link) -> datetime.datetime:
         """Created time in the request user's timezone"""
         return obj.created_at_user_tz
     
-    def updated(self, obj: Link) -> Any:
+    def updated(self, obj: Link) -> datetime.datetime:
         """Updated time in the request user's timezone"""
         return obj.updated_at_user_tz

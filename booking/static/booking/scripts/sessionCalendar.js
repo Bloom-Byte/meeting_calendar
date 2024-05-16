@@ -1,5 +1,7 @@
 const sessionCalendarEl = document.querySelector('#session-calendar');
 const userTimezone =  document.querySelector('#user-timezone').innerText.trim();
+const businessHourStart = document.querySelector("#business-hour-start").innerText.trim();
+const businessHourEnd = document.querySelector("#business-hour-end").innerText.trim();
 
 const sessionBookingModal = document.getElementById('session-booking-modal');
 const sessionBookingForm = sessionBookingModal.querySelector('#session-booking-form');
@@ -18,8 +20,8 @@ const sessionEditFormEndTimeField = sessionEditForm.querySelector("#end-time");
 const unavailableEventTitle = 'Booked/Unavailable';
 // Hours of operation for the calendar
 const businessHours = {
-    startTime: '08:00',
-    endTime: '20:00'
+    startTime: businessHourStart,
+    endTime: businessHourEnd
 };
 
 
@@ -308,7 +310,7 @@ var sessionCalendar = new FullCalendar.Calendar(sessionCalendarEl, {
             unselect: onTimeUnselect,
             allDaySlot: false,
             slotDuration: '01:00:00',
-            // slotLabelInterval: '01:00:00',
+            slotLabelInterval: '01:00:00',
             eventResizableFromStart: true,
             eventDurationEditable: true,
             eventDrop: onEventDropOrResize,
@@ -578,6 +580,7 @@ function showBookings(bookedTimes){
                     type: sessionCategory
                 }
             });
+
             if (sessionLink){
                 event.setProp('url', sessionLink);
             }

@@ -101,6 +101,7 @@ if (resendVerificationEmailLink){
     resendVerificationEmailLink.addEventListener("click", (e) => {
         e.preventDefault();
         resendVerificationEmailLink.disabled = true;
+        resendVerificationEmailLink.style.pointerEvents = 'none !important';
     
         const options = {
             method: 'POST',
@@ -112,6 +113,7 @@ if (resendVerificationEmailLink){
         }
         fetch(e.target.href, options).then((response) => {
             resendVerificationEmailLink.disabled = false;
+            resendVerificationEmailLink.style.pointerEvents = 'auto';
             
             if (!response.ok) {
                 response.json().then((data) => {

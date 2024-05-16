@@ -10,7 +10,7 @@ from django_utz.middleware import get_request_user
 from . import models
 from links.models import Link
 from links.forms import LinkForm
-from .utils import check_if_time_period_is_available
+from .utils import check_if_time_period_is_available, check_if_time_period_is_within_business_hours
 
 UserModel = get_user_model()
 
@@ -63,6 +63,14 @@ class BaseBookingModelForm(forms.ModelForm):
                 excluded_sessions = (self.instance,)
             else:
                 excluded_sessions = None
+
+            # Check if the time period chosen is within business hours
+            time_period_is_within_business_hours = check_if_time_period_is_within_business_hours(start, end)
+            if time_period_is_within_business_hours is False:
+                raise forms.ValidationError(
+                    "The time period chosen is not within the business hours. Please choose another time period."
+                )
+            # Check if the time period chosen is available
             time_period_is_available = check_if_time_period_is_available(start, end, excluded_sessions)
             if time_period_is_available is False:
                 raise forms.ValidationError(
@@ -104,28 +112,34 @@ class SessionForm(BaseBookingModelForm):
         }
 
     date = forms.DateField(
-        input_formats=["%Y-%m-%d"], required=True, label=_("Date"), disabled=False,
+        input_formats=["%Y-%m-%d"], required=True, label=_("Date"),
         widget=forms.DateInput(
             attrs={
                 "type": "date", 
-                "min": timezone.now().strftime("%Y-%m-%d")
+                "min": timezone.now().strftime("%Y-%m-%d"),
+                'readonly': 'readonly',
+                "style": "pointer-events: none; opacity: 0.75;"
             },
             format="yyyy-mm-dd",
         ),
         help_text=_("The date the session will take place (in your timezone).")
     )
     start_time = forms.TimeField(
-        input_formats=["%H:%M", "%H:%M:%S"], required=True, disabled=False,
+        input_formats=["%H:%M", "%H:%M:%S"], required=True,
         widget=forms.TimeInput(attrs={
             "type": "time",
+            'readonly': 'readonly',
+            "style": "pointer-events: none; opacity: 0.75;"
         }),
         label=_("Starts at"), help_text=_("The time the session will start (in your timezone).")
     )
     end_time = forms.TimeField(
-        input_formats=["%H:%M", "%H:%M:%S"], required=True, disabled=False,
+        input_formats=["%H:%M", "%H:%M:%S"], required=True,
         widget=forms.TimeInput(attrs={
             "type": "time",
-            "max": "23:59"
+            "max": "23:59",
+            'readonly': 'readonly',
+            "style": "pointer-events: none; opacity: 0.75;"
         }),
         label=_("Ends at"), help_text=_("The time the session will end (in your timezone).")
     )

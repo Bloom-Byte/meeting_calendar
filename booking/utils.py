@@ -4,6 +4,7 @@ import datetime
 from django.db import models
 
 from .models import Session, UnavailablePeriod
+from core.models import BusinessHoursSettings
 from .managers import SessionQuerySet
 from users.models import UserAccount
 
@@ -11,12 +12,12 @@ from users.models import UserAccount
 
 def session_to_simple_dict(session: Session, tz: Optional[datetime.tzinfo] = None) -> Dict[str, Any]:
     """Parse the session object to a simple dictionary with the necessary fields"""
-    start_in_tz = session.start.astimezone(tz).strftime("%H:%M")
-    end_in_tz = session.end.astimezone(tz).strftime("%H:%M")
+    start_in_tz = session.start.astimezone(tz)
+    end_in_tz = session.end.astimezone(tz)
     return {
         "title": session.title,
-        "date": session.start.strftime("%Y-%m-%d"),
-        "time_period": [start_in_tz, end_in_tz],
+        "date": start_in_tz.strftime("%Y-%m-%d"),
+        "time_period": [start_in_tz.strftime("%H:%M"), end_in_tz.strftime("%H:%M")],
         "link": session.link.path if session.link else None,
         "is_approved": session.is_approved,
     }
@@ -176,3 +177,23 @@ def check_if_time_period_is_available(start: datetime.datetime, end: datetime.da
     unavailable = get_unavailable_periods_within_time_period(start, end).exists()
     return not booked and not unavailable
 
+
+def get_business_hours_settings() -> BusinessHoursSettings:
+    """Returns the latest business hours settings. Creates one if none exists"""
+    try:
+        bh_settings = BusinessHoursSettings.objects.latest("created_at")
+    except BusinessHoursSettings.DoesNotExist:
+        bh_settings = BusinessHoursSettings.objects.create()
+    return bh_settings
+
+
+def check_if_time_period_is_within_business_hours(start: datetime.datetime, end: datetime.datetime) -> bool:
+    """
+    Check if the given time period is within the business hours of the site.
+
+    :param start: Start datetime of the time period
+    :param end: End datetime of the time period
+    :returns: True if the time period is within business hours, False otherwise
+    """
+    bh_settings = get_business_hours_settings()
+    return bh_settings.datetime_is_within_business_hours(start) and bh_settings.datetime_is_within_business_hours(end)

@@ -1,6 +1,7 @@
 {% extends 'core/base.html' %}
 {% load static %}
 {% load tz %}
+{% load django_utz %}
 
 {% block page_title %}
 Calendar
@@ -183,6 +184,9 @@ Calendar
 
 <section id="content-container">
     <span id="user-timezone" style="display: none !important;">{{ request.user.utz }}</span>
+    <!-- Convert the business opening and closing datetime today to the request user's timezone. Then, get the time part -->
+    <span id="business-hour-start" style="display: none !important;">{{ bh_settings.opens_at_today|usertimezone|time:"H:i" }}</span>
+    <span id="business-hour-end" style="display: none !important;">{{ bh_settings.closes_at_today|usertimezone|time:"H:i" }}</span>
 
     <div id="session-calendar">
         <!-- Calendar goes here -->

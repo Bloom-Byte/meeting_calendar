@@ -12,7 +12,7 @@ from .forms import SessionForm
 from helpers.response import response_message
 from .utils import (
     get_unavailable_times_on_date_for_user, get_bookings_by_user_on_date,
-    remove_booked_time_periods_from_unavailable_times
+    remove_booked_time_periods_from_unavailable_times, get_business_hours_settings
 )
 from users.decorators import requires_account_verification, to_JsonResponse
 from helpers.logging import log_exception
@@ -96,6 +96,13 @@ class SessionLinkView(LoginRequiredMixin, generic.DetailView):
 class SessionCalendarView(LoginRequiredMixin, generic.TemplateView):
     template_name = 'booking/session_calendar.html'
     http_method_names = ["get", "post"]
+
+    def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+        bh_settings = get_business_hours_settings()
+        context["bh_settings"] = bh_settings
+        return context
+
 
     def post(self, request: HttpRequest, *args: Any, **kwargs: Any) -> JsonResponse:
         data: Dict = json.loads(request.body)
