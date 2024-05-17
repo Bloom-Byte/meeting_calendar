@@ -5,7 +5,7 @@ import datetime
 try:
     import zoneinfo
 except ImportError:
-    from backports import zoineinfo
+    from backports import zoneinfo
 from timezone_field import TimeZoneField
 
 
