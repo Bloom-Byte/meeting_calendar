@@ -26,7 +26,7 @@ class BusinessHoursSettingsModelAdmin(admin.ModelAdmin):
         return request.user.is_superuser
     
     def has_delete_permission(self, request: HttpRequest, obj: Optional[BusinessHoursSettingsForm] = None) -> bool:
-        return False
+        return True
 
     def created(self, obj: BusinessHoursSettings) -> datetime.datetime:
         """Created time in the request user's timezone"""

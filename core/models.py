@@ -2,7 +2,12 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django_utz.decorators import model
 import datetime
+try:
+    import zoneinfo
+except ImportError:
+    from backports import zoineinfo
 from timezone_field import TimeZoneField
+
 
 
 @model
@@ -16,7 +21,7 @@ class BusinessHoursSettings(models.Model):
         _("Business closes at"), help_text=_("The time the business closes"), 
         default=datetime.time.fromisoformat("20:00:00")
     )
-    timezone = TimeZoneField(default=datetime.UTC)
+    timezone = TimeZoneField(default=zoneinfo.ZoneInfo("UTC"))
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
